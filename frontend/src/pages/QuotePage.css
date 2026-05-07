@@ -1,0 +1,33 @@
+.quote-layout { display: grid; grid-template-columns: 1fr 300px; gap: 32px; padding: 40px 0 60px; align-items: start; }
+.quote-form { display: flex; flex-direction: column; gap: 20px; }
+.form-section-card { background: var(--white); border: 1.5px solid var(--white-3); border-radius: var(--radius-md); padding: 28px; }
+.form-section-card h3 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 20px; }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+.quote-items { display: flex; flex-direction: column; gap: 16px; }
+.quote-item { display: flex; align-items: flex-start; gap: 12px; padding: 16px; background: var(--white-2); border-radius: var(--radius); }
+.quote-item-num { width: 28px; height: 28px; background: var(--yellow); color: var(--black); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-condensed); font-weight: 700; font-size: 0.85rem; flex-shrink: 0; margin-top: 10px; }
+.quote-item-fields { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.quote-item-row2 { display: flex; gap: 12px; align-items: flex-end; }
+.remove-item-btn { color: var(--grey); margin-top: 10px; transition: var(--transition); }
+.remove-item-btn:hover { color: var(--red); }
+
+.quote-side { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 100px; }
+.quote-side-card { background: var(--white); border: 1.5px solid var(--white-3); border-radius: var(--radius-md); padding: 22px; }
+.quote-side-card h4 { font-family: var(--font-condensed); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--black); margin-bottom: 14px; }
+.quote-side-card ul { display: flex; flex-direction: column; gap: 8px; }
+.quote-side-card ul li { font-size: 0.84rem; color: var(--black-3); }
+.quote-contact-card { background: var(--black); border-color: var(--black); }
+.quote-contact-card h4 { color: var(--yellow); }
+.quote-contact-card p { font-size: 0.83rem; color: rgba(255,255,255,0.5); margin-bottom: 14px; }
+
+.quote-success { min-height: 70vh; display: flex; align-items: center; justify-content: center; padding: 60px 20px; }
+.success-card { max-width: 520px; width: 100%; background: var(--white); border: 2px solid var(--black); border-radius: var(--radius-lg); padding: 48px 40px; text-align: center; }
+.success-icon { color: var(--yellow); margin: 0 auto 20px; }
+.success-card h2 { font-family: var(--font-display); font-size: 2.2rem; margin-bottom: 8px; }
+.order-num { font-family: var(--font-condensed); font-size: 1rem; font-weight: 700; background: var(--yellow); display: inline-block; padding: 4px 16px; border-radius: 100px; margin-bottom: 16px; }
+.success-card p { color: var(--grey); line-height: 1.7; margin-bottom: 10px; }
+.quote-success-contact { display: flex; gap: 12px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+.quote-success-contact a { display: flex; align-items: center; gap: 6px; font-family: var(--font-condensed); font-size: 0.85rem; font-weight: 700; color: var(--black); padding: 8px 16px; border: 1.5px solid var(--black); border-radius: var(--radius); }
+.quote-success-contact a:hover { background: var(--yellow); border-color: var(--yellow); }
+
+@media (max-width: 900px) { .quote-layout { grid-template-columns: 1fr; } .form-grid-2 { grid-template-columns: 1fr; } }

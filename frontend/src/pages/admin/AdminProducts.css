@@ -1,0 +1,179 @@
+/* ── Product modal width ─────────────────────────────────────────────────── */
+.product-modal { max-width: 760px !important; }
+
+/* ── Image count in modal section header ────────────────────────────────── */
+.img-count-label {
+  font-family: var(--font-condensed);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin-left: 10px;
+  background: var(--white-2);
+  padding: 2px 8px;
+  border-radius: 100px;
+  border: 1px solid var(--white-3);
+}
+
+/* ── Image grid ─────────────────────────────────────────────────────────── */
+.img-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* ── Individual image thumb ─────────────────────────────────────────────── */
+.img-thumb {
+  position: relative;
+  aspect-ratio: 4/3;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid var(--white-3);
+  background: var(--white-2);
+  transition: var(--transition);
+}
+.img-thumb:hover { border-color: var(--yellow); }
+.img-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Overlay shown on hover */
+.img-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 6px;
+  opacity: 0;
+  transition: var(--transition);
+}
+.img-thumb:hover .img-thumb-overlay { opacity: 1; }
+
+.img-thumb-num {
+  font-family: var(--font-condensed);
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--white);
+  background: rgba(0,0,0,0.5);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.img-thumb-remove {
+  background: var(--red);
+  color: var(--white);
+  border-radius: 3px;
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+}
+.img-thumb-remove:hover { background: #b91c1c; }
+
+/* Queued (pending upload) style */
+.img-thumb--queued { border-style: dashed; border-color: var(--yellow); }
+.img-thumb-badge {
+  font-family: var(--font-condensed);
+  font-size: 0.6rem; font-weight: 800;
+  background: var(--yellow); color: var(--black);
+  padding: 1px 5px; border-radius: 3px;
+}
+
+/* ── Add photo slot ──────────────────────────────────────────────────────── */
+.img-add-slot {
+  aspect-ratio: 4/3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 2px dashed var(--white-3);
+  border-radius: 6px;
+  background: var(--white-2);
+  color: var(--grey);
+  font-family: var(--font-condensed);
+  font-size: 0.72rem; font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.img-add-slot:hover {
+  border-color: var(--yellow);
+  background: var(--yellow-pale);
+  color: var(--black);
+}
+.img-add-hint {
+  font-size: 0.62rem;
+  color: var(--grey-light);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* ── Helper text ─────────────────────────────────────────────────────────── */
+.img-hint {
+  font-size: 0.75rem;
+  color: var(--grey);
+  line-height: 1.5;
+}
+
+/* ── Upload progress indicator ──────────────────────────────────────────── */
+.img-uploading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--black-3);
+  font-family: var(--font-condensed);
+  font-weight: 600;
+  background: var(--yellow-pale);
+  border: 1px solid var(--yellow);
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin-top: 8px;
+}
+
+/* ── Table image placeholder ─────────────────────────────────────────────── */
+.td-img-placeholder {
+  width: 44px; height: 38px;
+  background: var(--white-2);
+  border: 1.5px solid var(--white-3);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--grey-light);
+  flex-shrink: 0;
+}
+
+/* ── Image count badge in table ──────────────────────────────────────────── */
+.img-count-badge {
+  font-family: var(--font-condensed);
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--white-2);
+  color: var(--black-3);
+  border: 1px solid var(--white-3);
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+
+/* ── Spin animation for loader ───────────────────────────────────────────── */
+@keyframes spin-icon { to { transform: rotate(360deg); } }
+.spin { animation: spin-icon 0.8s linear infinite; }
+
+/* ── Form layout ─────────────────────────────────────────────────────────── */
+.toggles-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  .img-grid { grid-template-columns: repeat(3, 1fr); }
+  .product-form-grid { grid-template-columns: 1fr !important; }
+}
