@@ -76,7 +76,7 @@ export default function AboutPage() {
             { val: '200+', label: 'Institutions Served' },
             { val: '1,500+', label: 'Products Supplied' },
             { val: '47', label: 'Counties Reached' },
-            { val: '8+', label: 'Years Experience' },
+            { val: '3+', label: 'Years Experience' },
             { val: '98%', label: 'Client Satisfaction' },
           ].map(s => (
             <div key={s.label} className="about-stat">

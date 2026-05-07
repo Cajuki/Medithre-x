@@ -1,2 +1,292 @@
 [2m8:23:25 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
 [2m8:23:25 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+[2m9:13:43 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] Error:[0m Encountered diff marker
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/App.jsx:3:1 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m 3 │[0m <<<<<<<[38;5;249m [0m[38;5;249mH[0m[38;5;249mE[0m[38;5;249mA[0m[38;5;249mD[0m
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── between this marker and `=======` is the code that we're merging into
+ [38;5;240m   │[0m 
+ [38;5;246m52 │[0m =======
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── between this marker and `>>>>>>>` is the incoming code
+ [38;5;240m   │[0m 
+ [38;5;246m69 │[0m >>>>>>>[38;5;249m [0m[38;5;249m3[0m[38;5;249md[0m[38;5;249m7[0m[38;5;249mf[0m[38;5;249m6[0m[38;5;249m4[0m[38;5;249m6[0m[38;5;249mc[0m[38;5;249me[0m[38;5;249m5[0m[38;5;249mb[0m[38;5;249m4[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mf[0m[38;5;249md[0m[38;5;249m3[0m[38;5;249m8[0m[38;5;249m8[0m[38;5;249m0[0m[38;5;249m1[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m5[0m[38;5;249m9[0m[38;5;249m8[0m[38;5;249m7[0m[38;5;249m6[0m[38;5;249mf[0m[38;5;249mb[0m[38;5;249m7[0m[38;5;249m0[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m4[0m[38;5;249mc[0m
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── this marker concludes the conflict region
+ [38;5;240m   │[0m 
+ [38;5;240m   │[0m [38;5;115mHelp[0m: Conflict markers indicate that a merge was started but could not be completed due to merge conflicts.
+ [38;5;240m   │[0m       To resolve a conflict, keep only the code you want and then delete the lines containing conflict markers.
+ [38;5;240m   │[0m       If you're having merge conflicts after pulling new code, the top section is the code you already had and the bottom section is the remote code.
+ [38;5;240m   │[0m       If you're in the middle of a rebase, the top section is the code being rebased onto and the bottom section is the code coming from the current commit being rebased.
+ [38;5;240m   │[0m       If you have nested conflicts, resolve the outermost conflict first.
+[38;5;246m────╯[0m
+[39m
+  Plugin: [35mvite:oxc[39m
+  File: [36mC:/Users/Admin/Desktop/MED/medithrex/frontend/src/App.jsx[39m
+      at transformWithOxc (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3343:19)
+      at TransformPluginContext.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3411:26)
+      at EnvironmentPluginContainer.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:30164:51)
+      at async loadAndTransform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24512:26)
+      at async viteTransformMiddleware (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24306:20)
+[31mfailed to load config from C:\Users\Admin\Desktop\MED\medithrex\frontend\vite.config.js[39m
+[2m9:13:43 PM[22m [31m[1m[vite][22m[39m Build failed with 1 error:
+
+[31m[UNHANDLEABLE_ERROR] Error:[0m Something went wrong inside rolldown, please report this problem at https://github.com/rolldown/rolldown/issues.
+JSONError { path: "C:\\Users\\Admin\\Desktop\\MED\\medithrex\\frontend\\package.json", message: "key must be a string at line 11 column 1", line: 11, column: 1 }
+
+[2m9:13:43 PM[22m [31m[1m[vite][22m[39m server restart failed
+[2m9:13:43 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] TypeError: error loading dynamically imported module: http://localhost:5173/src/App.jsx?t=1778177620970
+[2m9:13:43 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m9:13:43 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] Error:[0m Encountered diff marker
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/Footer.jsx:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m <<<<<<<[38;5;249m [0m[38;5;249mH[0m[38;5;249mE[0m[38;5;249mA[0m[38;5;249mD[0m
+ [38;5;240m  │[0m ───┬───  
+ [38;5;240m  │[0m    ╰───── between this marker and `=======` is the code that we're merging into
+ [38;5;240m  │[0m 
+ [38;5;246m5 │[0m =======
+ [38;5;240m  │[0m ───┬───  
+ [38;5;240m  │[0m    ╰───── between this marker and `>>>>>>>` is the incoming code
+ [38;5;240m  │[0m 
+ [38;5;246m7 │[0m >>>>>>>[38;5;249m [0m[38;5;249m3[0m[38;5;249md[0m[38;5;249m7[0m[38;5;249mf[0m[38;5;249m6[0m[38;5;249m4[0m[38;5;249m6[0m[38;5;249mc[0m[38;5;249me[0m[38;5;249m5[0m[38;5;249mb[0m[38;5;249m4[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mf[0m[38;5;249md[0m[38;5;249m3[0m[38;5;249m8[0m[38;5;249m8[0m[38;5;249m0[0m[38;5;249m1[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m5[0m[38;5;249m9[0m[38;5;249m8[0m[38;5;249m7[0m[38;5;249m6[0m[38;5;249mf[0m[38;5;249mb[0m[38;5;249m7[0m[38;5;249m0[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m4[0m[38;5;249mc[0m
+ [38;5;240m  │[0m ───┬───  
+ [38;5;240m  │[0m    ╰───── this marker concludes the conflict region
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: Conflict markers indicate that a merge was started but could not be completed due to merge conflicts.
+ [38;5;240m  │[0m       To resolve a conflict, keep only the code you want and then delete the lines containing conflict markers.
+ [38;5;240m  │[0m       If you're having merge conflicts after pulling new code, the top section is the code you already had and the bottom section is the remote code.
+ [38;5;240m  │[0m       If you're in the middle of a rebase, the top section is the code being rebased onto and the bottom section is the code coming from the current commit being rebased.
+ [38;5;240m  │[0m       If you have nested conflicts, resolve the outermost conflict first.
+[38;5;246m───╯[0m
+[39m
+  Plugin: [35mvite:oxc[39m
+  File: [36mC:/Users/Admin/Desktop/MED/medithrex/frontend/src/components/Footer.jsx[39m
+      at transformWithOxc (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3343:19)
+      at TransformPluginContext.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3411:26)
+      at EnvironmentPluginContainer.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:30164:51)
+      at async loadAndTransform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24512:26)
+      at async viteTransformMiddleware (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24306:20)
+[2m9:13:43 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] TypeError: error loading dynamically imported module: http://localhost:5173/src/components/Footer.jsx?t=1778177621352
+[2m9:13:43 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/Footer.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m9:13:43 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] Error:[0m Encountered diff marker
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/context/CartContext.jsx:4:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m4 │[0m <<<<<<<[38;5;249m [0m[38;5;249mH[0m[38;5;249mE[0m[38;5;249mA[0m[38;5;249mD[0m
+ [38;5;240m  │[0m ───┬───  
+ [38;5;240m  │[0m    ╰───── between this marker and `=======` is the code that we're merging into
+ [38;5;240m  │[0m 
+ [38;5;246m6 │[0m =======
+ [38;5;240m  │[0m ───┬───  
+ [38;5;240m  │[0m    ╰───── between this marker and `>>>>>>>` is the incoming code
+ [38;5;246m7 │[0m >>>>>>>[38;5;249m [0m[38;5;249m3[0m[38;5;249md[0m[38;5;249m7[0m[38;5;249mf[0m[38;5;249m6[0m[38;5;249m4[0m[38;5;249m6[0m[38;5;249mc[0m[38;5;249me[0m[38;5;249m5[0m[38;5;249mb[0m[38;5;249m4[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mf[0m[38;5;249md[0m[38;5;249m3[0m[38;5;249m8[0m[38;5;249m8[0m[38;5;249m0[0m[38;5;249m1[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m5[0m[38;5;249m9[0m[38;5;249m8[0m[38;5;249m7[0m[38;5;249m6[0m[38;5;249mf[0m[38;5;249mb[0m[38;5;249m7[0m[38;5;249m0[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m4[0m[38;5;249mc[0m
+ [38;5;240m  │[0m ───┬───  
+ [38;5;240m  │[0m    ╰───── this marker concludes the conflict region
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: Conflict markers indicate that a merge was started but could not be completed due to merge conflicts.
+ [38;5;240m  │[0m       To resolve a conflict, keep only the code you want and then delete the lines containing conflict markers.
+ [38;5;240m  │[0m       If you're having merge conflicts after pulling new code, the top section is the code you already had and the bottom section is the remote code.
+ [38;5;240m  │[0m       If you're in the middle of a rebase, the top section is the code being rebased onto and the bottom section is the code coming from the current commit being rebased.
+ [38;5;240m  │[0m       If you have nested conflicts, resolve the outermost conflict first.
+[38;5;246m───╯[0m
+[39m
+  Plugin: [35mvite:oxc[39m
+  File: [36mC:/Users/Admin/Desktop/MED/medithrex/frontend/src/context/CartContext.jsx[39m
+      at transformWithOxc (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3343:19)
+      at TransformPluginContext.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3411:26)
+      at EnvironmentPluginContainer.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:30164:51)
+      at async loadAndTransform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24512:26)
+      at async viteTransformMiddleware (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24306:20)
+[2m9:13:43 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] TypeError: error loading dynamically imported module: http://localhost:5173/src/context/CartContext.jsx?t=1778177621398
+[2m9:13:43 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/context/CartContext.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m9:13:44 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] Error:[0m Encountered diff marker
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/App.jsx:3:1 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m 3 │[0m <<<<<<<[38;5;249m [0m[38;5;249mH[0m[38;5;249mE[0m[38;5;249mA[0m[38;5;249mD[0m
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── between this marker and `=======` is the code that we're merging into
+ [38;5;240m   │[0m 
+ [38;5;246m52 │[0m =======
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── between this marker and `>>>>>>>` is the incoming code
+ [38;5;240m   │[0m 
+ [38;5;246m69 │[0m >>>>>>>[38;5;249m [0m[38;5;249m3[0m[38;5;249md[0m[38;5;249m7[0m[38;5;249mf[0m[38;5;249m6[0m[38;5;249m4[0m[38;5;249m6[0m[38;5;249mc[0m[38;5;249me[0m[38;5;249m5[0m[38;5;249mb[0m[38;5;249m4[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mf[0m[38;5;249md[0m[38;5;249m3[0m[38;5;249m8[0m[38;5;249m8[0m[38;5;249m0[0m[38;5;249m1[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m5[0m[38;5;249m9[0m[38;5;249m8[0m[38;5;249m7[0m[38;5;249m6[0m[38;5;249mf[0m[38;5;249mb[0m[38;5;249m7[0m[38;5;249m0[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m4[0m[38;5;249mc[0m
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── this marker concludes the conflict region
+ [38;5;240m   │[0m 
+ [38;5;240m   │[0m [38;5;115mHelp[0m: Conflict markers indicate that a merge was started but could not be completed due to merge conflicts.
+ [38;5;240m   │[0m       To resolve a conflict, keep only the code you want and then delete the lines containing conflict markers.
+ [38;5;240m   │[0m       If you're having merge conflicts after pulling new code, the top section is the code you already had and the bottom section is the remote code.
+ [38;5;240m   │[0m       If you're in the middle of a rebase, the top section is the code being rebased onto and the bottom section is the code coming from the current commit being rebased.
+ [38;5;240m   │[0m       If you have nested conflicts, resolve the outermost conflict first.
+[38;5;246m────╯[0m
+[39m
+  Plugin: [35mvite:oxc[39m
+  File: [36mC:/Users/Admin/Desktop/MED/medithrex/frontend/src/App.jsx[39m
+      at transformWithOxc (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3343:19)
+      at TransformPluginContext.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3411:26)
+      at EnvironmentPluginContainer.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:30164:51)
+      at async loadAndTransform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24512:26)
+      at async viteTransformMiddleware (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24306:20)
+[2m9:13:44 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] TypeError: error loading dynamically imported module: http://localhost:5173/src/App.jsx?t=1778177622237
+[2m9:13:44 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/App.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m9:13:44 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] Error:[0m Encountered diff marker
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/Footer.jsx:1:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m1 │[0m <<<<<<<[38;5;249m [0m[38;5;249mH[0m[38;5;249mE[0m[38;5;249mA[0m[38;5;249mD[0m
+ [38;5;240m  │[0m ───┬───  
+ [38;5;240m  │[0m    ╰───── between this marker and `=======` is the code that we're merging into
+ [38;5;240m  │[0m 
+ [38;5;246m5 │[0m =======
+ [38;5;240m  │[0m ───┬───  
+ [38;5;240m  │[0m    ╰───── between this marker and `>>>>>>>` is the incoming code
+ [38;5;240m  │[0m 
+ [38;5;246m7 │[0m >>>>>>>[38;5;249m [0m[38;5;249m3[0m[38;5;249md[0m[38;5;249m7[0m[38;5;249mf[0m[38;5;249m6[0m[38;5;249m4[0m[38;5;249m6[0m[38;5;249mc[0m[38;5;249me[0m[38;5;249m5[0m[38;5;249mb[0m[38;5;249m4[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mf[0m[38;5;249md[0m[38;5;249m3[0m[38;5;249m8[0m[38;5;249m8[0m[38;5;249m0[0m[38;5;249m1[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m5[0m[38;5;249m9[0m[38;5;249m8[0m[38;5;249m7[0m[38;5;249m6[0m[38;5;249mf[0m[38;5;249mb[0m[38;5;249m7[0m[38;5;249m0[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m4[0m[38;5;249mc[0m
+ [38;5;240m  │[0m ───┬───  
+ [38;5;240m  │[0m    ╰───── this marker concludes the conflict region
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: Conflict markers indicate that a merge was started but could not be completed due to merge conflicts.
+ [38;5;240m  │[0m       To resolve a conflict, keep only the code you want and then delete the lines containing conflict markers.
+ [38;5;240m  │[0m       If you're having merge conflicts after pulling new code, the top section is the code you already had and the bottom section is the remote code.
+ [38;5;240m  │[0m       If you're in the middle of a rebase, the top section is the code being rebased onto and the bottom section is the code coming from the current commit being rebased.
+ [38;5;240m  │[0m       If you have nested conflicts, resolve the outermost conflict first.
+[38;5;246m───╯[0m
+[39m
+  Plugin: [35mvite:oxc[39m
+  File: [36mC:/Users/Admin/Desktop/MED/medithrex/frontend/src/components/Footer.jsx[39m
+      at transformWithOxc (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3343:19)
+      at TransformPluginContext.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3411:26)
+      at EnvironmentPluginContainer.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:30164:51)
+      at async loadAndTransform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24512:26)
+      at async viteTransformMiddleware (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24306:20)
+[2m9:13:44 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] TypeError: error loading dynamically imported module: http://localhost:5173/src/components/Footer.jsx?t=1778177622260
+[2m9:13:44 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m [2m[console.error] [22m[vite] Failed to reload /src/components/Footer.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above)
+[2m9:13:47 PM[22m [31m[1m[vite][22m[39m [31m[2m(client)[22m[39m Pre-transform error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] Error:[0m Encountered diff marker
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/main.jsx:8:1 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m 8 │[0m <<<<<<<[38;5;249m [0m[38;5;249mH[0m[38;5;249mE[0m[38;5;249mA[0m[38;5;249mD[0m
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── between this marker and `=======` is the code that we're merging into
+ [38;5;240m   │[0m 
+ [38;5;246m18 │[0m =======
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── between this marker and `>>>>>>>` is the incoming code
+ [38;5;240m   │[0m 
+ [38;5;246m26 │[0m >>>>>>>[38;5;249m [0m[38;5;249m3[0m[38;5;249md[0m[38;5;249m7[0m[38;5;249mf[0m[38;5;249m6[0m[38;5;249m4[0m[38;5;249m6[0m[38;5;249mc[0m[38;5;249me[0m[38;5;249m5[0m[38;5;249mb[0m[38;5;249m4[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mf[0m[38;5;249md[0m[38;5;249m3[0m[38;5;249m8[0m[38;5;249m8[0m[38;5;249m0[0m[38;5;249m1[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m5[0m[38;5;249m9[0m[38;5;249m8[0m[38;5;249m7[0m[38;5;249m6[0m[38;5;249mf[0m[38;5;249mb[0m[38;5;249m7[0m[38;5;249m0[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m4[0m[38;5;249mc[0m
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── this marker concludes the conflict region
+ [38;5;240m   │[0m 
+ [38;5;240m   │[0m [38;5;115mHelp[0m: Conflict markers indicate that a merge was started but could not be completed due to merge conflicts.
+ [38;5;240m   │[0m       To resolve a conflict, keep only the code you want and then delete the lines containing conflict markers.
+ [38;5;240m   │[0m       If you're having merge conflicts after pulling new code, the top section is the code you already had and the bottom section is the remote code.
+ [38;5;240m   │[0m       If you're in the middle of a rebase, the top section is the code being rebased onto and the bottom section is the code coming from the current commit being rebased.
+ [38;5;240m   │[0m       If you have nested conflicts, resolve the outermost conflict first.
+[38;5;246m────╯[0m
+
+  Plugin: [35mvite:oxc[39m
+  File: [36mC:/Users/Admin/Desktop/MED/medithrex/frontend/src/main.jsx[39m
+[2m9:13:47 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] Error:[0m Encountered diff marker
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/Navbar.jsx:3:1 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m3 │[0m <<<<<<<[38;5;249m [0m[38;5;249mH[0m[38;5;249mE[0m[38;5;249mA[0m[38;5;249mD[0m
+ [38;5;240m  │[0m ───┬───  
+ [38;5;240m  │[0m    ╰───── between this marker and `=======` is the code that we're merging into
+ [38;5;240m  │[0m 
+ [38;5;246m5 │[0m =======
+ [38;5;240m  │[0m ───┬───  
+ [38;5;240m  │[0m    ╰───── between this marker and `>>>>>>>` is the incoming code
+ [38;5;246m6 │[0m >>>>>>>[38;5;249m [0m[38;5;249m3[0m[38;5;249md[0m[38;5;249m7[0m[38;5;249mf[0m[38;5;249m6[0m[38;5;249m4[0m[38;5;249m6[0m[38;5;249mc[0m[38;5;249me[0m[38;5;249m5[0m[38;5;249mb[0m[38;5;249m4[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mf[0m[38;5;249md[0m[38;5;249m3[0m[38;5;249m8[0m[38;5;249m8[0m[38;5;249m0[0m[38;5;249m1[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m5[0m[38;5;249m9[0m[38;5;249m8[0m[38;5;249m7[0m[38;5;249m6[0m[38;5;249mf[0m[38;5;249mb[0m[38;5;249m7[0m[38;5;249m0[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m4[0m[38;5;249mc[0m
+ [38;5;240m  │[0m ───┬───  
+ [38;5;240m  │[0m    ╰───── this marker concludes the conflict region
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: Conflict markers indicate that a merge was started but could not be completed due to merge conflicts.
+ [38;5;240m  │[0m       To resolve a conflict, keep only the code you want and then delete the lines containing conflict markers.
+ [38;5;240m  │[0m       If you're having merge conflicts after pulling new code, the top section is the code you already had and the bottom section is the remote code.
+ [38;5;240m  │[0m       If you're in the middle of a rebase, the top section is the code being rebased onto and the bottom section is the code coming from the current commit being rebased.
+ [38;5;240m  │[0m       If you have nested conflicts, resolve the outermost conflict first.
+[38;5;246m───╯[0m
+[39m
+  Plugin: [35mvite:oxc[39m
+  File: [36mC:/Users/Admin/Desktop/MED/medithrex/frontend/src/components/Navbar.jsx[39m
+      at transformWithOxc (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3343:19)
+      at TransformPluginContext.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3411:26)
+      at EnvironmentPluginContainer.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:30164:51)
+      at async loadAndTransform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24512:26)
+      at async viteTransformMiddleware (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24306:20)
+[2m9:13:48 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] Error:[0m Encountered diff marker
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/ProductCard.jsx:9:1 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m 9 │[0m <<<<<<<[38;5;249m [0m[38;5;249mH[0m[38;5;249mE[0m[38;5;249mA[0m[38;5;249mD[0m
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── between this marker and `=======` is the code that we're merging into
+ [38;5;240m   │[0m 
+ [38;5;246m12 │[0m =======
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── between this marker and `>>>>>>>` is the incoming code
+ [38;5;246m13 │[0m >>>>>>>[38;5;249m [0m[38;5;249m3[0m[38;5;249md[0m[38;5;249m7[0m[38;5;249mf[0m[38;5;249m6[0m[38;5;249m4[0m[38;5;249m6[0m[38;5;249mc[0m[38;5;249me[0m[38;5;249m5[0m[38;5;249mb[0m[38;5;249m4[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mf[0m[38;5;249md[0m[38;5;249m3[0m[38;5;249m8[0m[38;5;249m8[0m[38;5;249m0[0m[38;5;249m1[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m5[0m[38;5;249m9[0m[38;5;249m8[0m[38;5;249m7[0m[38;5;249m6[0m[38;5;249mf[0m[38;5;249mb[0m[38;5;249m7[0m[38;5;249m0[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m4[0m[38;5;249mc[0m
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── this marker concludes the conflict region
+ [38;5;240m   │[0m 
+ [38;5;240m   │[0m [38;5;115mHelp[0m: Conflict markers indicate that a merge was started but could not be completed due to merge conflicts.
+ [38;5;240m   │[0m       To resolve a conflict, keep only the code you want and then delete the lines containing conflict markers.
+ [38;5;240m   │[0m       If you're having merge conflicts after pulling new code, the top section is the code you already had and the bottom section is the remote code.
+ [38;5;240m   │[0m       If you're in the middle of a rebase, the top section is the code being rebased onto and the bottom section is the code coming from the current commit being rebased.
+ [38;5;240m   │[0m       If you have nested conflicts, resolve the outermost conflict first.
+[38;5;246m────╯[0m
+[39m
+  Plugin: [35mvite:oxc[39m
+  File: [36mC:/Users/Admin/Desktop/MED/medithrex/frontend/src/components/ProductCard.jsx[39m
+      at transformWithOxc (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3343:19)
+      at TransformPluginContext.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3411:26)
+      at EnvironmentPluginContainer.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:30164:51)
+      at async loadAndTransform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24512:26)
+      at async viteTransformMiddleware (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24306:20)
+[2m9:13:52 PM[22m [31m[1m[vite][22m[39m [31mInternal server error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] Error:[0m Encountered diff marker
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/main.jsx:8:1 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m 8 │[0m <<<<<<<[38;5;249m [0m[38;5;249mH[0m[38;5;249mE[0m[38;5;249mA[0m[38;5;249mD[0m
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── between this marker and `=======` is the code that we're merging into
+ [38;5;240m   │[0m 
+ [38;5;246m18 │[0m =======
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── between this marker and `>>>>>>>` is the incoming code
+ [38;5;240m   │[0m 
+ [38;5;246m26 │[0m >>>>>>>[38;5;249m [0m[38;5;249m3[0m[38;5;249md[0m[38;5;249m7[0m[38;5;249mf[0m[38;5;249m6[0m[38;5;249m4[0m[38;5;249m6[0m[38;5;249mc[0m[38;5;249me[0m[38;5;249m5[0m[38;5;249mb[0m[38;5;249m4[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mf[0m[38;5;249md[0m[38;5;249m3[0m[38;5;249m8[0m[38;5;249m8[0m[38;5;249m0[0m[38;5;249m1[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m5[0m[38;5;249m9[0m[38;5;249m8[0m[38;5;249m7[0m[38;5;249m6[0m[38;5;249mf[0m[38;5;249mb[0m[38;5;249m7[0m[38;5;249m0[0m[38;5;249mb[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249m4[0m[38;5;249mc[0m
+ [38;5;240m   │[0m ───┬───  
+ [38;5;240m   │[0m    ╰───── this marker concludes the conflict region
+ [38;5;240m   │[0m 
+ [38;5;240m   │[0m [38;5;115mHelp[0m: Conflict markers indicate that a merge was started but could not be completed due to merge conflicts.
+ [38;5;240m   │[0m       To resolve a conflict, keep only the code you want and then delete the lines containing conflict markers.
+ [38;5;240m   │[0m       If you're having merge conflicts after pulling new code, the top section is the code you already had and the bottom section is the remote code.
+ [38;5;240m   │[0m       If you're in the middle of a rebase, the top section is the code being rebased onto and the bottom section is the code coming from the current commit being rebased.
+ [38;5;240m   │[0m       If you have nested conflicts, resolve the outermost conflict first.
+[38;5;246m────╯[0m
+[39m
+  Plugin: [35mvite:oxc[39m
+  File: [36mC:/Users/Admin/Desktop/MED/medithrex/frontend/src/main.jsx[39m
+      at transformWithOxc (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3343:19)
+      at TransformPluginContext.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:3411:26)
+      at EnvironmentPluginContainer.transform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:30164:51)
+      at async loadAndTransform (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24512:26)
+      at async viteTransformMiddleware (file:///C:/Users/Admin/Desktop/MED/medithrex/frontend/node_modules/vite/dist/node/chunks/node.js:24306:20)
+[2m9:21:41 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+[2m9:21:41 PM[22m [33m[1m[vite][22m[39m [33m[2m(client)[22m[39m [2m[console.warn] [22m⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
