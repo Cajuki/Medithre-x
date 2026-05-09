@@ -42,7 +42,7 @@ const STATS = [
   { value: '47',     label: 'Kenyan Counties' },
 ];
 
-const BRANDS = ['Philips','GE Healthcare','Mindray','Karl Storz','Siemens','Medtronic','Abbott','Roche'];
+const BRANDS = ['Touren', '2NK', 'Crown'];
 
 const WHY_US = [
   { icon: <Shield size={28} />,    title: 'Genuine Products',      desc: 'All equipment comes with manufacturer certification and full warranty.' },
@@ -52,9 +52,9 @@ const WHY_US = [
 ];
 
 const TESTIMONIALS = [
-  { name: 'Dr. J. Kimani',     role: 'Medical Director, Mimosa Clinic',  avatar: 'JK', text: 'Medithrex delivered our entire ICU setup on time and within budget. Their after-sales support and engineer installation has been truly exceptional.' },
-  { name: 'Lab Mgr S. Ochieng',role: 'Mobro Clinic, Nairobi',           avatar: 'SO', text: "We've sourced our hematology and biochemistry analyzers from Medithrex for years. Reliable equipment, genuine parts, and a team that always picks up the phone." },
-  { name: 'Dr. F. Wangari',    role: 'Clinical Lead, Taimedical Centre', avatar: 'FW', text: 'The quote-to-delivery process was seamless. A highly professional team that understands the Kenyan healthcare context and the urgency of our work.' },
+  { text: 'Medithrex delivered our entire ICU setup on time and within budget. Their after-sales support and engineer installation has been truly exceptional.' },
+  { text: "We've sourced our hematology and biochemistry analyzers from Medithrex for years. Reliable equipment, genuine parts, and a team that always picks up the phone." },
+  { text: 'The quote-to-delivery process was seamless. A highly professional team that understands the Kenyan healthcare context and the urgency of our work.' },
 ];
 
 export default function HomePage() {
@@ -272,7 +272,7 @@ export default function HomePage() {
       {/* ── BRANDS ────────────────────────────────────────────────────────── */}
       <section className="section brands-section">
         <div className="container">
-          <p className="section-label" style={{ textAlign: 'center' }}>Brands We Carry</p>
+          <p className="section-label" style={{ textAlign: 'center' }}>All Kenyan Popular Brands Available</p>
           <div className="brands-row">
             {BRANDS.map(b => <div key={b} className="brand-chip">{b}</div>)}
           </div>
@@ -292,13 +292,6 @@ export default function HomePage() {
                   {[...Array(5)].map((_, s) => <Star key={s} size={14} fill="currentColor" />)}
                 </div>
                 <p className="testimonial-text">"{t.text}"</p>
-                <div className="testimonial-author">
-                  <div className="testimonial-avatar">{t.avatar}</div>
-                  <div>
-                    <strong>{t.name}</strong>
-                    <span>{t.role}</span>
-                  </div>
-                </div>
               </div>
             ))}
           </div>

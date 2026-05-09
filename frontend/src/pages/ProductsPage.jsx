@@ -187,10 +187,11 @@ export default function ProductsPage() {
               {/* ── Filter Panel dropdown ──────────────────────────────── */}
               {panelOpen && (
                 <div className="filter-panel">
-                  <div className="filter-panel-header">
-                    <span>Filters {activeFilterCount > 0 && <em>({activeFilterCount} active)</em>}</span>
-                    <button className="filter-panel-close" onClick={() => setPanelOpen(false)}><X size={16} /></button>
-                  </div>
+                  <div className="filter-panel-inner">
+                    <div className="filter-panel-header">
+                      <span>Filters {activeFilterCount > 0 && <em>({activeFilterCount} active)</em>}</span>
+                      <button className="filter-panel-close" onClick={() => setPanelOpen(false)}><X size={16} /></button>
+                    </div>
 
                   {/* Category */}
                   <Section label="Category" expanded={catExpanded} toggle={() => setCatExpanded(o => !o)}>
@@ -256,6 +257,7 @@ export default function ProductsPage() {
                     <button className="btn btn-primary btn-sm" onClick={() => setPanelOpen(false)}>
                       Apply Filters
                     </button>
+                  </div>
                   </div>
                 </div>
               )}
