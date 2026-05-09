@@ -1,7 +1,8 @@
 import express from 'express';
+import path from 'path';
 import { query } from '../db/pool.js';
 import { protect, admin } from '../middleware/auth.js';
-import { categoryUpload, deleteImage, extractPublicId, normalizeUploadedFile } from '../middleware/upload.js';
+import { categoryUpload, deleteImage } from '../middleware/upload.js';
 
 const router = express.Router();
 
@@ -46,7 +47,9 @@ router.post('/', protect, admin, categoryUpload.single('image'), async (req, res
     const { name, description, sort_order, is_active } = req.body;
     if (!name) return res.status(400).json({ message: 'Category name is required' });
 
-    const imageUrl = normalizeUploadedFile(req.file);
+    const imageUrl = req.file
+      ? `${req.protocol}://${req.get('host')}/uploads/categories/${path.basename(req.file.path)}`
+      : null;
 
     // Check duplicate name
     const existing = await query('SELECT id FROM categories WHERE LOWER(name) = LOWER($1)', [name]);
@@ -72,11 +75,10 @@ router.put('/:id', protect, admin, categoryUpload.single('image'), async (req, r
     // If a new image was uploaded, use it; otherwise keep existing
     let imageUrl = null;
     if (req.file) {
-      imageUrl = normalizeUploadedFile(req.file);
-      // Delete old image from Cloudinary
+      imageUrl = `${req.protocol}://${req.get('host')}/uploads/categories/${path.basename(req.file.path)}`;
       const current = await query('SELECT image_url FROM categories WHERE id = $1', [req.params.id]);
       if (current.rows[0]?.image_url) {
-        await deleteImage(extractPublicId(current.rows[0].image_url));
+        await deleteImage(current.rows[0].image_url);
       }
     }
 
@@ -105,9 +107,8 @@ router.delete('/:id', protect, admin, async (req, res) => {
     const cat = await query('SELECT * FROM categories WHERE id = $1', [req.params.id]);
     if (!cat.rows.length) return res.status(404).json({ message: 'Category not found' });
 
-    // Delete cover image from Cloudinary
     if (cat.rows[0].image_url) {
-      await deleteImage(extractPublicId(cat.rows[0].image_url));
+      await deleteImage(cat.rows[0].image_url);
     }
 
     await query('DELETE FROM categories WHERE id = $1', [req.params.id]);

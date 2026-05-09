@@ -1,23 +1,59 @@
 import express from 'express';
-import {
-  productUpload,
-  categoryUpload,
-  deleteImage,
-  extractPublicId,
-  normalizeUploadedFile,
-  normalizeUploadedFiles,
-} from '../middleware/upload.js';
+import path from 'path';
+import fs from 'fs';
+import { productUpload, categoryUpload, deleteImage } from '../middleware/upload.js';
 import { protect, admin } from '../middleware/auth.js';
 import { query } from '../db/pool.js';
+import { Storage } from '@google-cloud/storage';
+
+const storage = new Storage({
+  keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
+  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+});
+
+const bucket = storage.bucket(process.env.GOOGLE_CLOUD_BUCKET || 'medithrex-uploads');
+
+const uploadToGCS = async (filePath, destination) => {
+  try {
+    const [file] = await bucket.upload(filePath, {
+      destination,
+      metadata: {
+        cacheControl: 'public, max-age=31536000',
+      },
+    });
+
+    // Make the file public
+    await file.makePublic();
+
+    // Get the public URL
+    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${destination}`;
+    return publicUrl;
+  } catch (error) {
+    console.error('GCS upload error:', error);
+    throw error;
+  } finally {
+    // Clean up temp file
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  }
+};
 
 const router = express.Router();
 router.use(protect, admin);
 
 // ── POST /api/upload/product-images  (up to 10) ───────────────────────────────
-router.post('/product-images', productUpload.array('images', 10), (req, res) => {
+router.post('/product-images', productUpload.array('images', 10), async (req, res) => {
   try {
     if (!req.files?.length) return res.status(400).json({ message: 'No images uploaded' });
-    const urls = normalizeUploadedFiles(req.files);
+
+    const urls = [];
+    for (const file of req.files) {
+      const destination = `products/${path.basename(file.path)}`;
+      const publicUrl = await uploadToGCS(file.path, destination);
+      urls.push(publicUrl);
+    }
+
     return res.status(201).json({ message: `${req.files.length} image(s) uploaded`, images: urls });
   } catch (err) {
     return res.status(500).json({ message: err.message });
@@ -25,24 +61,26 @@ router.post('/product-images', productUpload.array('images', 10), (req, res) => 
 });
 
 // ── POST /api/upload/category-image  (single image) ──────────────────────────
-router.post('/category-image', categoryUpload.single('image'), (req, res) => {
+router.post('/category-image', categoryUpload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No image uploaded' });
-    const url = normalizeUploadedFile(req.file);
-    return res.status(201).json({ message: 'Category image uploaded', image: url });
+
+    const destination = `categories/${path.basename(req.file.path)}`;
+    const publicUrl = await uploadToGCS(req.file.path, destination);
+
+    return res.status(201).json({ message: 'Category image uploaded', image: publicUrl });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 });
 
-// ── DELETE /api/upload/image  (delete any image by URL) ──────────────────────
-router.delete('/image', async (req, res) => {
+// Shared delete handler used by both image endpoints
+const removeImageHandler = async (req, res) => {
   try {
     const { imageUrl, productId, categoryId } = req.body;
     if (!imageUrl) return res.status(400).json({ message: 'imageUrl is required' });
 
-    const publicId = extractPublicId(imageUrl);
-    if (publicId) await deleteImage(publicId);
+    await deleteImage(imageUrl);
 
     if (productId) {
       await query('UPDATE products SET images = array_remove(images, $1) WHERE id = $2', [imageUrl, productId]);
@@ -54,22 +92,10 @@ router.delete('/image', async (req, res) => {
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
-});
+};
 
-router.delete('/product-image', async (req, res) => {
-  try {
-    const { imageUrl, productId } = req.body;
-    if (!imageUrl || !productId) return res.status(400).json({ message: 'imageUrl and productId are required' });
-
-    const publicId = extractPublicId(imageUrl);
-    if (publicId) await deleteImage(publicId);
-    await query('UPDATE products SET images = array_remove(images, $1) WHERE id = $2', [imageUrl, productId]);
-
-    return res.json({ message: 'Image deleted' });
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-});
+router.delete('/image', removeImageHandler);
+router.delete('/product-image', removeImageHandler);
 
 // Multer error handler
 router.use((err, req, res, _next) => {

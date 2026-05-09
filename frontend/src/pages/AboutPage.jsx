@@ -39,7 +39,7 @@ export default function AboutPage() {
               alt="Healthcare professionals in Kenya"
             />
             <div className="mission-badge">
-              <span className="mission-badge-num">8+</span>
+              <span className="mission-badge-num">2+</span>
               <span>Years of Excellence</span>
             </div>
           </div>

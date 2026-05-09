@@ -157,10 +157,6 @@ const createTables = async () => {
   console.log('\n✅ Schema ready.\n');
   console.log('Next: register at /register then promote to admin:');
   console.log("  UPDATE users SET role='admin' WHERE email='you@email.com';\n");
-  process.exit(0);
 };
 
-createTables().catch(err => {
-  console.error('\n❌ Schema init failed:', err.message);
-  process.exit(1);
-});
+export { createTables };

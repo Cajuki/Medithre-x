@@ -115,7 +115,7 @@ export default function AdminProducts() {
   const removeUploaded = async (url, idx) => {
     try {
       if (modal === 'edit' && form.id) {
-        await axios.delete('/api/upload/product-image', {
+        await axios.delete('/api/upload/image', {
           data: { imageUrl: url, productId: form.id }
         });
       }

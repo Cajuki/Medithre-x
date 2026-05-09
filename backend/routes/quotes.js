@@ -1,6 +1,6 @@
 import express from 'express';
 import { query, getClient } from '../db/pool.js';
-import { optionalProtect, protect } from '../middleware/auth.js';
+import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -15,11 +15,10 @@ const fmtQuote = (q, items = []) => ({
   message:     q.message,
   status:      q.status,
   quotedPrice: q.quoted_price ? parseFloat(q.quoted_price) : null,
-  responseMessage: q.response_message,
-  respondedAt: q.responded_at,
+  responseMessage: q.response_message || '',
+  respondedAt: q.responded_at || null,
   createdAt:   q.created_at,
   items:       items.map(i => ({
-    productId:   i.product_id ? String(i.product_id) : null,
     productName: i.product_name,
     quantity:    i.quantity,
     notes:       i.notes,
@@ -27,22 +26,20 @@ const fmtQuote = (q, items = []) => ({
 });
 
 // ── POST /api/quotes ───────────────────────────────────────────────────────────
-router.post('/', optionalProtect, async (req, res) => {
+router.post('/', async (req, res) => {
   const client = await getClient();
   try {
     const { name, email, phone, company, county, items = [], message } = req.body;
     if (!name || !email || !phone)
       return res.status(400).json({ message: 'Name, email and phone are required' });
-    if (!Array.isArray(items) || !items.length)
-      return res.status(400).json({ message: 'At least one quote item is required' });
 
     const quoteNumber = 'QT-' + Date.now().toString().slice(-8);
 
     await client.query('BEGIN');
     const qRes = await client.query(
-      `INSERT INTO quotes (quote_number, user_id, name, email, phone, company, county, message)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
-      [quoteNumber, req.user?.id || null, name, email.toLowerCase().trim(), phone, company || '', county || '', message || '']
+      `INSERT INTO quotes (quote_number, name, email, phone, company, county, message)
+       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+      [quoteNumber, name, email.toLowerCase().trim(), phone, company || '', county || '', message || '']
     );
     const quote = qRes.rows[0];
 
@@ -68,9 +65,12 @@ router.post('/', optionalProtect, async (req, res) => {
 // ── GET /api/quotes/my ────────────────────────────────────────────────────────
 router.get('/my', protect, async (req, res) => {
   try {
+    const userRes = await query('SELECT email FROM users WHERE id = $1', [req.user.id]);
+    if (!userRes.rows.length) return res.json([]);
+
     const qRes = await query(
-      'SELECT * FROM quotes WHERE user_id = $1 OR email = (SELECT email FROM users WHERE id = $1) ORDER BY created_at DESC',
-      [req.user.id]
+      'SELECT * FROM quotes WHERE email = $1 ORDER BY created_at DESC',
+      [userRes.rows[0].email]
     );
     const quotes = [];
     for (const q of qRes.rows) {

@@ -1,33 +1,6 @@
-# Development dependencies
 node_modules
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Environment files (secrets injected by Cloud Run at runtime)
+npm-debug.log
+Dockerfile
+.dockerignore
 .env
-.env.*
-!.env.example
-
-# Git
-.git
-.gitignore
-
-# Development tools
-.eslintrc*
-.prettierrc*
-nodemon.json
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Logs
-logs
-*.log
-
-# Test files
-__tests__
-*.test.js
-*.spec.js
-coverage
+uploads

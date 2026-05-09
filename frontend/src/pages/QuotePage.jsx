@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { CheckCircle, Plus, Trash2, Phone, Mail } from 'lucide-react';
@@ -33,6 +33,24 @@ export default function QuotePage() {
       county: user.county || '',
     }));
   }, [user]);
+
+  if (!user) {
+    return (
+      <div>
+        <div className="page-hero">
+          <div className="container page-hero-content">
+            <p className="section-label">Access Required</p>
+            <h1>Please Sign In</h1>
+            <p>You need to be signed in to request a quote. Please log in or create an account.</p>
+            <div style={{ marginTop: '2rem' }}>
+              <Link to="/login" className="btn btn-primary">Sign In</Link>
+              <Link to="/register" className="btn btn-outline" style={{ marginLeft: '1rem' }}>Create Account</Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const setF = (k, v) => setForm(f => ({ ...f, [k]: v }));
   const setItem = (i, k, v) => setItems(prev => prev.map((it, idx) => idx === i ? { ...it, [k]: v } : it));
