@@ -37,7 +37,7 @@ router.get('/', async (req, res) => {
       params.push(category);
     }
     if (search) {
-      conditions.push(`(name ILIKE $${idx} OR description ILIKE $${idx} OR brand ILIKE $${idx} OR category ILIKE $${idx})`);
+      conditions.push(`(name ILIKE $${idx} OR description ILIKE $${idx})`);
       params.push(`%${search}%`);
       idx++;
     }
@@ -73,12 +73,8 @@ router.get('/', async (req, res) => {
 router.get('/categories', async (req, res) => {
   try {
     const result = await query(
-      `SELECT c.name, COUNT(p.id) AS count
-       FROM categories c
-       LEFT JOIN products p ON p.category = c.name
-       WHERE c.is_active = TRUE
-       GROUP BY c.id, c.name
-       ORDER BY c.sort_order ASC, c.name ASC`
+      `SELECT category AS name, COUNT(*) AS count
+       FROM products GROUP BY category ORDER BY category`
     );
     return res.json(result.rows.map(r => ({ name: r.name, count: parseInt(r.count) })));
   } catch (err) {

@@ -146,7 +146,7 @@ router.get('/products', async (req, res) => {
     let idx = 1;
 
     if (search) {
-      conditions.push(`(name ILIKE $${idx} OR brand ILIKE $${idx} OR category ILIKE $${idx})`);
+      conditions.push(`(name ILIKE $${idx} OR description ILIKE $${idx})`);
       params.push(`%${search}%`); idx++;
     }
     if (category) { conditions.push(`category = $${idx++}`); params.push(category); }
@@ -169,27 +169,21 @@ router.get('/products', async (req, res) => {
 
 router.post('/products', async (req, res) => {
   try {
-    const {
-      name, description, short_description, category, price, sale_price, price_on_request,
-      images, brand, origin, in_stock, featured, is_new, best_seller, specifications,
-    } = req.body;
+    const { name, description, short_description, category, price, sale_price, price_on_request,
+            images, brand, origin, in_stock, featured, is_new, best_seller, specifications } = req.body;
 
     if (!name || !description || !category) {
       return res.status(400).json({ message: 'Name, description and category are required' });
     }
     const result = await query(
-      `INSERT INTO products (
-        name, description, short_description, category, price, sale_price, price_on_request,
-        images, brand, origin, in_stock, featured, is_new, best_seller, specifications
-      )
+      `INSERT INTO products (name,description,short_description,category,price,sale_price,price_on_request,
+        images,brand,origin,in_stock,featured,is_new,best_seller,specifications)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING *`,
-      [
-        name, description, short_description || '', category,
-        price || null, sale_price || null, price_on_request || false,
-        images || [], brand || '', origin || '',
-        in_stock !== false, featured || false, is_new || false, best_seller || false,
-        JSON.stringify(specifications || []),
-      ]
+      [name, description, short_description||'', category,
+       price||null, sale_price||null, price_on_request||false,
+       images||[], brand||'', origin||'',
+       in_stock !== false, featured||false, is_new||false, best_seller||false,
+       JSON.stringify(specifications||[])]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -199,10 +193,8 @@ router.post('/products', async (req, res) => {
 
 router.put('/products/:id', async (req, res) => {
   try {
-    const {
-      name, description, short_description, category, price, sale_price, price_on_request,
-      images, brand, origin, in_stock, featured, is_new, best_seller, specifications,
-    } = req.body;
+    const { name, description, short_description, category, price, sale_price, price_on_request,
+            images, brand, origin, in_stock, featured, is_new, best_seller, specifications } = req.body;
 
     const result = await query(
       `UPDATE products SET
@@ -210,13 +202,11 @@ router.put('/products/:id', async (req, res) => {
         price=$5, sale_price=$6, price_on_request=$7, images=$8, brand=$9, origin=$10,
         in_stock=$11, featured=$12, is_new=$13, best_seller=$14, specifications=$15
        WHERE id=$16 RETURNING *`,
-      [
-        name, description, short_description || '', category,
-        price || null, sale_price || null, price_on_request || false,
-        images || [], brand || '', origin || '',
-        in_stock !== false, featured || false, is_new || false, best_seller || false,
-        JSON.stringify(specifications || []), req.params.id,
-      ]
+      [name, description, short_description||'', category,
+       price||null, sale_price||null, price_on_request||false,
+       images||[], brand||'', origin||'',
+       in_stock !== false, featured||false, is_new||false, best_seller||false,
+       JSON.stringify(specifications||[]), req.params.id]
     );
     if (!result.rows.length) return res.status(404).json({ message: 'Product not found' });
     res.json(result.rows[0]);
@@ -305,25 +295,19 @@ router.get('/quotes', async (req, res) => {
     const params = [];
     let idx = 1;
 
-    if (status) { conditions.push(`q.status = $${idx++}`); params.push(status); }
+    if (status) { conditions.push(`status = $${idx++}`); params.push(status); }
     if (search) {
-      conditions.push(`(q.quote_number ILIKE $${idx} OR q.name ILIKE $${idx} OR q.email ILIKE $${idx} OR q.company ILIKE $${idx})`);
+      conditions.push(`(quote_number ILIKE $${idx} OR name ILIKE $${idx} OR email ILIKE $${idx} OR company ILIKE $${idx})`);
       params.push(`%${search}%`); idx++;
     }
 
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const countRes = await query(`SELECT COUNT(*) FROM quotes q ${where}`, params);
+    const countRes = await query(`SELECT COUNT(*) FROM quotes ${where}`, params);
     const total = parseInt(countRes.rows[0].count);
 
     const offset = (parseInt(page) - 1) * parseInt(limit);
     const dataRes = await query(
-      `SELECT q.*,
-              COUNT(qi.id) AS item_count
-       FROM quotes q
-       LEFT JOIN quote_items qi ON qi.quote_id = q.id
-       ${where}
-       GROUP BY q.id
-       ORDER BY q.created_at DESC LIMIT $${idx} OFFSET $${idx+1}`,
+      `SELECT * FROM quotes ${where} ORDER BY created_at DESC LIMIT $${idx} OFFSET $${idx+1}`,
       [...params, parseInt(limit), offset]
     );
 
@@ -348,15 +332,12 @@ router.put('/quotes/:id', async (req, res) => {
   try {
     const { status, quoted_price, admin_notes, response_message } = req.body;
     const result = await query(
-      `UPDATE quotes
-       SET status=COALESCE($1,status),
-           quoted_price=COALESCE($2,quoted_price),
-           admin_notes=COALESCE($3,admin_notes),
-           response_message=COALESCE($4,response_message),
-           responded_at=CASE
-             WHEN $1 IS NOT NULL OR $2 IS NOT NULL OR $4 IS NOT NULL THEN NOW()
-             ELSE responded_at
-           END
+      `UPDATE quotes SET
+         status = COALESCE($1,status),
+         quoted_price = COALESCE($2,quoted_price),
+         admin_notes = COALESCE($3,admin_notes),
+         response_message = COALESCE($4,response_message),
+         responded_at = CASE WHEN $4 IS NOT NULL THEN NOW() ELSE responded_at END
        WHERE id=$5 RETURNING *`,
       [status || null, quoted_price || null, admin_notes || null, response_message || null, req.params.id]
     );
