@@ -149,6 +149,64 @@
 }
 .auth-terms a { color: var(--yellow-dark); }
 
+/* Password strength indicator */
+.password-strength {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--grey-light);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.strength-weak { background: var(--red); }
+.strength-medium { background: var(--yellow); }
+.strength-strong { background: var(--green); }
+
+.strength-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.password-requirements {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+  font-size: 0.75rem;
+}
+
+.requirement {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--red);
+  transition: color 0.3s ease;
+}
+
+.requirement.met { color: var(--green); }
+
+.password-match {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .auth-divider {
   display: flex;
   align-items: center;

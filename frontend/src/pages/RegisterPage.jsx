@@ -1,12 +1,41 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, ArrowRight, UserPlus } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight, UserPlus, Check, X, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { isValidEmail, isValidKenyanPhone, normalizeKenyanPhone, KENYAN_PHONE_HINT } from '../utils/validation.js';
 import toast from 'react-hot-toast';
 import './AuthPages.css';
 
 const KENYAN_COUNTIES = ['Nairobi','Mombasa','Kisumu','Nakuru','Eldoret','Thika','Malindi','Kitale','Garissa','Kakamega','Nyeri','Machakos','Meru','Embu','Kisii','Kilifi','Lamu','Isiolo','Marsabit','Mandera','Wajir','Turkana','West Pokot','Samburu','Trans Nzoia','Uasin Gishu','Elgeyo Marakwet','Nandi','Baringo','Laikipia','Nakuru','Narok','Kajiado','Kericho','Bomet','Kakamega','Vihiga','Bungoma','Busia','Siaya','Kisumu','Homa Bay','Migori','Kisii','Nyamira','Nairobi','Kiambu','Murang\'a','Kirinyaga','Nyeri','Nyandarua','Meru','Tharaka Nithi','Embu','Kitui','Machakos','Makueni','Garissa','Wajir','Mandera','Marsabit','Isiolo','Mombasa','Kwale','Kilifi','Tana River','Lamu','Taita Taveta'];
+
+// Password strength checker
+const checkPasswordStrength = (password) => {
+  const checks = {
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /\d/.test(password),
+    special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+  };
+
+  const score = Object.values(checks).filter(Boolean).length;
+
+  let strength = 'weak';
+  let color = 'var(--red)';
+  let label = 'Weak';
+
+  if (score >= 4) {
+    strength = 'strong';
+    color = 'var(--green)';
+    label = 'Strong';
+  } else if (score >= 3) {
+    strength = 'medium';
+    color = 'var(--yellow)';
+    label = 'Medium';
+  }
+
+  return { checks, score, strength, color, label };
+};
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', county: '', password: '', confirm: '' });
@@ -15,14 +44,18 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  const passwordStrength = checkPasswordStrength(form.password);
+  const passwordsMatch = form.password && form.confirm && form.password === form.confirm;
+
   const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
   const handleSubmit = async e => {
     e.preventDefault();
     if (!isValidEmail(form.email)) return toast.error('Enter a valid email address');
     if (!isValidKenyanPhone(form.phone)) return toast.error(KENYAN_PHONE_HINT);
+    if (passwordStrength.strength === 'weak') return toast.error('Password is too weak. Please create a stronger password.');
     if (form.password !== form.confirm) return toast.error('Passwords do not match');
-    if (form.password.length < 6) return toast.error('Password must be at least 6 characters');
+    if (form.password.length < 8) return toast.error('Password must be at least 8 characters');
     setLoading(true);
     try {
       await register({ ...form, email: form.email.trim().toLowerCase(), phone: normalizeKenyanPhone(form.phone) });
@@ -103,15 +136,70 @@ export default function RegisterPage() {
                 <div className="form-group">
                   <label className="form-label">Password *</label>
                   <div className="password-wrap">
-                    <input className="form-input" type={show ? 'text' : 'password'} name="password" placeholder="Min. 6 characters" value={form.password} onChange={handleChange} required />
+                    <input className="form-input" type={show ? 'text' : 'password'} name="password" placeholder="Min. 8 characters" value={form.password} onChange={handleChange} required />
                     <button type="button" className="password-toggle" onClick={() => setShow(!show)}>
                       {show ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
+                  {form.password && (
+                    <div className="password-strength">
+                      <div className="strength-bar">
+                        <div
+                          className={`strength-fill strength-${passwordStrength.strength}`}
+                          style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
+                        />
+                      </div>
+                      <span className="strength-label" style={{ color: passwordStrength.color }}>
+                        {passwordStrength.label}
+                      </span>
+                    </div>
+                  )}
+                  {form.password && (
+                    <div className="password-requirements">
+                      <div className={`requirement ${passwordStrength.checks.length ? 'met' : ''}`}>
+                        {passwordStrength.checks.length ? <Check size={14} /> : <X size={14} />}
+                        At least 8 characters
+                      </div>
+                      <div className={`requirement ${passwordStrength.checks.uppercase ? 'met' : ''}`}>
+                        {passwordStrength.checks.uppercase ? <Check size={14} /> : <X size={14} />}
+                        One uppercase letter
+                      </div>
+                      <div className={`requirement ${passwordStrength.checks.lowercase ? 'met' : ''}`}>
+                        {passwordStrength.checks.lowercase ? <Check size={14} /> : <X size={14} />}
+                        One lowercase letter
+                      </div>
+                      <div className={`requirement ${passwordStrength.checks.number ? 'met' : ''}`}>
+                        {passwordStrength.checks.number ? <Check size={14} /> : <X size={14} />}
+                        One number
+                      </div>
+                      <div className={`requirement ${passwordStrength.checks.special ? 'met' : ''}`}>
+                        {passwordStrength.checks.special ? <Check size={14} /> : <X size={14} />}
+                        One special character
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="form-group">
                   <label className="form-label">Confirm Password *</label>
-                  <input className="form-input" type={show ? 'text' : 'password'} name="confirm" placeholder="Re-enter password" value={form.confirm} onChange={handleChange} required />
+                  <div className="password-wrap">
+                    <input className="form-input" type={show ? 'text' : 'password'} name="confirm" placeholder="Re-enter password" value={form.confirm} onChange={handleChange} required />
+                    <button type="button" className="password-toggle" onClick={() => setShow(!show)}>
+                      {show ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                  {form.confirm && (
+                    <div className="password-match">
+                      {passwordsMatch ? (
+                        <span style={{ color: 'var(--green)' }}>
+                          <Check size={14} /> Passwords match
+                        </span>
+                      ) : form.password && form.confirm ? (
+                        <span style={{ color: 'var(--red)' }}>
+                          <AlertTriangle size={14} /> Passwords do not match
+                        </span>
+                      ) : null}
+                    </div>
+                  )}
                 </div>
               </div>
 
