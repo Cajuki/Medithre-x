@@ -26,7 +26,7 @@ export default function Footer() {
             </div>
             <p>
               Kenya's premier supplier of medical and laboratory equipment. Delivering quality,
-              reliability, and innovation to healthcare institutions across East Africa since 2017.
+              reliability, and innovation to healthcare institutions with a Kenyan focus since 2024.
             </p>
             <div className="footer-social">
               <Link to="/contact" aria-label="Facebook"><Facebook size={18} /></Link>

@@ -228,7 +228,7 @@ export default function HomePage() {
               <div className="divider" />
               <p className="why-desc">
                 Since 2024, Medithrex has been the go-to supplier for hospitals, clinics, diagnostic labs,
-                and healthcare institutions across Kenya and East Africa. We combine global-standard equipment
+                and healthcare institutions with a Kenyan focus. We combine global-standard equipment
                 with deep local market expertise.
               </p>
               <div className="why-checks">

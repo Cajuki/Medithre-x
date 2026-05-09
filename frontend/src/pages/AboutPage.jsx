@@ -5,7 +5,7 @@ import christlayPhoto from '../Assets/chris.png';
 import './AboutPage.css';
 
 const TEAM = [
-  { name: 'Fidel Chimwani',  role: 'CEO & Co-Founder', photo: fidelPhoto, bio: 'Leads Medithrex vision, strategy and partnerships across East Africa.' },
+  { name: 'Fidel Chimwani',  role: 'CEO & Co-Founder', photo: fidelPhoto, bio: 'Leads Medithrex vision, strategy and partnerships with a Kenyan focus.' },
   { name: 'Christlay Muhanji', role: 'CEO & Co-Founder', photo: christlayPhoto, bio: 'Drives operations, product sourcing, and institutional client relations.' },
 ];
 
@@ -25,7 +25,7 @@ export default function AboutPage() {
         <div className="container page-hero-content">
           <p className="section-label">Our Story</p>
           <h1>About Medithrex</h1>
-          <p>Empowering Kenya's healthcare sector with world-class medical and laboratory equipment since 2017.</p>
+          <p>Empowering Kenya's healthcare sector with world-class medical and laboratory equipment since 2024.</p>
         </div>
       </div>
 
@@ -50,10 +50,10 @@ export default function AboutPage() {
             <div className="divider" />
             <p>
               Medithrex Medical Solutions is a leading supplier of medical and laboratory equipment to hospitals,
-              clinics, diagnostic centres, universities, and research institutions across Kenya and East Africa.
+              clinics, diagnostic centres, universities, and research institutions with a Kenyan focus.
             </p>
             <p>
-              Founded in Nairobi in 2017 and headquartered at Pramukh Plaza, Nairobi CBD — Shop 19 — we have
+              Founded in Nairobi in 2024 and headquartered at Pramukh Plaza, Nairobi CBD — Shop 19 — we have
               grown from a focused distributor into a comprehensive medical equipment solutions provider, serving
               over 200 institutions in all 47 counties of Kenya.
             </p>
