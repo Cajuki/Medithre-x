@@ -6,3 +6,6 @@ steps:
 
 images:
   - 'gcr.io/$PROJECT_ID/medithrex'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
