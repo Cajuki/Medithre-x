@@ -4,43 +4,23 @@ import fs from 'fs';
 import { productUpload, categoryUpload, deleteImage } from '../middleware/upload.js';
 import { protect, admin } from '../middleware/auth.js';
 import { query } from '../db/pool.js';
-import { Storage } from '@google-cloud/storage';
-
-const storage = new Storage({
-  keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
-  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-});
-
-const bucket = storage.bucket(process.env.GOOGLE_CLOUD_BUCKET || 'medithrex-uploads');
-
-const uploadToGCS = async (filePath, destination) => {
-  try {
-    const [file] = await bucket.upload(filePath, {
-      destination,
-      metadata: {
-        cacheControl: 'public, max-age=31536000',
-      },
-    });
-
-    // Make the file public
-    await file.makePublic();
-
-    // Get the public URL
-    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${destination}`;
-    return publicUrl;
-  } catch (error) {
-    console.error('GCS upload error:', error);
-    throw error;
-  } finally {
-    // Clean up temp file
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-  }
-};
 
 const router = express.Router();
 router.use(protect, admin);
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Ensure subdirectories exist
+['products', 'categories'].forEach(dir => {
+  const dirPath = path.join(uploadsDir, dir);
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+});
 
 // ── POST /api/upload/product-images  (up to 10) ───────────────────────────────
 router.post('/product-images', productUpload.array('images', 10), async (req, res) => {
@@ -49,8 +29,8 @@ router.post('/product-images', productUpload.array('images', 10), async (req, re
 
     const urls = [];
     for (const file of req.files) {
-      const destination = `products/${path.basename(file.path)}`;
-      const publicUrl = await uploadToGCS(file.path, destination);
+      const destination = `/uploads/products/${path.basename(file.path)}`;
+      const publicUrl = `${process.env.BACKEND_URL || 'http://localhost:8080'}${destination}`;
       urls.push(publicUrl);
     }
 
@@ -65,8 +45,8 @@ router.post('/category-image', categoryUpload.single('image'), async (req, res) 
   try {
     if (!req.file) return res.status(400).json({ message: 'No image uploaded' });
 
-    const destination = `categories/${path.basename(req.file.path)}`;
-    const publicUrl = await uploadToGCS(req.file.path, destination);
+    const destination = `/uploads/categories/${path.basename(req.file.path)}`;
+    const publicUrl = `${process.env.BACKEND_URL || 'http://localhost:8080'}${destination}`;
 
     return res.status(201).json({ message: 'Category image uploaded', image: publicUrl });
   } catch (err) {
