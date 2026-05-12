@@ -140,20 +140,27 @@ export default function AboutPage() {
             <h2 className="section-title">Visit Our Showroom</h2>
             <div className="divider" />
             <div className="location-details">
-              <div className="location-row">
-                <MapPin size={20} />
-                <div>
-                  <strong>Pramukh Plaza — Shop 19</strong>
-                  <p>Nairobi CBD, Nairobi, Kenya</p>
-                </div>
-              </div>
-              <div className="location-row">
-                <span className="location-icon">📞</span>
-                <div>
-                  <strong>0790 080 903</strong>
-                  <p>Call or WhatsApp</p>
-                </div>
-              </div>
+               <div className="location-row">
+                 <MapPin size={20} />
+                 <div>
+                   <strong>Pramukh Plaza — 3rd Floor Shop 19</strong>
+                   <p>Nairobi CBD, Nairobi, Kenya</p>
+                 </div>
+               </div>
+               <div className="location-row">
+                 <span className="location-icon">📞</span>
+                 <div>
+                   <strong>0790 080 903</strong>
+                   <p>Call</p>
+                 </div>
+               </div>
+               <div className="location-row">
+                 <span className="location-icon">📱</span>
+                 <div>
+                   <strong>0790 080 903</strong>
+                   <p>WhatsApp</p>
+                 </div>
+               </div>
               <div className="location-row">
                 <span className="location-icon">🕒</span>
                 <div>

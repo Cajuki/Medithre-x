@@ -65,14 +65,14 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <div className="contact-info-card">
-            <div className="ci-icon"><Mail size={22} /></div>
-            <div>
-              <h4>Email</h4>
-              <a href="mailto:info@medithrex.co.ke">info@medithrex.co.ke</a>
-              <p>We reply within 24 hours</p>
-            </div>
-          </div>
+             <div className="contact-info-card">
+               <div className="ci-icon"><Mail size={22} /></div>
+               <div>
+                 <h4>Email</h4>
+                 <a href="mailto:medithrex@gmail.com">medithrex@gmail.com</a>
+                 <p>We reply within 24 hours</p>
+               </div>
+             </div>
 
           <div className="contact-info-card">
             <div className="ci-icon"><MapPin size={22} /></div>

@@ -75,20 +75,20 @@ export default function Footer() {
                   <a href="tel:0790080903">0790 080 903</a>
                 </div>
               </div>
-              <div className="footer-contact-item">
-                <Mail size={16} />
-                <div>
-                  <span>Email Us</span>
-                  <a href="mailto:info@medithrex.co.ke">info@medithrex.co.ke</a>
-                </div>
-              </div>
+               <div className="footer-contact-item">
+                 <Mail size={16} />
+                 <div>
+                   <span>Email Us</span>
+                   <a href="mailto:medithrex@gmail.com">medithrex@gmail.com</a>
+                 </div>
+               </div>
               <div className="footer-contact-item">
                 <MapPin size={16} />
-                <div>
-                  <span>Our Location</span>
-                  <p>Pramukh Plaza — Shop 19</p>
-                  <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)' }}>Nairobi CBD, Nairobi, Kenya</p>
-                </div>
+                 <div>
+                   <span>Our Location</span>
+                   <p>Pramukh Plaza — 3rd Floor Shop 19</p>
+                   <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)' }}>Nairobi CBD, Nairobi, Kenya</p>
+                 </div>
               </div>
             </div>
             <Link to="/quote" className="btn btn-primary btn-sm" style={{ marginTop: '20px' }}>

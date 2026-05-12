@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://medithre-x-180462915671.europe-west1.run.app/api/:path*" }
+  ]
+}
