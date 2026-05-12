@@ -21,6 +21,7 @@ import ContactPage       from './pages/ContactPage.jsx';
 import AboutPage         from './pages/AboutPage.jsx';
 import LoginPage         from './pages/LoginPage.jsx';
 import RegisterPage      from './pages/RegisterPage.jsx';
+import ForgotPassword    from './pages/ForgotPassword.jsx';
 import AccountPage       from './pages/AccountPage.jsx';
 
 // Admin pages
@@ -87,9 +88,10 @@ export default function App() {
                 <Route path="/quote"       element={<QuotePage />} />
                 <Route path="/contact"     element={<ContactPage />} />
                 <Route path="/about"       element={<AboutPage />} />
-                <Route path="/login"       element={<LoginPage />} />
-                <Route path="/register"    element={<RegisterPage />} />
-                <Route path="/account/*"   element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
+                 <Route path="/login"       element={<LoginPage />} />
+                 <Route path="/register"    element={<RegisterPage />} />
+                 <Route path="/forgot-password" element={<ForgotPassword />} />
+                 <Route path="/account/*"   element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
               </Routes>
             </PublicLayout>
           } />

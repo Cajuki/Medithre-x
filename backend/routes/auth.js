@@ -63,6 +63,33 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// ── FORGOT PASSWORD ───────────────────────────────────────────────────────────
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email)
+      return res.status(400).json({ message: 'Email is required' });
+
+    const emailLower = email.toLowerCase().trim();
+    const result = await query('SELECT id FROM users WHERE email = $1', [emailLower]);
+    if (!result.rows.length)
+      // Don't reveal whether email exists for security
+      return res.status(200).json({ message: 'If an account exists with that email, you will receive reset instructions.' });
+
+    // Generate reset token (valid for 1 hour)
+    const resetToken = jwt.sign({ email: emailLower }, JWT_SECRET, { expiresIn: '1h' });
+    
+    // In a real application, you would send an email here
+    // For now, we'll just return success - in production, integrate with email service
+    console.log(`Password reset token for ${emailLower}: ${resetToken}`);
+    
+    return res.status(200).json({ message: 'If an account exists with that email, you will receive reset instructions.' });
+  } catch (err) {
+    console.error('Forgot password error:', err.message);
+    return res.status(500).json({ message: 'Server error. Please try again.' });
+  }
+});
+
 // ── GET PROFILE ───────────────────────────────────────────────────────────────
 router.get('/profile', protect, async (req, res) => {
   try {

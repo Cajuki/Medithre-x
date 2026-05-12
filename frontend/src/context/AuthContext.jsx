@@ -48,6 +48,10 @@ export const AuthProvider = ({ children }) => {
     return u;
   };
 
+  const forgotPassword = async (email) => {
+    await axios.post('/api/auth/forgot-password', { email });
+  };
+
   const logout = () => {
     localStorage.removeItem('medithrex_token');
     delete axios.defaults.headers.common['Authorization'];
@@ -62,7 +66,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, forgotPassword, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

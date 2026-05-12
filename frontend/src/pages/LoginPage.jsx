@@ -80,27 +80,33 @@ export default function LoginPage() {
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Password</label>
-                <div className="password-wrap">
-                  <input
-                    className="form-input"
-                    type={show ? 'text' : 'password'}
-                    name="password"
-                    placeholder="Your password"
-                    value={form.password}
-                    onChange={handleChange}
-                    required
-                  />
-                  <button type="button" className="password-toggle" onClick={() => setShow(!show)}>
-                    {show ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
+               <div className="form-group">
+                 <label className="form-label">Password</label>
+                 <div className="password-wrap">
+                   <input
+                     className="form-input"
+                     type={show ? 'text' : 'password'}
+                     name="password"
+                     placeholder="Your password"
+                     value={form.password}
+                     onChange={handleChange}
+                     required
+                   />
+                   <button type="button" className="password-toggle" onClick={() => setShow(!show)}>
+                     {show ? <EyeOff size={18} /> : <Eye size={18} />}
+                   </button>
+                 </div>
+               </div>
 
-              <button type="submit" className="btn btn-primary btn-lg auth-submit" disabled={loading}>
-                {loading ? <span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} /> : <>Sign In <ArrowRight size={18} /></>}
-              </button>
+               <div className="form-group">
+                 <Link to="/forgot-password" className="forgot-link">
+                   Forgot Password?
+                 </Link>
+               </div>
+
+               <button type="submit" className="btn btn-primary btn-lg auth-submit" disabled={loading}>
+                 {loading ? <span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} /> : <>Sign In <ArrowRight size={18} /></>}
+               </button>
             </form>
 
             <div className="auth-divider">or</div>
