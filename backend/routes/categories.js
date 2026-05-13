@@ -48,7 +48,7 @@ router.post('/', protect, admin, categoryUpload.single('image'), async (req, res
     if (!name) return res.status(400).json({ message: 'Category name is required' });
 
     const imageUrl = req.file
-      ? `${req.protocol}://${req.get('host')}/uploads/categories/${path.basename(req.file.path)}`
+      ? `/uploads/categories/${path.basename(req.file.path)}`
       : null;
 
     // Check duplicate name
@@ -75,7 +75,7 @@ router.put('/:id', protect, admin, categoryUpload.single('image'), async (req, r
     // If a new image was uploaded, use it; otherwise keep existing
     let imageUrl = null;
     if (req.file) {
-      imageUrl = `${req.protocol}://${req.get('host')}/uploads/categories/${path.basename(req.file.path)}`;
+      imageUrl = `/uploads/categories/${path.basename(req.file.path)}`;
       const current = await query('SELECT image_url FROM categories WHERE id = $1', [req.params.id]);
       if (current.rows[0]?.image_url) {
         await deleteImage(current.rows[0].image_url);

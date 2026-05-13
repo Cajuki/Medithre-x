@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import { useCart } from '../context/CartContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { CheckCircle } from 'lucide-react';
+import { PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
+import { resolveAssetUrl } from '../utils/assets.js';
 import './CheckoutPage.css';
 
 const COUNTIES = ['Nairobi','Mombasa','Kisumu','Nakuru','Eldoret','Thika','Nyeri','Meru','Kakamega','Garissa','Machakos','Kisii','Kitale','Malindi','Lamu','Mandera','Wajir','Marsabit','Isiolo','Embu','Nanyuki','Kericho','Bomet','Nandi','Trans Nzoia','Bungoma','Busia','Siaya','Homa Bay','Migori','Nyamira','Vihiga','Butali','Kwale','Kilifi','Tana River','Taita Taveta','Kajiado','Makueni','Kitui','Tharaka Nithi','Kirinyaga','Murang\'a','Kiambu','Nyandarua','Laikipia','Samburu','West Pokot','Turkana','Baringo'];
@@ -52,7 +54,7 @@ export default function CheckoutPage() {
         <h2>Order Placed Successfully!</h2>
         <p className="order-num">Order #{orderNumber}</p>
         <p>Thank you, {user?.name?.split(' ')[0]}. Our team will contact you within 24 hours to confirm and process your order.</p>
-        <p className="success-contact">For urgent inquiries: <a href="tel:0790080903">0790 080 903</a></p>
+        <p className="success-contact">For urgent inquiries: <a href={PRIMARY_PHONE.href}>{PRIMARY_PHONE.display}</a> or <a href={SECONDARY_PHONE.href}>{SECONDARY_PHONE.display}</a></p>
         <div className="success-actions">
           <button className="btn btn-primary" onClick={() => navigate('/account/orders')}>View My Orders</button>
           <button className="btn btn-outline" onClick={() => navigate('/products')}>Continue Shopping</button>
@@ -143,7 +145,7 @@ export default function CheckoutPage() {
           <div className="checkout-items">
             {items.map(i => (
               <div key={i.id} className="checkout-item">
-                <img src={i.images?.[0]} alt={i.name} />
+                <img src={resolveAssetUrl(i.images?.[0])} alt={i.name} />
                 <div>
                   <p>{i.name}</p>
                   <span>Qty: {i.quantity}</span>

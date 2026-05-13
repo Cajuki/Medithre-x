@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { CheckCircle, Plus, Trash2, Phone, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { isValidEmail, isValidKenyanPhone, normalizeKenyanPhone, KENYAN_PHONE_HINT } from '../utils/validation.js';
+import { BUSINESS_EMAIL, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
 import './QuotePage.css';
 
 const COUNTIES = ['Nairobi','Mombasa','Kisumu','Nakuru','Eldoret','Thika','Nyeri','Meru','Kakamega','Garissa','Machakos','Kisii','Kitale','Other'];
@@ -88,8 +89,9 @@ export default function QuotePage() {
         <p className="order-num">{quoteNumber}</p>
         <p>Thank you, {form.name.split(' ')[0]}. Our sales team will review your request and get back to you within <strong>24 hours</strong> with a detailed quotation.</p>
         <div className="quote-success-contact">
-          <a href="tel:0790080903"><Phone size={16} /> 0790 080 903</a>
-          <a href="mailto:info@medithrex.co.ke"><Mail size={16} /> info@medithrex.co.ke</a>
+          <a href={PRIMARY_PHONE.href}><Phone size={16} /> {PRIMARY_PHONE.display}</a>
+          <a href={SECONDARY_PHONE.href}><Phone size={16} /> {SECONDARY_PHONE.display}</a>
+          <a href={`mailto:${BUSINESS_EMAIL}`}><Mail size={16} /> {BUSINESS_EMAIL}</a>
         </div>
       </div>
     </div>
@@ -211,11 +213,14 @@ export default function QuotePage() {
           <div className="quote-side-card quote-contact-card">
             <h4>Prefer to Call?</h4>
             <p>Our sales team is available Monday–Friday, 8AM–6PM EAT.</p>
-            <a href="tel:0790080903" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
-              <Phone size={16} /> 0790 080 903
+            <a href={PRIMARY_PHONE.href} className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }}>
+              <Phone size={16} /> {PRIMARY_PHONE.display}
             </a>
-            <a href="mailto:info@medithrex.co.ke" className="btn btn-dark" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>
-              <Mail size={16} /> Email Us
+            <a href={SECONDARY_PHONE.href} className="btn btn-outline" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>
+              <Phone size={16} /> {SECONDARY_PHONE.display}
+            </a>
+            <a href={`mailto:${BUSINESS_EMAIL}`} className="btn btn-dark" style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>
+              <Mail size={16} /> {BUSINESS_EMAIL}
             </a>
           </div>
         </div>

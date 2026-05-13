@@ -9,6 +9,8 @@ import ProductCard from '../components/ProductCard.jsx';
 import photo1 from '../Assets/photo1.png';
 import photo2 from '../Assets/photo2.png';
 import photo3 from '../Assets/photo3.png';
+import { PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
+import { resolveAssetUrl } from '../utils/assets.js';
 import './HomePage.css';
 
 const HERO_SLIDES = [
@@ -28,7 +30,7 @@ const HERO_SLIDES = [
   },
   {
     title: 'Trusted by Healthcare Institutions Across Kenya',
-    sub: 'Over 200 institutions rely on Medithrex for quality equipment, fast delivery, and after-sales support.',
+    sub: 'Over 200 institutions rely on medithrex for quality equipment, fast delivery, and after-sales support.',
     image: photo3,
     cta: 'Get a Quote Today', ctaLink: '/quote',
     cta2: 'Our Story', cta2Link: '/about',
@@ -52,8 +54,8 @@ const WHY_US = [
 ];
 
 const TESTIMONIALS = [
-  { text: 'Medithrex delivered our entire ICU setup on time and within budget. Their after-sales support and engineer installation has been truly exceptional.' },
-  { text: "We've sourced our hematology and biochemistry analyzers from Medithrex for years. Reliable equipment, genuine parts, and a team that always picks up the phone." },
+  { text: 'medithrex delivered our entire ICU setup on time and within budget. Their after-sales support and engineer installation has been truly exceptional.' },
+  { text: "We've sourced our hematology and biochemistry analyzers from medithrex for years. Reliable equipment, genuine parts, and a team that always picks up the phone." },
   { text: 'The quote-to-delivery process was seamless. A highly professional team that understands the Kenyan healthcare context and the urgency of our work.' },
 ];
 
@@ -120,8 +122,8 @@ export default function HomePage() {
             <button key={i} className={`hero-dot${i === slide ? ' active' : ''}`} onClick={() => setSlide(i)} />
           ))}
         </div>
-        <a href="tel:0790080903" className="hero-call">
-          <Phone size={16} /> 0790 080 903
+        <a href={PRIMARY_PHONE.href} className="hero-call">
+          <Phone size={16} /> {PRIMARY_PHONE.display}
         </a>
       </section>
 
@@ -166,7 +168,7 @@ export default function HomePage() {
                 >
                   <div className="cat-card-img">
                     {cat.image_url ? (
-                      <img src={cat.image_url} alt={cat.name} loading="lazy" />
+                      <img src={resolveAssetUrl(cat.image_url)} alt={cat.name} loading="lazy" />
                     ) : (
                       <div className="cat-card-no-img">
                         <ImagePlus size={32} />
@@ -223,11 +225,11 @@ export default function HomePage() {
         <div className="container">
           <div className="why-inner">
             <div className="why-left">
-              <p className="section-label">Why Choose Medithrex</p>
+              <p className="section-label">Why Choose medithrex</p>
               <h2 className="section-title">Your Trusted Healthcare Equipment Partner</h2>
               <div className="divider" />
               <p className="why-desc">
-                Since 2024, Medithrex has been the go-to supplier for hospitals, clinics, diagnostic labs,
+                Since 2024, medithrex has been the go-to supplier for hospitals, clinics, diagnostic labs,
                 and healthcare institutions with a Kenyan focus. We combine global-standard equipment
                 with deep local market expertise.
               </p>
@@ -264,7 +266,8 @@ export default function HomePage() {
           </div>
           <div className="quote-banner-actions">
             <Link to="/quote" className="btn btn-primary btn-lg">Request a Quote <ArrowRight size={18} /></Link>
-            <a href="tel:0790080903" className="btn btn-outline-white btn-lg"><Phone size={18} /> 0790 080 903</a>
+            <a href={PRIMARY_PHONE.href} className="btn btn-outline-white btn-lg"><Phone size={18} /> {PRIMARY_PHONE.display}</a>
+            <a href={SECONDARY_PHONE.href} className="btn btn-outline-white btn-lg"><Phone size={18} /> {SECONDARY_PHONE.display}</a>
           </div>
         </div>
       </section>

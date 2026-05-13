@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { Phone, Mail, MapPin, Clock, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { isValidEmail, isValidKenyanPhone, normalizeKenyanPhone, KENYAN_PHONE_HINT } from '../utils/validation.js';
+import { BUSINESS_EMAIL, BUSINESS_LOCATION, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
 import './ContactPage.css';
 
 export default function ContactPage() {
@@ -60,7 +61,8 @@ export default function ContactPage() {
             <div className="ci-icon"><Phone size={22} /></div>
             <div>
               <h4>Phone & WhatsApp</h4>
-              <a href="tel:0790080903">0790 080 903</a>
+              <a href={PRIMARY_PHONE.href}>{PRIMARY_PHONE.display}</a>
+              <a href={SECONDARY_PHONE.href}>{SECONDARY_PHONE.display}</a>
               <p>Call or WhatsApp anytime</p>
             </div>
           </div>
@@ -69,7 +71,7 @@ export default function ContactPage() {
                <div className="ci-icon"><Mail size={22} /></div>
                <div>
                  <h4>Email</h4>
-                 <a href="mailto:medithrex@gmail.com">medithrex@gmail.com</a>
+                 <a href={`mailto:${BUSINESS_EMAIL}`}>{BUSINESS_EMAIL}</a>
                  <p>We reply within 24 hours</p>
                </div>
              </div>
@@ -78,7 +80,7 @@ export default function ContactPage() {
             <div className="ci-icon"><MapPin size={22} /></div>
             <div>
               <h4>Our Location</h4>
-              <p style={{ fontWeight: 600, color: 'var(--black)' }}>Pramukh Plaza — Shop 19</p>
+              <p style={{ fontWeight: 600, color: 'var(--black)' }}>{BUSINESS_LOCATION}</p>
               <p>Nairobi CBD, Nairobi, Kenya</p>
             </div>
           </div>
@@ -95,7 +97,7 @@ export default function ContactPage() {
           {/* Embedded map */}
           <div className="contact-map">
             <iframe
-              title="Medithrex — Pramukh Plaza, Nairobi CBD"
+              title="medithrex — Pramukh Plaza, Nairobi CBD"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8185987700456!2d36.8175!3d-1.2833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f10d22ef9aaab%3A0x9da5b6c6c0b9c4e0!2sNairobi+CBD!5e0!3m2!1sen!2ske!4v1"
               width="100%" height="200"
               style={{ border: 0, borderRadius: '8px', display: 'block' }}
@@ -111,7 +113,7 @@ export default function ContactPage() {
             <CheckCircle size={48} />
             <h3>Message Received!</h3>
             <p>Thank you for reaching out. Our team will get back to you within 24 hours.</p>
-            <a href="tel:0790080903" className="btn btn-primary"><Phone size={16} /> 0790 080 903</a>
+            <a href={PRIMARY_PHONE.href} className="btn btn-primary"><Phone size={16} /> {PRIMARY_PHONE.display}</a>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="contact-form">

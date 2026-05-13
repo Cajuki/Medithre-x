@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ShoppingCart, User, Menu, X, ChevronDown, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
+import { BUSINESS_LOCATION, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -57,9 +58,9 @@ export default function Navbar() {
       {/* ── Topbar ─────────────────────────────────────────────────────────── */}
       <div className="navbar-topbar">
         <div className="container">
-          <span><Phone size={12} /> 0790 080 903</span>
+          <span><Phone size={12} /> {PRIMARY_PHONE.display} / {SECONDARY_PHONE.display}</span>
           <span>Mon – Fri: 8:00 AM – 6:00 PM EAT</span>
-          <span>📍 Nairobi CBD, Pramukh Plaza — Shop 19</span>
+          <span>📍 Nairobi CBD, {BUSINESS_LOCATION}</span>
         </div>
       </div>
 
@@ -69,7 +70,7 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link to="/" className="navbar-logo">
-            <span className="logo-text">MEDITHREX</span>
+            <span className="logo-text">medithrex</span>
             <span className="logo-sub">MEDICAL SOLUTIONS</span>
           </Link>
 

@@ -5,6 +5,13 @@ import { protect, admin } from '../middleware/auth.js';
 
 const router = express.Router();
 
+const formatAdminQuote = (quote, items = null) => ({
+  ...quote,
+  quoted_price: quote.quoted_price ? parseFloat(quote.quoted_price) : null,
+  item_count: quote.item_count ? parseInt(quote.item_count, 10) : items ? items.length : 0,
+  items,
+});
+
 // All admin routes require authentication + admin role
 router.use(protect, admin);
 
@@ -295,23 +302,30 @@ router.get('/quotes', async (req, res) => {
     const params = [];
     let idx = 1;
 
-    if (status) { conditions.push(`status = $${idx++}`); params.push(status); }
+    if (status) { conditions.push(`q.status = $${idx++}`); params.push(status); }
     if (search) {
-      conditions.push(`(quote_number ILIKE $${idx} OR name ILIKE $${idx} OR email ILIKE $${idx} OR company ILIKE $${idx})`);
+      conditions.push(`(q.quote_number ILIKE $${idx} OR q.name ILIKE $${idx} OR q.email ILIKE $${idx} OR q.company ILIKE $${idx})`);
       params.push(`%${search}%`); idx++;
     }
 
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const countRes = await query(`SELECT COUNT(*) FROM quotes ${where}`, params);
+    const countRes = await query(`SELECT COUNT(*) FROM quotes q ${where}`, params);
     const total = parseInt(countRes.rows[0].count);
 
     const offset = (parseInt(page) - 1) * parseInt(limit);
     const dataRes = await query(
-      `SELECT * FROM quotes ${where} ORDER BY created_at DESC LIMIT $${idx} OFFSET $${idx+1}`,
+      `SELECT q.*,
+              COUNT(qi.id) AS item_count
+       FROM quotes q
+       LEFT JOIN quote_items qi ON qi.quote_id = q.id
+       ${where}
+       GROUP BY q.id
+       ORDER BY q.created_at DESC
+       LIMIT $${idx} OFFSET $${idx+1}`,
       [...params, parseInt(limit), offset]
     );
 
-    res.json({ quotes: dataRes.rows, total, pages: Math.ceil(total / parseInt(limit)), page: parseInt(page) });
+    res.json({ quotes: dataRes.rows.map(q => formatAdminQuote(q)), total, pages: Math.ceil(total / parseInt(limit)), page: parseInt(page) });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -322,7 +336,7 @@ router.get('/quotes/:id', async (req, res) => {
     const qRes = await query(`SELECT * FROM quotes WHERE id=$1`, [req.params.id]);
     if (!qRes.rows.length) return res.status(404).json({ message: 'Quote not found' });
     const iRes = await query(`SELECT * FROM quote_items WHERE quote_id=$1`, [req.params.id]);
-    res.json({ ...qRes.rows[0], items: iRes.rows });
+    res.json(formatAdminQuote(qRes.rows[0], iRes.rows));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -331,6 +345,11 @@ router.get('/quotes/:id', async (req, res) => {
 router.put('/quotes/:id', async (req, res) => {
   try {
     const { status, quoted_price, admin_notes, response_message } = req.body;
+    const normalizedPrice = quoted_price === '' || quoted_price === null || quoted_price === undefined
+      ? null
+      : parseFloat(quoted_price);
+    const normalizedAdminNotes = admin_notes === '' ? null : admin_notes;
+    const normalizedResponseMessage = response_message === '' ? null : response_message;
     const result = await query(
       `UPDATE quotes SET
          status = COALESCE($1,status),
@@ -339,10 +358,11 @@ router.put('/quotes/:id', async (req, res) => {
          response_message = COALESCE($4,response_message),
          responded_at = CASE WHEN $4 IS NOT NULL THEN NOW() ELSE responded_at END
        WHERE id=$5 RETURNING *`,
-      [status || null, quoted_price || null, admin_notes || null, response_message || null, req.params.id]
+      [status || null, normalizedPrice, normalizedAdminNotes, normalizedResponseMessage, req.params.id]
     );
     if (!result.rows.length) return res.status(404).json({ message: 'Quote not found' });
-    res.json(result.rows[0]);
+    const iRes = await query(`SELECT * FROM quote_items WHERE quote_id=$1`, [req.params.id]);
+    res.json(formatAdminQuote(result.rows[0], iRes.rows));
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

@@ -67,7 +67,7 @@ export default function AdminQuotes() {
           </style>
         </head>
         <body>
-          <h1>Medithrex Quote Response</h1>
+          <h1>medithrex Quote Response</h1>
           <div class="meta">
             <div><strong>Quote #:</strong> ${selected.quote_number}</div>
             <div><strong>Customer:</strong> ${selected.name}</div>

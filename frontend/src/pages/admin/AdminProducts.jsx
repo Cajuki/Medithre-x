@@ -6,6 +6,7 @@ import {
   ChevronLeft, ChevronRight, X, Save,
   Upload, ImagePlus, Loader
 } from 'lucide-react';
+import { resolveAssetUrl } from '../../utils/assets.js';
 import './AdminPages.css';
 import './AdminProducts.css';
 
@@ -235,7 +236,7 @@ export default function AdminProducts() {
                     <td>
                       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                         {p.images?.[0]
-                          ? <img className="td-img" src={p.images[0]} alt={p.name} />
+                          ? <img className="td-img" src={resolveAssetUrl(p.images[0])} alt={p.name} />
                           : <div className="td-img-placeholder"><ImagePlus size={16} /></div>
                         }
                         <div>
@@ -314,7 +315,7 @@ export default function AdminProducts() {
                 <div className="img-grid">
                   {form.images.map((url, i) => (
                     <div key={url} className="img-thumb">
-                      <img src={url} alt={`Product image ${i+1}`} />
+                      <img src={resolveAssetUrl(url)} alt={`Product image ${i+1}`} />
                       <div className="img-thumb-overlay">
                         <span className="img-thumb-num">#{i+1}</span>
                         <button

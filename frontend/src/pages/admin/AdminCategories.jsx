@@ -6,6 +6,7 @@ import {
   Upload, Loader, Eye, EyeOff,
   GripVertical, ImagePlus, ChevronLeft, ChevronRight
 } from 'lucide-react';
+import { resolveAssetUrl } from '../../utils/assets.js';
 import './AdminPages.css';
 import './AdminCategories.css';
 
@@ -137,7 +138,7 @@ export default function AdminCategories() {
   const setF = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   // Current cover image to display in modal
-  const currentImage = previewFile?.preview || form.image_url;
+  const currentImage = previewFile?.preview || resolveAssetUrl(form.image_url);
 
   return (
     <div>
@@ -180,7 +181,7 @@ export default function AdminCategories() {
               {/* Cover image */}
               <div className="cat-admin-img">
                 {cat.image_url ? (
-                  <img src={cat.image_url} alt={cat.name} />
+                  <img src={resolveAssetUrl(cat.image_url)} alt={cat.name} />
                 ) : (
                   <div className="cat-admin-no-img">
                     <ImagePlus size={32} />

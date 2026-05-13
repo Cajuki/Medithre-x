@@ -19,12 +19,12 @@ const seedUsers = async () => {
   await query(`
     INSERT INTO users (name, email, phone, company, password, role)
     VALUES
-      ('Admin Medithrex', 'admin@medithrex.co.ke', '0790080903', 'Medithrex Medical Solutions', $1, 'admin'),
+      ('Admin Medithrex', 'medithrexmedicalsolutions@gmail.com', '0790080903', 'Medithrex Medical Solutions', $1, 'admin'),
       ('Jane Wanjiru',    'jane@hospital.co.ke',   '0712345678', 'Kenyatta National Hospital',  $2, 'user')
     ON CONFLICT (email) DO NOTHING;
   `, [adminHash, userHash]);
 
-  console.log('  ✅ admin@medithrex.co.ke  /  Admin@2024');
+  console.log('  ✅ medithrexmedicalsolutions@gmail.com /  Admin@2024');
   console.log('  ✅ jane@hospital.co.ke    /  User@2024');
 };
 
@@ -177,7 +177,7 @@ const seed = async () => {
     await seedUsers();
     await seedProducts();
     console.log('\n🎉 Seeding complete!\n');
-    console.log('  Admin → admin@medithrex.co.ke  /  Admin@2024');
+    console.log('  Admin → medithrexmedicalsolutions@gmail.com  /  Admin@2024');
     console.log('  User  → jane@hospital.co.ke    /  User@2024\n');
     process.exit(0);
   } catch (err) {

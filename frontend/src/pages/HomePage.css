@@ -253,7 +253,7 @@
   overflow: hidden;
 }
 .quote-banner::before {
-  content: 'MEDITHREX';
+  content: 'medithrex';
   position: absolute;
   right: -20px;
   top: 50%;

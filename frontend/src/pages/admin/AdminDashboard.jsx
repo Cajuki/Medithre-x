@@ -65,7 +65,7 @@ export default function AdminDashboard() {
       <div className="admin-page-header">
         <div>
           <h1>Dashboard</h1>
-          <p>Welcome back — here's what's happening with Medithrex today.</p>
+          <p>Welcome back — here's what's happening with medithrex today.</p>
         </div>
         <span className="dash-date">{new Date().toLocaleDateString('en-KE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
       </div>

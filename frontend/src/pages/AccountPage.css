@@ -361,17 +361,57 @@
   .dashboard-stats { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
-  .account-layout { grid-template-columns: 1fr; }
+  .account-layout { grid-template-columns: 1fr; gap: 20px; padding-top: 20px; }
   .account-sidebar { position: static; }
+  .account-user { padding: 16px; }
+  .account-nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 12px;
+    scrollbar-width: thin;
+  }
+  .account-nav-link {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    border: 1px solid var(--white-3);
+  }
+  .logout-btn {
+    margin-top: 0;
+    padding-top: 11px;
+    border-top: 1px solid var(--white-3);
+    border-radius: var(--radius);
+  }
+  .account-page-header h2 { font-size: 1.55rem; }
+  .account-page-header p { line-height: 1.6; }
   .orders-table-head, .orders-table-row { grid-template-columns: 1fr 1fr 80px; }
   .orders-table-head span:nth-child(3),
   .orders-table-row span:nth-child(3) { display: none; }
   .account-quick-actions { grid-template-columns: 1fr 1fr; }
   .profile-grid { grid-template-columns: 1fr; }
+  .order-card-header,
+  .order-card-footer,
+  .order-card-meta { flex-direction: column; align-items: flex-start; }
+  .order-card-footer { gap: 10px; }
+  .profile-section { padding: 22px 18px; }
 }
 @media (max-width: 480px) {
   .dashboard-stats { grid-template-columns: 1fr 1fr; }
   .orders-table-head, .orders-table-row { grid-template-columns: 1fr 1fr; }
   .orders-table-head span:nth-child(4),
   .orders-table-row span:nth-child(4) { display: none; }
+  .account-layout { padding-bottom: 40px; }
+  .account-section-head { padding: 16px; }
+  .orders-table-head,
+  .orders-table-row,
+  .order-card-items,
+  .order-card-notes,
+  .quoted-price-row { padding-left: 16px; padding-right: 16px; }
+  .account-quick-actions { grid-template-columns: 1fr; }
+  .dashboard-stats { gap: 12px; }
+  .dash-stat-card { padding: 16px; }
+  .dash-stat-val { font-size: 1.5rem; }
+  .order-card-item { align-items: flex-start; flex-wrap: wrap; }
+  .profile-section { padding: 18px 16px; }
 }

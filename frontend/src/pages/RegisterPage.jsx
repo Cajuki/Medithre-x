@@ -4,6 +4,7 @@ import { Eye, EyeOff, ArrowRight, UserPlus, Check, X, AlertTriangle } from 'luci
 import { useAuth } from '../context/AuthContext.jsx';
 import { isValidEmail, isValidKenyanPhone, normalizeKenyanPhone, KENYAN_PHONE_HINT } from '../utils/validation.js';
 import toast from 'react-hot-toast';
+import { BUSINESS_EMAIL, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
 import './AuthPages.css';
 
 const KENYAN_COUNTIES = ['Nairobi','Mombasa','Kisumu','Nakuru','Eldoret','Thika','Malindi','Kitale','Garissa','Kakamega','Nyeri','Machakos','Meru','Embu','Kisii','Kilifi','Lamu','Isiolo','Marsabit','Mandera','Wajir','Turkana','West Pokot','Samburu','Trans Nzoia','Uasin Gishu','Elgeyo Marakwet','Nandi','Baringo','Laikipia','Nakuru','Narok','Kajiado','Kericho','Bomet','Kakamega','Vihiga','Bungoma','Busia','Siaya','Kisumu','Homa Bay','Migori','Kisii','Nyamira','Nairobi','Kiambu','Murang\'a','Kirinyaga','Nyeri','Nyandarua','Meru','Tharaka Nithi','Embu','Kitui','Machakos','Makueni','Garissa','Wajir','Mandera','Marsabit','Isiolo','Mombasa','Kwale','Kilifi','Tana River','Lamu','Taita Taveta'];
@@ -59,7 +60,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register({ ...form, email: form.email.trim().toLowerCase(), phone: normalizeKenyanPhone(form.phone) });
-      toast.success('Account created! Welcome to Medithrex.');
+      toast.success('Account created! Welcome to medithrex.');
       navigate('/account');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed. Try again.');
@@ -75,7 +76,7 @@ export default function RegisterPage() {
         <div className="auth-brand">
           <div className="auth-brand-content">
             <Link to="/" className="auth-logo">
-              <span className="auth-logo-text">MEDITHREX</span>
+              <span className="auth-logo-text">medithrex</span>
               <span className="auth-logo-sub">MEDICAL SOLUTIONS</span>
             </Link>
             <h2>Join Kenya's Healthcare Network</h2>
@@ -86,7 +87,7 @@ export default function RegisterPage() {
               ))}
             </div>
             <div className="auth-contact">
-              Questions? Call: <a href="tel:0790080903">0790 080 903</a>
+              Questions? Call: <a href={PRIMARY_PHONE.href}>{PRIMARY_PHONE.display}</a> or <a href={SECONDARY_PHONE.href}>{SECONDARY_PHONE.display}</a>
             </div>
           </div>
           <div className="auth-brand-bg" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=900&q=80)' }} />
@@ -205,8 +206,8 @@ export default function RegisterPage() {
 
               <p className="auth-terms">
                 By creating an account you agree to our{' '}
-                <a href="mailto:info@medithrex.co.ke?subject=Terms%20of%20Service%20Request">Terms of Service</a> and{' '}
-                <a href="mailto:info@medithrex.co.ke?subject=Privacy%20Policy%20Request">Privacy Policy</a>.
+                <a href={`mailto:${BUSINESS_EMAIL}?subject=Terms%20of%20Service%20Request`}>Terms of Service</a> and{' '}
+                <a href={`mailto:${BUSINESS_EMAIL}?subject=Privacy%20Policy%20Request`}>Privacy Policy</a>.
               </p>
 
               <button type="submit" className="btn btn-primary btn-lg auth-submit" disabled={loading}>

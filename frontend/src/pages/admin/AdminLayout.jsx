@@ -33,7 +33,7 @@ export default function AdminLayout() {
       <aside className={`admin-sidebar${mobileOpen ? ' mobile-open' : ''}`}>
         <div className="admin-sidebar-head">
           <div className="admin-brand">
-            <span className="admin-brand-text">MEDITHREX</span>
+            <span className="admin-brand-text">medithrex</span>
             {!collapsed && <span className="admin-brand-sub">ADMIN PANEL</span>}
           </div>
           <button className="sidebar-collapse-btn desktop-only" onClick={() => setCollapsed(!collapsed)}>

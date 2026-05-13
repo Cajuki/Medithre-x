@@ -30,8 +30,7 @@ router.post('/product-images', productUpload.array('images', 10), async (req, re
     const urls = [];
     for (const file of req.files) {
       const destination = `/uploads/products/${path.basename(file.path)}`;
-      const publicUrl = `${process.env.BACKEND_URL || 'http://localhost:8080'}${destination}`;
-      urls.push(publicUrl);
+      urls.push(destination);
     }
 
     return res.status(201).json({ message: `${req.files.length} image(s) uploaded`, images: urls });
@@ -46,9 +45,7 @@ router.post('/category-image', categoryUpload.single('image'), async (req, res) 
     if (!req.file) return res.status(400).json({ message: 'No image uploaded' });
 
     const destination = `/uploads/categories/${path.basename(req.file.path)}`;
-    const publicUrl = `${process.env.BACKEND_URL || 'http://localhost:8080'}${destination}`;
-
-    return res.status(201).json({ message: 'Category image uploaded', image: publicUrl });
+    return res.status(201).json({ message: 'Category image uploaded', image: destination });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

@@ -2,10 +2,11 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Users, MapPin, Award, Truck } from 'lucide-react';
 import fidelPhoto from '../Assets/fidel.png';
 import christlayPhoto from '../Assets/chris.png';
+import { BUSINESS_LOCATION, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
 import './AboutPage.css';
 
 const TEAM = [
-  { name: 'Fidel Chimwani',  role: 'CEO & Co-Founder', photo: fidelPhoto, bio: 'Leads Medithrex vision, strategy and partnerships with a Kenyan focus.' },
+  { name: 'Fidel Chimwani',  role: 'CEO & Co-Founder', photo: fidelPhoto, bio: 'Leads medithrex vision, strategy and partnerships with a Kenyan focus.' },
   { name: 'Christlay Muhanji', role: 'CEO & Co-Founder', photo: christlayPhoto, bio: 'Drives operations, product sourcing, and institutional client relations.' },
 ];
 
@@ -24,7 +25,7 @@ export default function AboutPage() {
       <div className="page-hero">
         <div className="container page-hero-content">
           <p className="section-label">Our Story</p>
-          <h1>About Medithrex</h1>
+          <h1>About medithrex</h1>
           <p>Empowering Kenya's healthcare sector with world-class medical and laboratory equipment since 2024.</p>
         </div>
       </div>
@@ -49,11 +50,11 @@ export default function AboutPage() {
             <h2 className="section-title">Kenya's Trusted Medical Equipment Partner</h2>
             <div className="divider" />
             <p>
-              Medithrex Medical Solutions is a leading supplier of medical and laboratory equipment to hospitals,
+              medithrex medical solutions is a leading supplier of medical and laboratory equipment to hospitals,
               clinics, diagnostic centres, universities, and research institutions with a Kenyan focus.
             </p>
             <p>
-              Founded in Nairobi in 2024 and headquartered at Pramukh Plaza, Nairobi CBD — Shop 19 — we have
+              Founded in Nairobi in 2024 and headquartered at {BUSINESS_LOCATION}, Nairobi CBD, we have
               grown from a focused distributor into a comprehensive medical equipment solutions provider, serving
               over 200 institutions in all 47 counties of Kenya.
             </p>
@@ -111,7 +112,7 @@ export default function AboutPage() {
       <section className="section team-section">
         <div className="container">
           <div style={{ marginBottom: '40px' }}>
-            <p className="section-label">The People Behind Medithrex</p>
+            <p className="section-label">The People Behind medithrex</p>
             <h2 className="section-title">Our Founders</h2>
             <div className="divider" />
           </div>
@@ -143,22 +144,22 @@ export default function AboutPage() {
                <div className="location-row">
                  <MapPin size={20} />
                  <div>
-                   <strong>Pramukh Plaza — 3rd Floor Shop 19</strong>
+                   <strong>{BUSINESS_LOCATION}</strong>
                    <p>Nairobi CBD, Nairobi, Kenya</p>
                  </div>
                </div>
                <div className="location-row">
                  <span className="location-icon">📞</span>
                  <div>
-                   <strong>0790 080 903</strong>
-                   <p>Call</p>
+                   <strong>{PRIMARY_PHONE.display}</strong>
+                   <p>Primary contact</p>
                  </div>
                </div>
                <div className="location-row">
                  <span className="location-icon">📱</span>
                  <div>
-                   <strong>0790 080 903</strong>
-                   <p>WhatsApp</p>
+                   <strong>{SECONDARY_PHONE.display}</strong>
+                   <p>Secondary contact</p>
                  </div>
                </div>
               <div className="location-row">
@@ -175,7 +176,7 @@ export default function AboutPage() {
           </div>
           <div className="location-map">
             <iframe
-              title="Medithrex Location — Pramukh Plaza, Nairobi CBD"
+              title="medithrex Location — Pramukh Plaza, Nairobi CBD"
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8185987700456!2d36.8175!3d-1.2833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f10d22ef9aaab%3A0x9da5b6c6c0b9c4e0!2sNairobi+CBD!5e0!3m2!1sen!2ske!4v1"
               width="100%" height="340" style={{ border: 0, borderRadius: '8px' }}
               allowFullScreen loading="lazy" referrerPolicy="no-referrer-when-downgrade"

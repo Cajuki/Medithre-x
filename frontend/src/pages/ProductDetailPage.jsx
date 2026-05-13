@@ -4,6 +4,8 @@ import axios from 'axios';
 import { ShoppingCart, FileText, ArrowLeft, CheckCircle, Package, Phone, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext.jsx';
 import toast from 'react-hot-toast';
+import { PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
+import { resolveAssetUrl } from '../utils/assets.js';
 import './ProductDetailPage.css';
 
 export default function ProductDetailPage() {
@@ -49,14 +51,14 @@ export default function ProductDetailPage() {
         {/* Images */}
         <div className="product-images">
           <div className="product-main-img">
-            <img src={product.images?.[imgIdx] || '/placeholder.jpg'} alt={product.name} />
+            <img src={resolveAssetUrl(product.images?.[imgIdx]) || '/placeholder.jpg'} alt={product.name} />
             {!product.inStock && <div className="out-of-stock-overlay">Out of Stock</div>}
           </div>
           {product.images?.length > 1 && (
             <div className="product-thumbs">
               {product.images.map((img, i) => (
                 <button key={i} className={`thumb${imgIdx === i ? ' active' : ''}`} onClick={() => setImgIdx(i)}>
-                  <img src={img} alt="" />
+                  <img src={resolveAssetUrl(img)} alt="" />
                 </button>
               ))}
             </div>
@@ -139,7 +141,12 @@ export default function ProductDetailPage() {
           <div className="product-trust">
             <div className="trust-item"><CheckCircle size={16} /> Genuine Certified Product</div>
             <div className="trust-item"><Package size={16} /> Warranty Included</div>
-            <div className="trust-item"><Phone size={16} /> <a href="tel:0790080903">0790 080 903</a></div>
+            <div className="trust-item">
+              <Phone size={16} />
+              <a href={PRIMARY_PHONE.href}>{PRIMARY_PHONE.display}</a>
+              <span> / </span>
+              <a href={SECONDARY_PHONE.href}>{SECONDARY_PHONE.display}</a>
+            </div>
           </div>
         </div>
       </div>

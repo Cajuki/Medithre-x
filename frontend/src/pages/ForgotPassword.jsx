@@ -4,6 +4,7 @@ import { Mail, ArrowRight, CheckCircle, LogIn } from 'lucide-react';
 import { isValidEmail } from '../utils/validation.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import toast from 'react-hot-toast';
+import { PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
 import './AuthPages.css';
 
 export default function ForgotPassword() {
@@ -37,13 +38,13 @@ export default function ForgotPassword() {
         <div className="auth-brand">
           <div className="auth-brand-content">
             <Link to="/" className="auth-logo">
-              <span className="auth-logo-text">MEDITHREX</span>
+              <span className="auth-logo-text">medithrex</span>
               <span className="auth-logo-sub">MEDICAL SOLUTIONS</span>
             </Link>
-            <h2>Reset Your Password</h1>
+            <h2>Reset Your Password</h2>
             <p>Enter your email address to receive password reset instructions.</p>
             <div className="auth-contact">
-              Need help? Call: <a href="tel:0790080903">0790 080 903</a>
+              Need help? Call: <a href={PRIMARY_PHONE.href}>{PRIMARY_PHONE.display}</a> or <a href={SECONDARY_PHONE.href}>{SECONDARY_PHONE.display}</a>
             </div>
           </div>
           <div className="auth-brand-bg" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1576086213369-97a306d36557?w=900&q=80)' }} />

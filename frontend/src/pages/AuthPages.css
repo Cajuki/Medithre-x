@@ -227,8 +227,17 @@
 @media (max-width: 900px) {
   .auth-split { grid-template-columns: 1fr; }
   .auth-brand { display: none; }
-  .auth-form-panel { padding: 48px 24px; min-height: 100vh; }
+  .auth-form-panel { padding: 40px 20px 56px; min-height: 100vh; align-items: flex-start; }
+  .auth-form-wrap { max-width: 560px; }
+  .auth-form-header h1 { font-size: 1.9rem; }
+  .auth-form-header p { line-height: 1.6; }
+  .password-requirements { grid-template-columns: 1fr; }
 }
 @media (max-width: 480px) {
+  .auth-form-panel { padding: 28px 16px 48px; }
+  .auth-form-wrap { max-width: none; }
+  .auth-form-header { margin-bottom: 24px; }
+  .auth-form-header h1 { font-size: 1.7rem; }
   .form-row-2 { grid-template-columns: 1fr; }
+  .auth-contact { line-height: 1.6; }
 }

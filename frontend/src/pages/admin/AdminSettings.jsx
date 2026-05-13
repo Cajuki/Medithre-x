@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { isValidKenyanPhone, normalizeKenyanPhone, KENYAN_PHONE_HINT } from '../../utils/validation.js';
 import { Save, Lock, RefreshCw, Phone, Mail, Globe } from 'lucide-react';
+import { BUSINESS_EMAIL, PRIMARY_PHONE, SECONDARY_PHONE } from '../../config/contact.js';
 import './AdminPages.css';
 
 export default function AdminSettings() {
@@ -99,7 +100,7 @@ export default function AdminSettings() {
           <div className="admin-card-header"><h3>System Information</h3></div>
           <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 0 }}>
             {[
-              { label: 'Platform', value: 'Medithrex v1.0.0' },
+              { label: 'Platform', value: 'medithrex v1.0.0' },
               { label: 'Database', value: 'PostgreSQL' },
               { label: 'Frontend', value: 'React 18 + Vite 5' },
               { label: 'Backend', value: 'Node.js + Express 4' },
@@ -122,14 +123,15 @@ export default function AdminSettings() {
               <div className="settings-contact-icon"><Phone size={18} /></div>
               <div>
                 <label>Phone / WhatsApp</label>
-                <p>0790 080 903</p>
+                <p>{PRIMARY_PHONE.display}</p>
+                <p>{SECONDARY_PHONE.display}</p>
               </div>
             </div>
             <div className="settings-contact-row">
               <div className="settings-contact-icon"><Mail size={18} /></div>
               <div>
                 <label>Email</label>
-                <p>info@medithrex.co.ke</p>
+                <p>{BUSINESS_EMAIL}</p>
               </div>
             </div>
             <div className="settings-contact-row">

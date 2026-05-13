@@ -145,7 +145,7 @@ export default function ProductsPage() {
       {/* Page hero */}
       <div className="page-hero">
         <div className="container page-hero-content">
-          <p className="section-label">Medithrex Product Catalogue</p>
+          <p className="section-label">medithrex product catalogue</p>
           <h1>Medical & Laboratory Equipment</h1>
           <p>Browse our extensive range of quality-certified medical and laboratory equipment for healthcare institutions across Kenya.</p>
         </div>

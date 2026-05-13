@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Phone, Mail, MapPin, Facebook, Twitter, Linkedin, Instagram, ArrowRight } from 'lucide-react';
+import { BUSINESS_EMAIL, BUSINESS_LOCATION, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
 import './Footer.css';
 
 export default function Footer() {
@@ -21,7 +22,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="footer-brand">
             <div className="footer-logo">
-              <span className="footer-logo-text">MEDITHREX</span>
+              <span className="footer-logo-text">medithrex</span>
               <span className="footer-logo-sub">MEDICAL SOLUTIONS</span>
             </div>
             <p>
@@ -72,21 +73,22 @@ export default function Footer() {
                 <Phone size={16} />
                 <div>
                   <span>Call / WhatsApp</span>
-                  <a href="tel:0790080903">0790 080 903</a>
+                  <a href={PRIMARY_PHONE.href}>{PRIMARY_PHONE.display}</a>
+                  <a href={SECONDARY_PHONE.href}>{SECONDARY_PHONE.display}</a>
                 </div>
               </div>
                <div className="footer-contact-item">
                  <Mail size={16} />
                  <div>
                    <span>Email Us</span>
-                   <a href="mailto:medithrex@gmail.com">medithrex@gmail.com</a>
+                   <a href={`mailto:${BUSINESS_EMAIL}`}>{BUSINESS_EMAIL}</a>
                  </div>
                </div>
               <div className="footer-contact-item">
                 <MapPin size={16} />
                  <div>
                    <span>Our Location</span>
-                   <p>Pramukh Plaza — 3rd Floor Shop 19</p>
+                   <p>{BUSINESS_LOCATION}</p>
                    <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)' }}>Nairobi CBD, Nairobi, Kenya</p>
                  </div>
               </div>
@@ -100,11 +102,11 @@ export default function Footer() {
 
       <div className="footer-bottom">
         <div className="container">
-          <p>© {new Date().getFullYear()} Medithrex Medical Solutions. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} medithrex Medical Solutions. All rights reserved.</p>
           <div className="footer-bottom-links">
-            <a href="mailto:info@medithrex.co.ke?subject=Privacy%20Policy%20Request">Privacy Policy</a>
-            <a href="mailto:info@medithrex.co.ke?subject=Terms%20of%20Service%20Request">Terms of Service</a>
-            <a href="mailto:info@medithrex.co.ke?subject=Returns%20Policy%20Request">Returns Policy</a>
+            <a href={`mailto:${BUSINESS_EMAIL}?subject=Privacy%20Policy%20Request`}>Privacy Policy</a>
+            <a href={`mailto:${BUSINESS_EMAIL}?subject=Terms%20of%20Service%20Request`}>Terms of Service</a>
+            <a href={`mailto:${BUSINESS_EMAIL}?subject=Returns%20Policy%20Request`}>Returns Policy</a>
           </div>
         </div>
       </div>

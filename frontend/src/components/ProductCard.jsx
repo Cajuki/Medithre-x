@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ShoppingCart, FileText, Eye } from 'lucide-react';
 import { useCart } from '../context/CartContext.jsx';
 import toast from 'react-hot-toast';
+import { resolveAssetUrl } from '../utils/assets.js';
 import './ProductCard.css';
 
 export default function ProductCard({ product }) {
@@ -19,7 +20,7 @@ export default function ProductCard({ product }) {
   return (
     <div className="product-card">
       <Link to={`/products/${product.id}`} className="product-card-image">
-        <img src={product.images?.[0] || '/placeholder.jpg'} alt={product.name} loading="lazy" />
+        <img src={resolveAssetUrl(product.images?.[0]) || '/placeholder.jpg'} alt={product.name} loading="lazy" />
         <div className="product-card-overlay">
           <Eye size={20} /> Quick View
         </div>
