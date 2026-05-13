@@ -41,7 +41,7 @@ export default function ForgotPassword() {
               <span className="auth-logo-text">medithrex</span>
               <span className="auth-logo-sub">MEDICAL SOLUTIONS</span>
             </Link>
-            <h2>Reset Your Password</h2>
+            <h1>Reset Your Password</h1>
             <p>Enter your email address to receive password reset instructions.</p>
             <div className="auth-contact">
               Need help? Call: <a href={PRIMARY_PHONE.href}>{PRIMARY_PHONE.display}</a> or <a href={SECONDARY_PHONE.href}>{SECONDARY_PHONE.display}</a>
@@ -55,7 +55,7 @@ export default function ForgotPassword() {
           <div className="auth-form-wrap">
             <div className="auth-form-header">
               <div className="auth-form-icon">{step === 1 ? <LogIn size={22} /> : <Mail size={22} />}</div>
-              <h1>{step === 1 ? 'Forgot Password' : 'Check Your Email'}</h1>
+              <h2>{step === 1 ? 'Forgot Password' : 'Check Your Email'}</h2>
               <p>{step === 1 ? 'Don\'t worry, it happens. Enter your email to reset your password.' : 'We\'ve sent password reset instructions to your email address.'}</p>
             </div>
 
@@ -84,7 +84,7 @@ export default function ForgotPassword() {
             {step === 2 && (
               <div className="auth-success">
                 <CheckCircle size={48} />
-                <h2>Reset Instructions Sent</h2>
+                <h3>Reset Instructions Sent</h3>
                 <p>If an account exists with {form.email}, you should receive an email with password reset instructions shortly.</p>
                 <Link to="/login" className="btn btn-outline" style={{ width: '100%', justifyContent: 'center' }}>
                   Back to Sign In

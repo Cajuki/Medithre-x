@@ -20,6 +20,18 @@ const createTables = async () => {
   console.log('  ✅ users');
 
   await query(`
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      id         SERIAL       PRIMARY KEY,
+      token_hash VARCHAR(255) UNIQUE NOT NULL,
+      user_id    INTEGER      NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      expires_at TIMESTAMPTZ  NOT NULL,
+      used      BOOLEAN      DEFAULT FALSE,
+      created_at TIMESTAMPTZ  DEFAULT NOW()
+    );
+  `);
+  console.log('  ✅ password_reset_tokens');
+
+  await query(`
     CREATE TABLE IF NOT EXISTS categories (
       id          SERIAL       PRIMARY KEY,
       name        VARCHAR(100) UNIQUE NOT NULL,
@@ -140,17 +152,19 @@ const createTables = async () => {
   console.log('  ✅ contact_messages');
 
   // Indexes
-  const indexes = [
-    'CREATE INDEX IF NOT EXISTS idx_categories_active     ON categories(is_active)',
-    'CREATE INDEX IF NOT EXISTS idx_categories_sort       ON categories(sort_order)',
-    'CREATE INDEX IF NOT EXISTS idx_products_category     ON products(category)',
-    'CREATE INDEX IF NOT EXISTS idx_products_featured     ON products(featured)',
-    'CREATE INDEX IF NOT EXISTS idx_products_in_stock     ON products(in_stock)',
-    'CREATE INDEX IF NOT EXISTS idx_orders_user_id        ON orders(user_id)',
-    'CREATE INDEX IF NOT EXISTS idx_orders_status         ON orders(status)',
-    'CREATE INDEX IF NOT EXISTS idx_quotes_email          ON quotes(email)',
-    'CREATE INDEX IF NOT EXISTS idx_contact_is_read       ON contact_messages(is_read)',
-  ];
+   const indexes = [
+     'CREATE INDEX IF NOT EXISTS idx_categories_active     ON categories(is_active)',
+     'CREATE INDEX IF NOT EXISTS idx_categories_sort       ON categories(sort_order)',
+     'CREATE INDEX IF NOT EXISTS idx_products_category     ON products(category)',
+     'CREATE INDEX IF NOT EXISTS idx_products_featured     ON products(featured)',
+     'CREATE INDEX IF NOT EXISTS idx_products_in_stock     ON products(in_stock)',
+     'CREATE INDEX IF NOT EXISTS idx_orders_user_id        ON orders(user_id)',
+     'CREATE INDEX IF NOT EXISTS idx_orders_status         ON orders(status)',
+     'CREATE INDEX IF NOT EXISTS idx_quotes_email          ON quotes(email)',
+     'CREATE INDEX IF NOT EXISTS idx_contact_is_read       ON contact_messages(is_read)',
+     'CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_token_hash ON password_reset_tokens(token_hash)',
+     'CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user_id  ON password_reset_tokens(user_id)',
+   ];
   for (const idx of indexes) await query(idx);
   console.log('  ✅ indexes');
 
