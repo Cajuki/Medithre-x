@@ -11,9 +11,6 @@ RUN npm install --production
 # Copy backend application source
 COPY backend/ ./
 
-# Ensure uploads directory exists for local development (ignored in prod)
-RUN mkdir -p /usr/src/app/uploads/products /usr/src/app/uploads/categories
-
 # Expose port expected by Cloud Run
 EXPOSE 8080
 

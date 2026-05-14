@@ -1,20 +1,18 @@
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
-import { productUpload, categoryUpload, deleteImage } from '../middleware/upload.js';
+import { productUpload, categoryUpload, deleteImage, uploadToGCS, isGCSAvailable } from '../middleware/upload.js';
 import { protect, admin } from '../middleware/auth.js';
 import { query } from '../db/pool.js';
 
 const router = express.Router();
 router.use(protect, admin);
 
-// Ensure uploads directory exists
+// Ensure uploads directory exists (local dev only)
 const uploadsDir = path.join(process.cwd(), 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
-
-// Ensure subdirectories exist
 ['products', 'categories'].forEach(dir => {
   const dirPath = path.join(uploadsDir, dir);
   if (!fs.existsSync(dirPath)) {
@@ -29,8 +27,18 @@ router.post('/product-images', productUpload.array('images', 10), async (req, re
 
     const urls = [];
     for (const file of req.files) {
-      const destination = `/uploads/products/${path.basename(file.path)}`;
-      urls.push(destination);
+      const filename = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9._-]/g, '-')}`;
+      const destination = `products/${filename}`;
+
+      if (isGCSAvailable()) {
+        const publicUrl = await uploadToGCS(file, destination);
+        urls.push(publicUrl);
+      } else {
+        // Local dev fallback
+        const localPath = path.join(uploadsDir, 'products', filename);
+        fs.writeFileSync(localPath, file.buffer);
+        urls.push(`/uploads/products/${filename}`);
+      }
     }
 
     return res.status(201).json({ message: `${req.files.length} image(s) uploaded`, images: urls });
@@ -44,8 +52,18 @@ router.post('/category-image', categoryUpload.single('image'), async (req, res) 
   try {
     if (!req.file) return res.status(400).json({ message: 'No image uploaded' });
 
-    const destination = `/uploads/categories/${path.basename(req.file.path)}`;
-    return res.status(201).json({ message: 'Category image uploaded', image: destination });
+    const filename = `${Date.now()}-${req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, '-')}`;
+    const destination = `categories/${filename}`;
+
+    if (isGCSAvailable()) {
+      const publicUrl = await uploadToGCS(req.file, destination);
+      return res.status(201).json({ message: 'Category image uploaded', image: publicUrl });
+    } else {
+      // Local dev fallback
+      const localPath = path.join(uploadsDir, 'categories', filename);
+      fs.writeFileSync(localPath, req.file.buffer);
+      return res.status(201).json({ message: 'Category image uploaded', image: `/uploads/categories/${filename}` });
+    }
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

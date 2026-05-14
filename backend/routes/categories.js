@@ -1,10 +1,13 @@
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import { query } from '../db/pool.js';
 import { protect, admin } from '../middleware/auth.js';
-import { categoryUpload, deleteImage } from '../middleware/upload.js';
+import { categoryUpload, deleteImage, uploadToGCS, isGCSAvailable } from '../middleware/upload.js';
 
 const router = express.Router();
+
+const uploadsDir = path.join(process.cwd(), 'uploads');
 
 // ── GET /api/categories — public, used by homepage & products page ────────────
 router.get('/', async (req, res) => {
@@ -47,9 +50,19 @@ router.post('/', protect, admin, categoryUpload.single('image'), async (req, res
     const { name, description, sort_order, is_active } = req.body;
     if (!name) return res.status(400).json({ message: 'Category name is required' });
 
-    const imageUrl = req.file
-      ? `/uploads/categories/${path.basename(req.file.path)}`
-      : null;
+    let imageUrl = null;
+    if (req.file) {
+      const filename = `${Date.now()}-${req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, '-')}`;
+      const destination = `categories/${filename}`;
+
+      if (isGCSAvailable()) {
+        imageUrl = await uploadToGCS(req.file, destination);
+      } else {
+        const localPath = path.join(uploadsDir, 'categories', filename);
+        fs.writeFileSync(localPath, req.file.buffer);
+        imageUrl = `/uploads/categories/${filename}`;
+      }
+    }
 
     // Check duplicate name
     const existing = await query('SELECT id FROM categories WHERE LOWER(name) = LOWER($1)', [name]);
@@ -75,7 +88,17 @@ router.put('/:id', protect, admin, categoryUpload.single('image'), async (req, r
     // If a new image was uploaded, use it; otherwise keep existing
     let imageUrl = null;
     if (req.file) {
-      imageUrl = `/uploads/categories/${path.basename(req.file.path)}`;
+      const filename = `${Date.now()}-${req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, '-')}`;
+      const destination = `categories/${filename}`;
+
+      if (isGCSAvailable()) {
+        imageUrl = await uploadToGCS(req.file, destination);
+      } else {
+        const localPath = path.join(uploadsDir, 'categories', filename);
+        fs.writeFileSync(localPath, req.file.buffer);
+        imageUrl = `/uploads/categories/${filename}`;
+      }
+
       const current = await query('SELECT image_url FROM categories WHERE id = $1', [req.params.id]);
       if (current.rows[0]?.image_url) {
         await deleteImage(current.rows[0].image_url);

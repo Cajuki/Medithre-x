@@ -32,7 +32,11 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static(path.resolve(__dirname, 'uploads')));
+// Serve uploads directory only in development (Cloud Run uses GCS for uploads)
+// In production, images are served from Google Cloud Storage public URLs
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/uploads', express.static(path.resolve(__dirname, 'uploads')));
+}
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/api/auth',     authRoutes);

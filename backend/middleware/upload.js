@@ -1,15 +1,29 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { Storage } from '@google-cloud/storage';
 
 const uploadsDir = path.join(process.cwd(), 'uploads');
 
-// Ensure uploads directory exists
+// ── Google Cloud Storage setup ────────────────────────────────────────────────
+// On Cloud Run, default credentials are available automatically.
+// Locally, set GOOGLE_APPLICATION_CREDENTIALS to your service account key file.
+let gcsBucket = null;
+let gcsClient = null;
+
+if (process.env.GOOGLE_CLOUD_BUCKET) {
+  const keyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS || undefined;
+  gcsClient = new Storage({
+    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+    ...(keyFilename ? { keyFilename } : {}),
+  });
+  gcsBucket = gcsClient.bucket(process.env.GOOGLE_CLOUD_BUCKET);
+}
+
+// ── Ensure local uploads directory (for local dev fallback only) ─────────────
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
-
-// Ensure subdirectories exist
 ['products', 'categories'].forEach(dir => {
   const dirPath = path.join(uploadsDir, dir);
   if (!fs.existsSync(dirPath)) {
@@ -17,6 +31,7 @@ if (!fs.existsSync(uploadsDir)) {
   }
 });
 
+// ── Local disk storage (development only) ────────────────────────────────────
 const makeLocalStorage = (subfolder) => multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(uploadsDir, subfolder);
@@ -28,42 +43,126 @@ const makeLocalStorage = (subfolder) => multer.diskStorage({
   },
 });
 
-export const deleteImage = async (imageUrl) => {
+// ── Multer memory storage (always used; we handle upload in the route) ───────
+const memoryUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
+
+// ── GCS upload helper ────────────────────────────────────────────────────────
+export const uploadToGCS = (file, destination) => {
+  return new Promise((resolve, reject) => {
+    if (!gcsBucket) return reject(new Error('Google Cloud Storage bucket not configured'));
+
+    const blob = gcsBucket.file(destination);
+    const stream = blob.createWriteStream({
+      metadata: {
+        contentType: file.mimetype,
+        cacheControl: 'public, max-age=31536000',
+      },
+    });
+
+    stream.on('error', (err) => {
+      console.error('GCS upload error:', err.message);
+      reject(err);
+    });
+
+    stream.on('finish', async () => {
+      try {
+        // Make the file publicly readable
+        await blob.makePublic();
+        const publicUrl = `https://storage.googleapis.com/${gcsBucket.name}/${destination}`;
+        resolve(publicUrl);
+      } catch (err) {
+        console.error('GCS makePublic error:', err.message);
+        reject(err);
+      }
+    });
+
+    stream.end(file.buffer);
+  });
+};
+
+// ── Delete from GCS ─────────────────────────────────────────────────────────
+export const deleteFromGCS = (url) => {
+  return new Promise((resolve, reject) => {
+    if (!gcsBucket) return resolve(); // silently skip if no bucket configured
+
+    // Extract the file path from a GCS URL
+    // Supports: https://storage.googleapis.com/BUCKET_NAME/path/to/file
+    //           /uploads/products/filename.jpg (legacy local path)
+    let filePath = url;
+    try {
+      const urlObj = new URL(url);
+      if (urlObj.hostname === 'storage.googleapis.com') {
+        filePath = urlObj.pathname.replace(`/${gcsBucket.name}/`, '');
+      }
+    } catch {
+      // Not a full URL — treat as a local-style path, skip GCS delete
+      resolve();
+      return;
+    }
+
+    const blob = gcsBucket.file(filePath);
+    blob.delete()
+      .then(() => {
+        console.log('🗑️ GCS image deleted:', filePath);
+        resolve();
+      })
+      .catch((err) => {
+        if (err.code === 404) {
+          console.log('GCS file not found (already deleted):', filePath);
+          resolve();
+        } else {
+          console.error('GCS delete error:', err.message);
+          reject(err);
+        }
+      });
+  });
+};
+
+// ── Delete from local disk ───────────────────────────────────────────────────
+export const deleteLocalImage = (imageUrl) => {
   try {
     if (!imageUrl) return;
 
-    // Extract filename from URL (assuming it's served from /uploads/)
     const urlParts = imageUrl.split('/');
     const filename = urlParts[urlParts.length - 1];
-    
+
     if (filename) {
-      // Determine if it's a product or category image from the URL
       let filePath;
       if (imageUrl.includes('/products/')) {
         filePath = path.join(uploadsDir, 'products', filename);
       } else if (imageUrl.includes('/categories/')) {
         filePath = path.join(uploadsDir, 'categories', filename);
       } else {
-        // Default to products if we can't determine
         filePath = path.join(uploadsDir, 'products', filename);
       }
-      
+
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
         console.log('🗑️ Local image deleted:', filePath);
       }
     }
   } catch (error) {
-    console.error('Delete image error:', error.message);
+    console.error('Delete local image error:', error.message);
   }
 };
 
-export const categoryUpload = multer({
-  storage: makeLocalStorage('categories'),
-  limits: { fileSize: 5 * 1024 * 1024 },
-});
+// ── Unified delete (tries GCS first for full URLs, falls back to local) ──────
+export const deleteImage = async (imageUrl) => {
+  if (!imageUrl) return;
 
-export const productUpload = multer({
-  storage: makeLocalStorage('products'),
-  limits: { fileSize: 5 * 1024 * 1024 },
-});
+  // If it looks like a GCS URL, delete from GCS
+  if (imageUrl.includes('storage.googleapis.com')) {
+    await deleteFromGCS(imageUrl);
+  } else {
+    // Local path — delete from disk
+    deleteLocalImage(imageUrl);
+  }
+};
+
+// ── Exports ──────────────────────────────────────────────────────────────────
+export const categoryUpload = memoryUpload;
+export const productUpload = memoryUpload;
+export const isGCSAvailable = () => !!gcsBucket;
