@@ -17,58 +17,116 @@ export const verifyToken = (plainToken, storedHash) => {
 };
 
 /**
- * Create reusable transporter (IMPORTANT: outside function for performance)
+ * Create reusable transporter (created once at module load, reused for every email)
+ *
+ * Uses EMAIL_USER / EMAIL_PASS (NOT EMAIL_USERNAME / EMAIL_PASSWORD)
+ * to match the variable names in .env and .env.example.
+ *
+ * On Cloud Run the same env vars are set via Variables & Secrets in the
+ * service configuration.  If they are missing the transporter is still
+ * created — errors are surfaced at send time instead of killing the process
+ * at import time.
  */
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: Number(process.env.EMAIL_PORT),
-  secure: Number(process.env.EMAIL_PORT) === 465, // true for 465, false for 587
+  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+  port: Number(process.env.EMAIL_PORT) || 587,
+  secure: String(process.env.EMAIL_PORT) === '465', // true for 465 (SSL), false for 587 (STARTTLS)
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    /**
+     * Accept both EMAIL_USERNAME / EMAIL_PASSWORD (legacy)
+     * and EMAIL_USER / EMAIL_PASS (canonical, matches .env).
+     * Backend wins so a correctly-set old env var always has precedence.
+     */
+    user: process.env.EMAIL_USER ?? process.env.EMAIL_USERNAME ?? '',
+    pass: process.env.EMAIL_PASS ?? process.env.EMAIL_PASSWORD ?? '',
   },
 });
 
 /**
- * Send password reset email
+ * Lightweight preflight check — never throws, always logs its result.
+ */
+const verifyTransporter = async () => {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.warn('⚠️  EMAIL_USER or EMAIL_PASS is not set — transporter verification skipped');
+    return;
+  }
+  try {
+    await transporter.verify();
+    console.log('✅ SMTP transporter verified');
+  } catch (err) {
+    console.error('❌ SMTP transporter verification failed:', err.message);
+  }
+};
+verifyTransporter();
+
+/**
+ * Send password reset email.
+ *
+ * @param {string} email      Recipient e-mail address
+ * @param {string} resetUrl   Full URL the user clicks to reset their password
  */
 export const sendPasswordResetEmail = async (email, resetUrl) => {
-  try {
-    // optional debug (remove in production if you want)
-    await transporter.verify();
+  if (!email)    throw new Error('sendPasswordResetEmail: email is required');
+  if (!resetUrl) throw new Error('sendPasswordResetEmail: resetUrl is required');
 
-    const mailOptions = {
-      from: `"Medithre-x" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Reset Your Password',
-      text: `Reset your password using this link: ${resetUrl}. This link expires in 10 minutes.`,
-      html: `
-        <div style="font-family:Arial,sans-serif;line-height:1.5">
-          <h2>Password Reset Request</h2>
-          <p>You requested to reset your password.</p>
-          <p>
-            <a href="${resetUrl}" style="
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || `"Medithre-x" <${process.env.EMAIL_USER || 'noreply@example.com'}>`,
+    to: email,
+    subject: 'Reset Your Password',
+    text: `Reset your password using this link:\n\n${resetUrl}\n\nThis link expires in 1 hour.`,
+    html: `
+      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#333;max-width:500px;margin:0 auto">
+        <h2 style="color:#111">Password Reset Request</h2>
+        <p>You asked to reset your password. Click the button below to set a new one:</p>
+        <p>
+          <a
+            href="${resetUrl}"
+            style="
               display:inline-block;
-              padding:10px 15px;
-              background:#000;
+              padding:12px 24px;
+              background:#2563eb;
               color:#fff;
               text-decoration:none;
-              border-radius:5px;">
-              Reset Password
-            </a>
-          </p>
-          <p>This link will expire in 10 minutes.</p>
-          <p>If you did not request this, ignore this email.</p>
-        </div>
-      `,
-    };
+              font-weight:700;
+              border-radius:6px;
+              font-size:16px;"
+          >Reset Password</a>
+        </p>
+        <p style="font-size:13px;color:#666">
+          This link expires in <strong>1 hour</strong> and can only be used once.
+        </p>
+        <p style="font-size:13px;color:#666">
+          If you did not request this, you can safely ignore this email — your account
+          is not at risk.
+        </p>
+        <hr style="border:none;border-top:1px solid #eee;margin:24px 0" />
+        <p style="font-size:11px;color:#999">
+          Medithre-x &copy; ${new Date().getFullYear()}
+        </p>
+      </div>
+    `,
+  };
 
-    await transporter.sendMail(mailOptions);
+  try {
+    const info = await transporter.sendMail(mailOptions);
 
-    console.log('✅ Password reset email sent to:', email);
+    console.log('✅ Password reset email sent');
+    console.log('   to       :', email);
+    console.log('   messageId:', info.messageId);
 
-  } catch (error) {
-    console.error('❌ Email sending failed:', error);
-    throw error;
+  } catch (err) {
+    // Nodemailer wraps the SMTP server's response inside err.response
+    const code    = err.code    ?? '(no code)';
+    const command = err.command ?? '(no command)';
+    const resp    = err.response ?? '(no response body)';
+
+    console.error('❌ SMTP sendMail failed');
+    console.error('   code    :', code);    // e.g. EAUTH, ECONNECTION, ETIMEDOUT
+    console.error('   command :', command);  // e.g. AUTH, MAIL FROM, RCPT TO
+    console.error('   response:', resp);    // raw SMTP reply from server
+    console.error('   to      :', email);
+    console.error('   resetUrl:', resetUrl);
+
+    throw new Error(`Email send failed [${code}]: ${String(resp).substring(0, 120)}`);
   }
 };
