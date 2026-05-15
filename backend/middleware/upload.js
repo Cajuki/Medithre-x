@@ -17,9 +17,11 @@ if (process.env.GOOGLE_CLOUD_BUCKET) {
   // On Cloud Run default credentials (Workload Identity) are used automatically
   // and no file is needed — skipping avoids ENOENT at startup.
   const keyFilename = rawKeyFilename && fs.existsSync(rawKeyFilename) ? rawKeyFilename : undefined;
+  const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
   gcsClient = new Storage({
-    projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+    projectId,
     ...(keyFilename ? { keyFilename } : {}),
+    ...(projectId ? { userProject: projectId } : {}), // required for requester-pays buckets
   });
   gcsBucket = gcsClient.bucket(process.env.GOOGLE_CLOUD_BUCKET);
 }
