@@ -66,6 +66,10 @@ export const uploadToGCS = (file, destination) => {
         contentType: file.mimetype,
         cacheControl: 'public, max-age=31536000',
       },
+      // Explicit userProject required for requester-pays buckets.
+      // The Storage constructor-level userProject is not always inherited
+      // by createWriteStream / resumable-upload internals.
+      userProject: process.env.GOOGLE_CLOUD_PROJECT_ID,
     });
 
     stream.on('error', (err) => {
@@ -75,12 +79,19 @@ export const uploadToGCS = (file, destination) => {
 
     stream.on('finish', async () => {
       try {
-        // Make the file publicly readable
-        await blob.makePublic();
+        // Apply public-read ACL on the uploaded object.
+        // makePublic() internally calls patch() — on requester-pays buckets
+        // that patch call needs the userProject header or it fails with
+        // "Bucket is a requester pays bucket but no user project provided".
+        await blob.setMetadata({
+          predefinedAcl: 'publicRead',
+        }, {
+          userProject: process.env.GOOGLE_CLOUD_PROJECT_ID,
+        });
         const publicUrl = `https://storage.googleapis.com/${gcsBucket.name}/${destination}`;
         resolve(publicUrl);
       } catch (err) {
-        console.error('GCS makePublic error:', err.message);
+        console.error('GCS setMetadata / makePublic error:', err.message);
         reject(err);
       }
     });
@@ -110,7 +121,11 @@ export const deleteFromGCS = (url) => {
     }
 
     const blob = gcsBucket.file(filePath);
-    blob.delete()
+    blob.delete({
+      // Explicit userProject required for requester-pays buckets on
+      // delete operations even when the Storage client was created with it.
+      userProject: process.env.GOOGLE_CLOUD_PROJECT_ID,
+    })
       .then(() => {
         console.log('🗑️ GCS image deleted:', filePath);
         resolve();
