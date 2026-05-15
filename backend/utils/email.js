@@ -9,7 +9,7 @@ export const hashToken = (token) => {
 };
 
 /**
- * Verify token
+ * Verify a plain token against its stored hash.
  */
 export const verifyToken = (plainToken, storedHash) => {
   const hashed = createHash('sha256').update(plainToken).digest('hex');
@@ -139,8 +139,8 @@ export const sendPasswordResetEmail = async (email, resetUrl) => {
     console.error('   SMTP reply  :', resp);
     console.error('   recipient   :', email);
 
-    // Pass the full SMTP summary through so auth.js catch block can log
-    // and forward it to the client in development mode.
+    // Throw the full SMTP summary so auth.js catch block can log
+    // and forward it to the client in every environment.
     throw new TypeError(summary);
   }
 };

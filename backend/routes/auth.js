@@ -106,8 +106,7 @@ router.post('/forgot-password', async (req, res) => {
     console.error('   message :', err.message);
     console.error('   stack   :', err.stack);
     return res.status(500).json({
-      message: 'Failed to send reset email. Please check your email settings or contact support.',
-      error: err.message,
+      message: err.message || 'Failed to send reset email.',
     });
   }
 });
@@ -138,9 +137,8 @@ router.get('/verify-reset-token', async (req, res) => {
     return res.status(200).json({ valid: true, message: 'Token is valid' });
   } catch (err) {
     console.error('❌ Verify token error');
-    console.error('   name:', err.name, 'code:', err.code,
-                  'message:', err.message, 'stack:', err.stack);
-    return res.status(500).json({ message: 'Server error', error: err.message });
+    console.error('   name:', err.name, 'code:', err.code, 'message:', err.message);
+    return res.status(500).json({ message: err.message || 'Server error' });
   }
 });
 
@@ -182,9 +180,8 @@ router.post('/reset-password', async (req, res) => {
     return res.status(200).json({ message: 'Password reset successfully' });
   } catch (err) {
     console.error('❌ Reset password error');
-    console.error('   name:', err.name, 'code:', err.code,
-                  'message:', err.message, 'stack:', err.stack);
-    return res.status(500).json({ message: 'Server error', error: err.message });
+    console.error('   name:', err.name, 'code:', err.code, 'message:', err.message);
+    return res.status(500).json({ message: err.message || 'Server error' });
   }
 });
 
