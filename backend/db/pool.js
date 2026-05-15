@@ -44,11 +44,20 @@ if (process.env.DATABASE_URL) {
   console.log(`🔗 Using local PostgreSQL → ${poolConfig.host}:${poolConfig.port}/${poolConfig.database}`);
 }
 
-const pool = new Pool(poolConfig);
+let pool;
 
-pool.on('connect', () => console.log('✅ PostgreSQL connected'));
-pool.on('error',  (err) => console.error('❌ PostgreSQL pool error:', err.message));
+try {
+  pool = new Pool(poolConfig);
+} catch (err) {
+  console.error('❌ Failed to create PostgreSQL pool:', err.message);
+  pool = null;
+}
 
-export const query     = (text, params) => pool.query(text, params);
-export const getClient = () => pool.connect();
+if (pool) {
+  pool.on('connect', () => console.log('✅ PostgreSQL connected'));
+  pool.on('error',  (err) => console.error('❌ PostgreSQL pool error:', err.message));
+}
+
+export const query     = (text, params) => pool ? pool.query(text, params) : Promise.reject(new Error('PostgreSQL unavailable'));
+export const getClient = () => pool ? pool.connect() : Promise.reject(new Error('PostgreSQL unavailable'));
 export default pool;
