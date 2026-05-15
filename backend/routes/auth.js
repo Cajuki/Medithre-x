@@ -95,7 +95,8 @@ router.post('/forgot-password', async (req, res) => {
 
     // Send email with reset link
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    await sendPasswordResetEmail(emailLower, rawToken, frontendUrl);
+    const resetUrl = `${frontendUrl}/reset-password?token=${rawToken}`;
+    await sendPasswordResetEmail(emailLower, resetUrl);
 
     return res.status(200).json({ message: 'If an account exists with that email, you will receive reset instructions.' });
   } catch (err) {
