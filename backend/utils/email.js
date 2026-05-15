@@ -60,6 +60,18 @@ const verifyTransporter = async () => {
 verifyTransporter();
 
 /**
+ * Smoke-test the transporter at module load.
+ * If credentials or host are bad this is the single noisy line in logs
+ * that tells you "email is broken" before any user request arrives.
+ */
+if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+  const hostLabel = process.env.EMAIL_HOST || 'smtp.gmail.com:587';
+  console.log(`📧 SMTP ready → ${hostLabel} (user: ${process.env.EMAIL_USER})`);
+} else {
+  console.warn('⚠️  EMAIL_USER / EMAIL_PASS not set — password reset emails will fail silently on send.');
+}
+
+/**
  * Send password reset email.
  *
  * @param {string} email      Recipient e-mail address
@@ -119,14 +131,16 @@ export const sendPasswordResetEmail = async (email, resetUrl) => {
     const code    = err.code    ?? '(no code)';
     const command = err.command ?? '(no command)';
     const resp    = err.response ?? '(no response body)';
+    const summary = `[${code}] ${command}: ${String(resp).substring(0, 140)}`;
 
-    console.error('❌ SMTP sendMail failed');
-    console.error('   code    :', code);    // e.g. EAUTH, ECONNECTION, ETIMEDOUT
-    console.error('   command :', command);  // e.g. AUTH, MAIL FROM, RCPT TO
-    console.error('   response:', resp);    // raw SMTP reply from server
-    console.error('   to      :', email);
-    console.error('   resetUrl:', resetUrl);
+    console.error('❌ Email send failed —', summary);
+    console.error('   SMTP code   :', code);
+    console.error('   SMTP command:', command);
+    console.error('   SMTP reply  :', resp);
+    console.error('   recipient   :', email);
 
-    throw new Error(`Email send failed [${code}]: ${String(resp).substring(0, 120)}`);
+    // Pass the full SMTP summary through so auth.js catch block can log
+    // and forward it to the client in development mode.
+    throw new TypeError(summary);
   }
 };
