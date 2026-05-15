@@ -12,7 +12,11 @@ let gcsBucket = null;
 let gcsClient = null;
 
 if (process.env.GOOGLE_CLOUD_BUCKET) {
-  const keyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS || undefined;
+  const rawKeyFilename = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  // Only pass keyFilename when the file actually exists on disk.
+  // On Cloud Run default credentials (Workload Identity) are used automatically
+  // and no file is needed — skipping avoids ENOENT at startup.
+  const keyFilename = rawKeyFilename && fs.existsSync(rawKeyFilename) ? rawKeyFilename : undefined;
   gcsClient = new Storage({
     projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
     ...(keyFilename ? { keyFilename } : {}),
