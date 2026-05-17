@@ -1,49 +1,23 @@
 import express from 'express';
-import path from 'path';
-import fs from 'fs';
-import { productUpload, categoryUpload, deleteImage, uploadToGCS, isGCSAvailable } from '../middleware/upload.js';
+import { productUpload, categoryUpload, uploadToCloudinary, deleteFromCloudinary } from '../middleware/upload.js';
 import { protect, admin } from '../middleware/auth.js';
 import { query } from '../db/pool.js';
 
 const router = express.Router();
 router.use(protect, admin);
 
-// Ensure uploads directory exists (local dev only)
-const uploadsDir = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-['products', 'categories'].forEach(dir => {
-  const dirPath = path.join(uploadsDir, dir);
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true });
-  }
-});
-
 // ── POST /api/upload/product-images  (up to 10) ───────────────────────────────
 router.post('/product-images', productUpload.array('images', 10), async (req, res) => {
   try {
     if (!req.files?.length) return res.status(400).json({ message: 'No images uploaded' });
 
-    const urls = [];
-    for (const file of req.files) {
-      const filename = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9._-]/g, '-')}`;
-      const destination = `products/${filename}`;
-
-      if (isGCSAvailable()) {
-        const publicUrl = await uploadToGCS(file, destination);
-        urls.push(publicUrl);
-      } else {
-        // Local dev fallback
-        const localPath = path.join(uploadsDir, 'products', filename);
-        fs.writeFileSync(localPath, file.buffer);
-        urls.push(`/uploads/products/${filename}`);
-      }
-    }
+    const uploadPromises = req.files.map((file) => uploadToCloudinary(file, 'products'));
+    const urls = await Promise.all(uploadPromises);
 
     return res.status(201).json({ message: `${req.files.length} image(s) uploaded`, images: urls });
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    console.error('❌ Product image upload error:', err.message);
+    return res.status(500).json({ message: 'Failed to upload product images' });
   }
 });
 
@@ -52,20 +26,11 @@ router.post('/category-image', categoryUpload.single('image'), async (req, res) 
   try {
     if (!req.file) return res.status(400).json({ message: 'No image uploaded' });
 
-    const filename = `${Date.now()}-${req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, '-')}`;
-    const destination = `categories/${filename}`;
-
-    if (isGCSAvailable()) {
-      const publicUrl = await uploadToGCS(req.file, destination);
-      return res.status(201).json({ message: 'Category image uploaded', image: publicUrl });
-    } else {
-      // Local dev fallback
-      const localPath = path.join(uploadsDir, 'categories', filename);
-      fs.writeFileSync(localPath, req.file.buffer);
-      return res.status(201).json({ message: 'Category image uploaded', image: `/uploads/categories/${filename}` });
-    }
+    const imageUrl = await uploadToCloudinary(req.file, 'categories');
+    return res.status(201).json({ message: 'Category image uploaded', image: imageUrl });
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    console.error('❌ Category image upload error:', err.message);
+    return res.status(500).json({ message: 'Failed to upload category image' });
   }
 });
 
@@ -75,7 +40,7 @@ const removeImageHandler = async (req, res) => {
     const { imageUrl, productId, categoryId } = req.body;
     if (!imageUrl) return res.status(400).json({ message: 'imageUrl is required' });
 
-    await deleteImage(imageUrl);
+    await deleteFromCloudinary(imageUrl);
 
     if (productId) {
       await query('UPDATE products SET images = array_remove(images, $1) WHERE id = $2', [imageUrl, productId]);
@@ -85,7 +50,8 @@ const removeImageHandler = async (req, res) => {
     }
     return res.json({ message: 'Image deleted' });
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    console.error('❌ Image delete error:', err.message);
+    return res.status(500).json({ message: 'Failed to delete image' });
   }
 };
 

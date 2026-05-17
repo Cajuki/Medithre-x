@@ -1,13 +1,9 @@
 import express from 'express';
-import path from 'path';
-import fs from 'fs';
 import { query } from '../db/pool.js';
 import { protect, admin } from '../middleware/auth.js';
-import { categoryUpload, deleteImage, uploadToGCS, isGCSAvailable } from '../middleware/upload.js';
+import { categoryUpload, uploadToCloudinary, deleteFromCloudinary } from '../middleware/upload.js';
 
 const router = express.Router();
-
-const uploadsDir = path.join(process.cwd(), 'uploads');
 
 // ── GET /api/categories — public, used by homepage & products page ────────────
 router.get('/', async (req, res) => {
@@ -52,16 +48,7 @@ router.post('/', protect, admin, categoryUpload.single('image'), async (req, res
 
     let imageUrl = null;
     if (req.file) {
-      const filename = `${Date.now()}-${req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, '-')}`;
-      const destination = `categories/${filename}`;
-
-      if (isGCSAvailable()) {
-        imageUrl = await uploadToGCS(req.file, destination);
-      } else {
-        const localPath = path.join(uploadsDir, 'categories', filename);
-        fs.writeFileSync(localPath, req.file.buffer);
-        imageUrl = `/uploads/categories/${filename}`;
-      }
+      imageUrl = await uploadToCloudinary(req.file, 'categories');
     }
 
     // Check duplicate name
@@ -75,7 +62,8 @@ router.post('/', protect, admin, categoryUpload.single('image'), async (req, res
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('❌ Category create error:', err.message);
+    res.status(500).json({ message: 'Failed to create category. Error: ' + (err.message || 'Unknown') });
   }
 });
 
@@ -85,23 +73,13 @@ router.put('/:id', protect, admin, categoryUpload.single('image'), async (req, r
     const { name, description, sort_order, is_active } = req.body;
     if (!name) return res.status(400).json({ message: 'Category name is required' });
 
-    // If a new image was uploaded, use it; otherwise keep existing
     let imageUrl = null;
     if (req.file) {
-      const filename = `${Date.now()}-${req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, '-')}`;
-      const destination = `categories/${filename}`;
-
-      if (isGCSAvailable()) {
-        imageUrl = await uploadToGCS(req.file, destination);
-      } else {
-        const localPath = path.join(uploadsDir, 'categories', filename);
-        fs.writeFileSync(localPath, req.file.buffer);
-        imageUrl = `/uploads/categories/${filename}`;
-      }
+      imageUrl = await uploadToCloudinary(req.file, 'categories');
 
       const current = await query('SELECT image_url FROM categories WHERE id = $1', [req.params.id]);
       if (current.rows[0]?.image_url) {
-        await deleteImage(current.rows[0].image_url);
+        await deleteFromCloudinary(current.rows[0].image_url);
       }
     }
 
@@ -120,7 +98,8 @@ router.put('/:id', protect, admin, categoryUpload.single('image'), async (req, r
     if (!result.rows.length) return res.status(404).json({ message: 'Category not found' });
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('❌ Category update error:', err.message);
+    return res.status(500).json({ message: 'Failed to update category. Error: ' + (err.message || 'Unknown') });
   }
 });
 
@@ -131,13 +110,14 @@ router.delete('/:id', protect, admin, async (req, res) => {
     if (!cat.rows.length) return res.status(404).json({ message: 'Category not found' });
 
     if (cat.rows[0].image_url) {
-      await deleteImage(cat.rows[0].image_url);
+      await deleteFromCloudinary(cat.rows[0].image_url);
     }
 
     await query('DELETE FROM categories WHERE id = $1', [req.params.id]);
     res.json({ message: 'Category deleted' });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('❌ Category delete error:', err.message);
+    return res.status(500).json({ message: 'Failed to delete category. Error: ' + (err.message || 'Unknown') });
   }
 });
 
@@ -151,7 +131,8 @@ router.patch('/:id/toggle', protect, admin, async (req, res) => {
     if (!result.rows.length) return res.status(404).json({ message: 'Category not found' });
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('❌ Category toggle error:', err.message);
+    return res.status(500).json({ message: 'Failed to toggle category. Error: ' + (err.message || 'Unknown') });
   }
 });
 
