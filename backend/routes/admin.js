@@ -72,108 +72,205 @@ router.get('/stats', async (req, res) => {
 
 // ── USERS ─────────────────────────────────────────────────────────────────────
 router.get('/users', async (req, res) => {
-  try {
-    const { search, role, page = 1, limit = 20 } = req.query;
-    const conditions = [];
-    const params = [];
-    let idx = 1;
+   try {
+     const { search, role, page = 1, limit = 20 } = req.query;
+     
+     // Validate pagination parameters
+     const pageNum = parseInt(page);
+     const limitNum = parseInt(limit);
+     
+     if (isNaN(pageNum) || pageNum < 1) {
+       return res.status(400).json({ message: 'Invalid page parameter' });
+     }
+     if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+       return res.status(400).json({ message: 'Invalid limit parameter (must be between 1 and 100)' });
+     }
 
-    if (search) {
-      conditions.push(`(name ILIKE $${idx} OR email ILIKE $${idx} OR company ILIKE $${idx})`);
-      params.push(`%${search}%`); idx++;
-    }
-    if (role) { conditions.push(`role = $${idx++}`); params.push(role); }
+     const conditions = [];
+     const params = [];
+     let idx = 1;
 
-    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const countRes = await query(`SELECT COUNT(*) FROM users ${where}`, params);
-    const total = parseInt(countRes.rows[0].count);
+     if (search) {
+       conditions.push(`(name ILIKE $${idx} OR email ILIKE $${idx} OR company ILIKE $${idx})`);
+       params.push(`%${search}%`); idx++;
+     }
+     if (role) { conditions.push(`role = $${idx++}`); params.push(role); }
 
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-    const dataRes = await query(
-      `SELECT id, name, email, phone, company, county, role, created_at
-       FROM users ${where}
-       ORDER BY created_at DESC
-       LIMIT $${idx} OFFSET $${idx + 1}`,
-      [...params, parseInt(limit), offset]
-    );
+     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+     
+     // Get total count
+     let total = 0;
+     try {
+       const countRes = await query(`SELECT COUNT(*) FROM users ${where}`, params);
+       total = parseInt(countRes.rows[0].count) || 0;
+     } catch (countErr) {
+       console.error('Error counting users:', countErr.message);
+       throw new Error('Failed to count users');
+     }
 
-    res.json({ users: dataRes.rows, total, pages: Math.ceil(total / parseInt(limit)), page: parseInt(page) });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+     // Get paginated data
+     const offset = (pageNum - 1) * limitNum;
+     let dataRes;
+     try {
+       dataRes = await query(
+         `SELECT id, name, email, phone, company, county, role, created_at
+          FROM users ${where}
+          ORDER BY created_at DESC
+          LIMIT $${idx} OFFSET $${idx + 1}`,
+         [...params, limitNum, offset]
+       );
+     } catch (queryErr) {
+       console.error('Error querying users:', queryErr.message);
+       throw new Error('Failed to query users');
+     }
+
+     res.json({ 
+       users: dataRes.rows || [], 
+       total, 
+       pages: Math.ceil(total / limitNum), 
+       page: pageNum 
+     });
+   } catch (err) {
+     console.error('Admin users error:', err.message);
+     // Don't expose internal error details in production
+     if (process.env.NODE_ENV === 'production') {
+       res.status(500).json({ message: 'Failed to load users' });
+     } else {
+       res.status(500).json({ message: 'Failed to load users: ' + err.message });
+     }
+   }
+ });
 
 router.get('/users/:id', async (req, res) => {
-  try {
-    const uRes = await query(`SELECT id,name,email,phone,company,county,role,created_at FROM users WHERE id=$1`, [req.params.id]);
-    if (!uRes.rows.length) return res.status(404).json({ message: 'User not found' });
+   try {
+     const uRes = await query(`SELECT id,name,email,phone,company,county,role,created_at FROM users WHERE id=$1`, [req.params.id]);
+     if (!uRes.rows.length) return res.status(404).json({ message: 'User not found' });
 
-    const oRes = await query(`SELECT * FROM orders WHERE user_id=$1 ORDER BY created_at DESC`, [req.params.id]);
-    const qRes = await query(`SELECT * FROM quotes WHERE email=(SELECT email FROM users WHERE id=$1) ORDER BY created_at DESC`, [req.params.id]);
+     const oRes = await query(`SELECT * FROM orders WHERE user_id=$1 ORDER BY created_at DESC`, [req.params.id]);
+     const qRes = await query(`SELECT * FROM quotes WHERE email=(SELECT email FROM users WHERE id=$1) ORDER BY created_at DESC`, [req.params.id]);
 
-    res.json({ ...uRes.rows[0], orders: oRes.rows, quotes: qRes.rows });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+     res.json({ ...uRes.rows[0], orders: oRes.rows, quotes: qRes.rows });
+   } catch (err) {
+     console.error('Admin user detail error:', err.message);
+     // Don't expose internal error details in production
+     if (process.env.NODE_ENV === 'production') {
+       res.status(500).json({ message: 'Failed to load user details' });
+     } else {
+       res.status(500).json({ message: 'Failed to load user details: ' + err.message });
+     }
+   }
+ });
 
 router.put('/users/:id', async (req, res) => {
-  try {
-    const { name, phone, company, county, role } = req.body;
-    const result = await query(
-      `UPDATE users SET name=$1,phone=$2,company=$3,county=$4,role=$5 WHERE id=$6 RETURNING id,name,email,phone,company,county,role,created_at`,
-      [name, phone, company, county, role, req.params.id]
-    );
-    if (!result.rows.length) return res.status(404).json({ message: 'User not found' });
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+   try {
+     const { name, phone, company, county, role } = req.body;
+     const result = await query(
+       `UPDATE users SET name=$1,phone=$2,company=$3,county=$4,role=$5 WHERE id=$6 RETURNING id,name,email,phone,company,county,role,created_at`,
+       [name, phone, company, county, role, req.params.id]
+     );
+     if (!result.rows.length) return res.status(404).json({ message: 'User not found' });
+     res.json(result.rows[0]);
+   } catch (err) {
+     console.error('Admin update user error:', err.message);
+     // Don't expose internal error details in production
+     if (process.env.NODE_ENV === 'production') {
+       res.status(500).json({ message: 'Failed to update user' });
+     } else {
+       res.status(500).json({ message: 'Failed to update user: ' + err.message });
+     }
+   }
+ });
 
 router.delete('/users/:id', async (req, res) => {
-  try {
-    // Prevent deleting yourself
-    if (parseInt(req.params.id) === req.user.id) {
-      return res.status(400).json({ message: 'You cannot delete your own account' });
-    }
-    await query(`DELETE FROM users WHERE id=$1`, [req.params.id]);
-    res.json({ message: 'User deleted' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+   try {
+     // Prevent deleting yourself
+     if (parseInt(req.params.id) === req.user.id) {
+       return res.status(400).json({ message: 'You cannot delete your own account' });
+     }
+     await query(`DELETE FROM users WHERE id=$1`, [req.params.id]);
+     res.json({ message: 'User deleted' });
+   } catch (err) {
+     console.error('Admin delete user error:', err.message);
+     // Don't expose internal error details in production
+     if (process.env.NODE_ENV === 'production') {
+       res.status(500).json({ message: 'Failed to delete user' });
+     } else {
+       res.status(500).json({ message: 'Failed to delete user: ' + err.message });
+     }
+   }
+ });
 
 // ── PRODUCTS ──────────────────────────────────────────────────────────────────
 router.get('/products', async (req, res) => {
-  try {
-    const { search, category, page = 1, limit = 20 } = req.query;
-    const conditions = [];
-    const params = [];
-    let idx = 1;
+   try {
+     const { search, category, page = 1, limit = 20 } = req.query;
+     
+     // Validate pagination parameters
+     const pageNum = parseInt(page);
+     const limitNum = parseInt(limit);
+     
+     if (isNaN(pageNum) || pageNum < 1) {
+       return res.status(400).json({ message: 'Invalid page parameter' });
+     }
+     if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+       return res.status(400).json({ message: 'Invalid limit parameter (must be between 1 and 100)' });
+     }
 
-    if (search) {
-      conditions.push(`(name ILIKE $${idx} OR description ILIKE $${idx})`);
-      params.push(`%${search}%`); idx++;
-    }
-    if (category) { conditions.push(`category = $${idx++}`); params.push(category); }
+     const conditions = [];
+     const params = [];
+     let idx = 1;
 
-    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const countRes = await query(`SELECT COUNT(*) FROM products ${where}`, params);
-    const total = parseInt(countRes.rows[0].count);
+     if (search) {
+       conditions.push(`(name ILIKE $${idx} OR description ILIKE $${idx})`);
+       params.push(`%${search}%`); idx++;
+     }
+     if (category) { conditions.push(`category = $${idx++}`); params.push(category); }
 
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-    const dataRes = await query(
-      `SELECT * FROM products ${where} ORDER BY created_at DESC LIMIT $${idx} OFFSET $${idx+1}`,
-      [...params, parseInt(limit), offset]
-    );
+     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+     
+     // Get total count
+     let total = 0;
+     try {
+       const countRes = await query(`SELECT COUNT(*) FROM products ${where}`, params);
+       total = parseInt(countRes.rows[0].count) || 0;
+     } catch (countErr) {
+       console.error('Error counting products:', countErr.message);
+       throw new Error('Failed to count products');
+     }
 
-    res.json({ products: dataRes.rows, total, pages: Math.ceil(total / parseInt(limit)), page: parseInt(page) });
-  } catch (err) {
-    console.error('Admin products error:', err.message);
-    res.status(500).json({ message: 'Failed to load products: ' + err.message });
-  }
-});
+     // Get paginated data
+     const offset = (pageNum - 1) * limitNum;
+     let dataRes;
+     try {
+       dataRes = await query(
+         `SELECT * FROM products ${where} ORDER BY created_at DESC LIMIT $${idx} OFFSET $${idx+1}`,
+         [...params, limitNum, offset]
+       );
+     } catch (queryErr) {
+       console.error('Error querying products:', queryErr.message);
+       throw new Error('Failed to query products');
+     }
+
+     // Format response
+     const products = dataRes.rows || [];
+     const totalPages = Math.ceil(total / limitNum);
+     
+     res.json({ 
+       products, 
+       total, 
+       pages: totalPages, 
+       page: pageNum 
+     });
+   } catch (err) {
+     console.error('Admin products error:', err.message);
+     // Don't expose internal error details in production
+     if (process.env.NODE_ENV === 'production') {
+       res.status(500).json({ message: 'Failed to load products' });
+     } else {
+       res.status(500).json({ message: 'Failed to load products: ' + err.message });
+     }
+   }
+ });
 
 router.post('/products', async (req, res) => {
   try {
@@ -234,37 +331,75 @@ router.delete('/products/:id', async (req, res) => {
 
 // ── ORDERS ────────────────────────────────────────────────────────────────────
 router.get('/orders', async (req, res) => {
-  try {
-    const { status, search, page = 1, limit = 20 } = req.query;
-    const conditions = [];
-    const params = [];
-    let idx = 1;
+   try {
+     const { status, search, page = 1, limit = 20 } = req.query;
+     
+     // Validate pagination parameters
+     const pageNum = parseInt(page);
+     const limitNum = parseInt(limit);
+     
+     if (isNaN(pageNum) || pageNum < 1) {
+       return res.status(400).json({ message: 'Invalid page parameter' });
+     }
+     if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+       return res.status(400).json({ message: 'Invalid limit parameter (must be between 1 and 100)' });
+     }
 
-    if (status) { conditions.push(`o.status = $${idx++}`); params.push(status); }
-    if (search) {
-      conditions.push(`(o.order_number ILIKE $${idx} OR u.name ILIKE $${idx} OR u.email ILIKE $${idx})`);
-      params.push(`%${search}%`); idx++;
-    }
+     const conditions = [];
+     const params = [];
+     let idx = 1;
 
-    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const countRes = await query(
-      `SELECT COUNT(*) FROM orders o LEFT JOIN users u ON o.user_id = u.id ${where}`, params
-    );
-    const total = parseInt(countRes.rows[0].count);
+     if (status) { conditions.push(`o.status = $${idx++}`); params.push(status); }
+     if (search) {
+       conditions.push(`(o.order_number ILIKE $${idx} OR u.name ILIKE $${idx} OR u.email ILIKE $${idx})`);
+       params.push(`%${search}%`); idx++;
+     }
 
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-    const dataRes = await query(
-      `SELECT o.*, u.name AS customer_name, u.email AS customer_email, u.phone AS customer_phone
-       FROM orders o LEFT JOIN users u ON o.user_id = u.id
-       ${where} ORDER BY o.created_at DESC LIMIT $${idx} OFFSET $${idx+1}`,
-      [...params, parseInt(limit), offset]
-    );
+     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+     
+     // Get total count
+     let total = 0;
+     try {
+       const countRes = await query(
+         `SELECT COUNT(*) FROM orders o LEFT JOIN users u ON o.user_id = u.id ${where}`, params
+       );
+       total = parseInt(countRes.rows[0].count) || 0;
+     } catch (countErr) {
+       console.error('Error counting orders:', countErr.message);
+       throw new Error('Failed to count orders');
+     }
 
-    res.json({ orders: dataRes.rows, total, pages: Math.ceil(total / parseInt(limit)), page: parseInt(page) });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+     // Get paginated data
+     const offset = (pageNum - 1) * limitNum;
+     let dataRes;
+     try {
+       dataRes = await query(
+         `SELECT o.*, u.name AS customer_name, u.email AS customer_email, u.phone AS customer_phone
+          FROM orders o LEFT JOIN users u ON o.user_id = u.id
+          ${where} ORDER BY o.created_at DESC LIMIT $${idx} OFFSET $${idx+1}`,
+         [...params, limitNum, offset]
+       );
+     } catch (queryErr) {
+       console.error('Error querying orders:', queryErr.message);
+       throw new Error('Failed to query orders');
+     }
+
+     res.json({ 
+       orders: dataRes.rows || [], 
+       total, 
+       pages: Math.ceil(total / limitNum), 
+       page: pageNum 
+     });
+   } catch (err) {
+     console.error('Admin orders error:', err.message);
+     // Don't expose internal error details in production
+     if (process.env.NODE_ENV === 'production') {
+       res.status(500).json({ message: 'Failed to load orders' });
+     } else {
+       res.status(500).json({ message: 'Failed to load orders: ' + err.message });
+     }
+   }
+ });
 
 router.get('/orders/:id', async (req, res) => {
   try {
@@ -281,56 +416,103 @@ router.get('/orders/:id', async (req, res) => {
 });
 
 router.put('/orders/:id/status', async (req, res) => {
-  try {
-    const { status, payment_status } = req.body;
-    const result = await query(
-      `UPDATE orders SET status=COALESCE($1,status), payment_status=COALESCE($2,payment_status)
-       WHERE id=$3 RETURNING *`,
-      [status || null, payment_status || null, req.params.id]
-    );
-    if (!result.rows.length) return res.status(404).json({ message: 'Order not found' });
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+   try {
+     const { status, payment_status } = req.body;
+     const result = await query(
+       `UPDATE orders SET status=COALESCE($1,status), payment_status=COALESCE($2,payment_status)
+        WHERE id=$3 RETURNING *`,
+       [status || null, payment_status || null, req.params.id]
+     );
+     if (!result.rows.length) return res.status(404).json({ message: 'Order not found' });
+     res.json(result.rows[0]);
+   } catch (err) {
+     console.error('Admin update order status error:', err.message);
+     // Don't expose internal error details in production
+     if (process.env.NODE_ENV === 'production') {
+       res.status(500).json({ message: 'Failed to update order status' });
+     } else {
+       res.status(500).json({ message: 'Failed to update order status: ' + err.message });
+     }
+   }
+ });
 
 // ── QUOTES ────────────────────────────────────────────────────────────────────
 router.get('/quotes', async (req, res) => {
-  try {
-    const { status, search, page = 1, limit = 20 } = req.query;
-    const conditions = [];
-    const params = [];
-    let idx = 1;
+   try {
+     const { status, search, page = 1, limit = 20 } = req.query;
+     
+     // Validate pagination parameters
+     const pageNum = parseInt(page);
+     const limitNum = parseInt(limit);
+     
+     if (isNaN(pageNum) || pageNum < 1) {
+       return res.status(400).json({ message: 'Invalid page parameter' });
+     }
+     if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+       return res.status(400).json({ message: 'Invalid limit parameter (must be between 1 and 100)' });
+     }
 
-    if (status) { conditions.push(`q.status = $${idx++}`); params.push(status); }
-    if (search) {
-      conditions.push(`(q.quote_number ILIKE $${idx} OR q.name ILIKE $${idx} OR q.email ILIKE $${idx} OR q.company ILIKE $${idx})`);
-      params.push(`%${search}%`); idx++;
-    }
+     const conditions = [];
+     const params = [];
+     let idx = 1;
 
-    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const countRes = await query(`SELECT COUNT(*) FROM quotes q ${where}`, params);
-    const total = parseInt(countRes.rows[0].count);
+     if (status) { conditions.push(`q.status = $${idx++}`); params.push(status); }
+     if (search) {
+       conditions.push(`(q.quote_number ILIKE $${idx} OR q.name ILIKE $${idx} OR q.email ILIKE $${idx} OR q.company ILIKE $${idx})`);
+       params.push(`%${search}%`); idx++;
+     }
 
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-    const dataRes = await query(
-      `SELECT q.*,
-              COUNT(qi.id) AS item_count
-       FROM quotes q
-       LEFT JOIN quote_items qi ON qi.quote_id = q.id
-       ${where}
-       GROUP BY q.id
-       ORDER BY q.created_at DESC
-       LIMIT $${idx} OFFSET $${idx+1}`,
-      [...params, parseInt(limit), offset]
-    );
+     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+     
+     // Get total count
+     let total = 0;
+     try {
+       const countRes = await query(`SELECT COUNT(*) FROM quotes q ${where}`, params);
+       total = parseInt(countRes.rows[0].count) || 0;
+     } catch (countErr) {
+       console.error('Error counting quotes:', countErr.message);
+       throw new Error('Failed to count quotes');
+     }
 
-    res.json({ quotes: dataRes.rows.map(q => formatAdminQuote(q)), total, pages: Math.ceil(total / parseInt(limit)), page: parseInt(page) });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+     // Get paginated data
+     const offset = (pageNum - 1) * limitNum;
+     let dataRes;
+     try {
+       dataRes = await query(
+         `SELECT q.*,
+                 COUNT(qi.id) AS item_count
+          FROM quotes q
+          LEFT JOIN quote_items qi ON qi.quote_id = q.id
+          ${where}
+          GROUP BY q.id
+          ORDER BY q.created_at DESC
+          LIMIT $${idx} OFFSET $${idx+1}`,
+         [...params, limitNum, offset]
+       );
+     } catch (queryErr) {
+       console.error('Error querying quotes:', queryErr.message);
+       throw new Error('Failed to query quotes');
+     }
+
+     const quotes = dataRes.rows || [];
+     const formattedQuotes = quotes.map(q => formatAdminQuote(q));
+     
+     res.json({ 
+       quotes: formattedQuotes, 
+       total, 
+       pages: Math.ceil(total / limitNum), 
+       page: pageNum 
+     });
+   } catch (err) {
+     console.error('Admin quotes error:', err.message);
+     // Don't expose internal error details in production
+     if (process.env.NODE_ENV === 'production') {
+       res.status(500).json({ message: 'Failed to load quotes' });
+     } else {
+       res.status(500).json({ message: 'Failed to load quotes: ' + err.message });
+     }
+   }
+ });
 
 router.get('/quotes/:id', async (req, res) => {
   try {
@@ -344,59 +526,103 @@ router.get('/quotes/:id', async (req, res) => {
 });
 
 router.put('/quotes/:id', async (req, res) => {
-  try {
-    const { status, quoted_price, admin_notes, response_message } = req.body;
-    const normalizedPrice = quoted_price === '' || quoted_price === null || quoted_price === undefined
-      ? null
-      : parseFloat(quoted_price);
-    const normalizedAdminNotes = admin_notes === '' ? null : admin_notes;
-    const normalizedResponseMessage = response_message === '' ? null : response_message;
-    const result = await query(
-      `UPDATE quotes SET
-         status = COALESCE($1,status),
-         quoted_price = COALESCE($2,quoted_price),
-         admin_notes = COALESCE($3,admin_notes),
-         response_message = COALESCE($4,response_message),
-         responded_at = CASE WHEN $4 IS NOT NULL THEN NOW() ELSE responded_at END
-       WHERE id=$5 RETURNING *`,
-      [status || null, normalizedPrice, normalizedAdminNotes, normalizedResponseMessage, req.params.id]
-    );
-    if (!result.rows.length) return res.status(404).json({ message: 'Quote not found' });
-    const iRes = await query(`SELECT * FROM quote_items WHERE quote_id=$1`, [req.params.id]);
-    res.json(formatAdminQuote(result.rows[0], iRes.rows));
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+   try {
+     const { status, quoted_price, admin_notes, response_message } = req.body;
+     const normalizedPrice = quoted_price === '' || quoted_price === null || quoted_price === undefined
+       ? null
+       : parseFloat(quoted_price);
+     const normalizedAdminNotes = admin_notes === '' ? null : admin_notes;
+     const normalizedResponseMessage = response_message === '' ? null : response_message;
+     const result = await query(
+       `UPDATE quotes SET
+          status = COALESCE($1,status),
+          quoted_price = COALESCE($2,quoted_price),
+          admin_notes = COALESCE($3,admin_notes),
+          response_message = COALESCE($4,response_message),
+          responded_at = CASE WHEN $4 IS NOT NULL THEN NOW() ELSE responded_at END
+        WHERE id=$5 RETURNING *`,
+       [status || null, normalizedPrice, normalizedAdminNotes, normalizedResponseMessage, req.params.id]
+     );
+     if (!result.rows.length) return res.status(404).json({ message: 'Quote not found' });
+     const iRes = await query(`SELECT * FROM quote_items WHERE quote_id=$1`, [req.params.id]);
+     res.json(formatAdminQuote(result.rows[0], iRes.rows));
+   } catch (err) {
+     console.error('Admin update quote error:', err.message);
+     // Don't expose internal error details in production
+     if (process.env.NODE_ENV === 'production') {
+       res.status(500).json({ message: 'Failed to update quote' });
+     } else {
+       res.status(500).json({ message: 'Failed to update quote: ' + err.message });
+     }
+   }
+ });
 
 // ── MESSAGES ──────────────────────────────────────────────────────────────────
 router.get('/messages', async (req, res) => {
-  try {
-    const { is_read, page = 1, limit = 20 } = req.query;
-    const conditions = [];
-    const params = [];
-    let idx = 1;
+   try {
+     const { is_read, page = 1, limit = 20 } = req.query;
+     
+     // Validate pagination parameters
+     const pageNum = parseInt(page);
+     const limitNum = parseInt(limit);
+     
+     if (isNaN(pageNum) || pageNum < 1) {
+       return res.status(400).json({ message: 'Invalid page parameter' });
+     }
+     if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+       return res.status(400).json({ message: 'Invalid limit parameter (must be between 1 and 100)' });
+     }
 
-    if (is_read !== undefined && is_read !== '') {
-      conditions.push(`is_read = $${idx++}`);
-      params.push(is_read === 'true');
-    }
+     const conditions = [];
+     const params = [];
+     let idx = 1;
 
-    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-    const countRes = await query(`SELECT COUNT(*) FROM contact_messages ${where}`, params);
-    const total = parseInt(countRes.rows[0].count);
+     if (is_read !== undefined && is_read !== '') {
+       conditions.push(`is_read = $${idx++}`);
+       params.push(is_read === 'true');
+     }
 
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-    const dataRes = await query(
-      `SELECT * FROM contact_messages ${where} ORDER BY created_at DESC LIMIT $${idx} OFFSET $${idx+1}`,
-      [...params, parseInt(limit), offset]
-    );
+     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+     
+     // Get total count
+     let total = 0;
+     try {
+       const countRes = await query(`SELECT COUNT(*) FROM contact_messages ${where}`, params);
+       total = parseInt(countRes.rows[0].count) || 0;
+     } catch (countErr) {
+       console.error('Error counting messages:', countErr.message);
+       throw new Error('Failed to count messages');
+     }
 
-    res.json({ messages: dataRes.rows, total, pages: Math.ceil(total / parseInt(limit)), page: parseInt(page) });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+     // Get paginated data
+     const offset = (pageNum - 1) * limitNum;
+     let dataRes;
+     try {
+       dataRes = await query(
+         `SELECT * FROM contact_messages ${where} ORDER BY created_at DESC LIMIT $${idx} OFFSET $${idx+1}`,
+         [...params, limitNum, offset]
+       );
+     } catch (queryErr) {
+       console.error('Error querying messages:', queryErr.message);
+       throw new Error('Failed to query messages');
+     }
+
+     res.json({ 
+       messages: dataRes.rows || [], 
+       total, 
+       pages: Math.ceil(total / limitNum), 
+       page: pageNum 
+     });
+   } catch (err) {
+     console.error('Admin messages error:', err.message);
+     // Don't expose internal error details in production
+     if (process.env.NODE_ENV === 'production') {
+       res.status(500).json({ message: 'Failed to load messages' });
+     } else {
+       res.status(500).json({ message: 'Failed to load messages: ' + err.message });
+     }
+   }
+ });
 
 router.put('/messages/:id/read', async (req, res) => {
   try {
