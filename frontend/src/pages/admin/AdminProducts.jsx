@@ -209,10 +209,11 @@ export default function AdminProducts() {
           <div className="admin-filters">
             <div className="admin-search-wrap">
               <Search size={15} />
-              <input className="admin-search" placeholder="Search by name, brand or category…" value={search}
+              <input id="product-search" className="admin-search" placeholder="Search by name, brand or category…" value={search}
                 onChange={e => { setSearch(e.target.value); setPage(1); }} />
             </div>
-            <select className="admin-select" value={category} onChange={e => { setCategory(e.target.value); setPage(1); }}>
+            <label htmlFor="product-category-filter" className="sr-only">Filter by category</label>
+            <select id="product-category-filter" className="admin-select" value={category} onChange={e => { setCategory(e.target.value); setPage(1); }}>
               <option value="">All Categories</option>
               {categories.map(c => <option key={c}>{c}</option>)}
             </select>
@@ -383,53 +384,53 @@ export default function AdminProducts() {
                 <h4>Product Details</h4>
                 <div className="product-form-grid">
                   <div className="form-group full-width">
-                    <label className="form-label">Product Name *</label>
-                    <input className="form-input" value={form.name}
+                    <label className="form-label" htmlFor="product-name">Product Name *</label>
+                    <input id="product-name" className="form-input" value={form.name}
                       onChange={e => setF('name', e.target.value)}
                       placeholder="e.g. Hematology Analyzer BC-6800" />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Category *</label>
-                    <select className="form-select" value={form.category}
+                    <label className="form-label" htmlFor="product-category">Category *</label>
+                    <select id="product-category" className="form-select" value={form.category}
                       onChange={e => setF('category', e.target.value)}>
                       <option value="">Select category</option>
                       {categories.map(c => <option key={c}>{c}</option>)}
                     </select>
                   </div>
                   <div className="form-group full-width">
-                    <label className="form-label">Description *</label>
-                    <textarea className="form-textarea" rows={3} value={form.description}
+                    <label className="form-label" htmlFor="product-description">Description *</label>
+                    <textarea id="product-description" className="form-textarea" rows={3} value={form.description}
                       onChange={e => setF('description', e.target.value)}
                       placeholder="Full product description…" />
                   </div>
                   <div className="form-group full-width">
-                    <label className="form-label">Short Description</label>
-                    <input className="form-input" value={form.short_description}
+                    <label className="form-label" htmlFor="product-short-desc">Short Description</label>
+                    <input id="product-short-desc" className="form-input" value={form.short_description}
                       onChange={e => setF('short_description', e.target.value)}
                       placeholder="One-line summary shown on product cards" />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Brand</label>
-                    <input className="form-input" value={form.brand}
+                    <label className="form-label" htmlFor="product-brand">Brand</label>
+                    <input id="product-brand" className="form-input" value={form.brand}
                       onChange={e => setF('brand', e.target.value)}
                       placeholder="e.g. Mindray" />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Country of Origin</label>
-                    <input className="form-input" value={form.origin}
+                    <label className="form-label" htmlFor="product-origin">Country of Origin</label>
+                    <input id="product-origin" className="form-input" value={form.origin}
                       onChange={e => setF('origin', e.target.value)}
                       placeholder="e.g. China" />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Price (KES)</label>
-                    <input className="form-input" type="number" value={form.price}
+                    <label className="form-label" htmlFor="product-price">Price (KES)</label>
+                    <input id="product-price" className="form-input" type="number" value={form.price}
                       onChange={e => setF('price', e.target.value)}
                       placeholder="0.00"
                       disabled={form.price_on_request} />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Discounted Price (KES)</label>
-                    <input className="form-input" type="number" value={form.sale_price}
+                    <label className="form-label" htmlFor="product-sale-price">Discounted Price (KES)</label>
+                    <input id="product-sale-price" className="form-input" type="number" value={form.sale_price}
                       onChange={e => setF('sale_price', e.target.value)}
                       placeholder="Optional sale price"
                       disabled={form.price_on_request} />
@@ -441,27 +442,27 @@ export default function AdminProducts() {
                   </div>
                   <div className="form-group toggles-col">
                     <label className="filter-check">
-                      <input type="checkbox" checked={form.price_on_request}
+                      <input id="product-price-on-request" type="checkbox" checked={form.price_on_request}
                         onChange={e => setF('price_on_request', e.target.checked)} />
                       Price on Request
                     </label>
                     <label className="filter-check">
-                      <input type="checkbox" checked={form.in_stock}
+                      <input id="product-in-stock" type="checkbox" checked={form.in_stock}
                         onChange={e => setF('in_stock', e.target.checked)} />
                       In Stock
                     </label>
                     <label className="filter-check">
-                      <input type="checkbox" checked={form.featured}
+                      <input id="product-featured" type="checkbox" checked={form.featured}
                         onChange={e => setF('featured', e.target.checked)} />
                       Featured Product
                     </label>
                     <label className="filter-check">
-                      <input type="checkbox" checked={form.is_new}
+                      <input id="product-is-new" type="checkbox" checked={form.is_new}
                         onChange={e => setF('is_new', e.target.checked)} />
                       New Arrival
                     </label>
                     <label className="filter-check">
-                      <input type="checkbox" checked={form.best_seller}
+                      <input id="product-best-seller" type="checkbox" checked={form.best_seller}
                         onChange={e => setF('best_seller', e.target.checked)} />
                       Best Seller
                     </label>
@@ -475,10 +476,10 @@ export default function AdminProducts() {
                 <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                   {(form.specifications || []).map((s, i) => (
                     <div key={i} className="spec-row">
-                      <input className="form-input" value={s.key}
+                      <input id={`spec-key-${i}`} className="form-input" value={s.key}
                         onChange={e => setSpec(i, 'key', e.target.value)}
                         placeholder="Property (e.g. Throughput)" />
-                      <input className="form-input" value={s.value}
+                      <input id={`spec-value-${i}`} className="form-input" value={s.value}
                         onChange={e => setSpec(i, 'value', e.target.value)}
                         placeholder="Value (e.g. 60 samples/hr)" />
                       <button type="button" className="action-btn danger"
