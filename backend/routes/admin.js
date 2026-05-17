@@ -285,4 +285,105 @@ router.delete('/products/:id', async (req, res) => {
   }
 });
 
+// ═══════════════════════════════════════════════════════════════════
+// USER MANAGEMENT — Admin can view, update role & delete any user
+// ═══════════════════════════════════════════════════════════════════
+
+// GET /api/admin/users/:id  — full user profile with recent orders & quotes
+router.get('/users/:id', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id, 10);
+
+    const userRes = await query(
+      `SELECT id, name, email, phone, company, county, role, created_at
+       FROM users WHERE id=$1`,
+      [userId]
+    );
+
+    if (!userRes.rows.length) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const user = userRes.rows[0];
+
+    // Fetch recent orders
+    const ordersRes = await query(
+      `SELECT o.*, u.name AS customer_name, u.email AS customer_email
+       FROM orders o
+       LEFT JOIN users u ON o.user_id = u.id
+       WHERE o.user_id = $1
+       ORDER BY o.created_at DESC
+       LIMIT 5`,
+      [userId]
+    );
+
+    // Fetch recent quotes
+    const quotesRes = await query(
+      `SELECT * FROM quotes WHERE user_id = $1 ORDER BY created_at DESC LIMIT 5`,
+      [userId]
+    );
+
+    res.json({
+      ...user,
+      orders:  ordersRes.rows,
+      quotes:  quotesRes.rows,
+    });
+
+  } catch (err) {
+    console.error('Admin get user error:', err.message);
+    res.status(500).json({ message: 'Failed to load user' });
+  }
+});
+
+// PUT /api/admin/users/:id  — update user profile / role
+router.put('/users/:id', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id, 10);
+    const { name, email, phone, company, county, role } = req.body;
+
+    const result = await query(
+      `UPDATE users SET
+         name    = COALESCE($1, name),
+         email   = COALESCE($2, email),
+         phone   = COALESCE($3, phone),
+         company = COALESCE($4, company),
+         county  = COALESCE($5, county),
+         role    = COALESCE($6, role)
+       WHERE id = $7
+       RETURNING id, name, email, phone, company, county, role, created_at`,
+      [name, email, phone, company, county, role, userId]
+    );
+
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(result.rows[0]);
+
+  } catch (err) {
+    console.error('Admin update user error:', err.message);
+    res.status(500).json({ message: 'Failed to update user' });
+  }
+});
+
+// DELETE /api/admin/users/:id  — remove a user account
+router.delete('/users/:id', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id, 10);
+
+    // Prevent deleting the only super-admin (optional guard)
+    const result = await query(`DELETE FROM users WHERE id=$1 RETURNING id`, [userId]);
+
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({ message: 'User deleted' });
+
+  } catch (err) {
+    console.error('Admin delete user error:', err.message);
+    res.status(500).json({ message: 'Failed to delete user' });
+  }
+});
+
 export default router;

@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import { ShoppingCart, FileText, ArrowLeft, CheckCircle, Package, Phone, ChevronRight } from 'lucide-react';
+import { ShoppingCart, FileText, ArrowLeft, ArrowRight, CheckCircle, Package, Phone, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext.jsx';
 import toast from 'react-hot-toast';
 import { PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
@@ -17,6 +17,26 @@ export default function ProductDetailPage() {
   const { addItem } = useCart();
   const hasDiscount = !product?.priceOnRequest && product?.salePrice && product?.price && product.salePrice < product.price;
   const discountPercent = hasDiscount ? Math.round(((product.price - product.salePrice) / product.price) * 100) : 0;
+
+  const imageCount = product?.images?.length || 0;
+
+  const prevImg = useCallback(() => {
+    setImgIdx(i => (i > 0 ? i - 1 : imageCount - 1));
+  }, [imageCount]);
+
+  const nextImg = useCallback(() => {
+    setImgIdx(i => (i < imageCount - 1 ? i + 1 : 0));
+  }, [imageCount]);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (!product || imageCount <= 1) return;
+      if (e.key === 'ArrowLeft') prevImg();
+      if (e.key === 'ArrowRight') nextImg();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [product, imageCount, prevImg, nextImg]);
 
   useEffect(() => {
     setLoading(true);
@@ -53,6 +73,31 @@ export default function ProductDetailPage() {
           <div className="product-main-img">
             <img src={resolveAssetUrl(product.images?.[imgIdx]) || '/placeholder.jpg'} alt={product.name} />
             {!product.inStock && <div className="out-of-stock-overlay">Out of Stock</div>}
+
+            {/* Navigation arrows */}
+            {imageCount > 1 && (
+              <>
+                <button
+                  className="img-nav-btn img-nav-prev"
+                  onClick={prevImg}
+                  aria-label="Previous image"
+                  type="button"
+                >
+                  <ArrowLeft size={20} />
+                </button>
+                <button
+                  className="img-nav-btn img-nav-next"
+                  onClick={nextImg}
+                  aria-label="Next image"
+                  type="button"
+                >
+                  <ArrowRight size={20} />
+                </button>
+                <div className="img-counter">
+                  {imgIdx + 1} / {imageCount}
+                </div>
+              </>
+            )}
           </div>
           {product.images?.length > 1 && (
             <div className="product-thumbs">
