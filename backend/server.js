@@ -59,6 +59,10 @@ app.get('/api/health', async (req, res) => {
       db_name: result.rows[0].db,
       timestamp: result.rows[0].time,
       environment: process.env.NODE_ENV || 'development',
+      cloudinary: {
+        configured: !!process.env.CLOUDINARY_CLOUD_NAME,
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      },
     });
   } catch (err) {
     // Return 200 so Cloud Run doesn't restart — just flag DB as disconnected
