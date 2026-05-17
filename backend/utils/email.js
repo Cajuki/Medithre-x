@@ -1,4 +1,3 @@
-import nodemailer from 'nodemailer';
 import { createHash } from 'crypto';
 
 /**
@@ -16,43 +15,48 @@ export const verifyToken = (plainToken, storedHash) => {
   return hashed === storedHash;
 };
 
-/**
- * Create reusable transporter (created once at module load, reused for every email)
- *
- * Uses EMAIL_USER / EMAIL_PASS (NOT EMAIL_USERNAME / EMAIL_PASSWORD)
- * to match the variable names in .env and .env.example.
- *
- * On Cloud Run the same env vars are set via Variables & Secrets in the
- * service configuration.  If they are missing the transporter is still
- * created — errors are surfaced at send time instead of killing the process
- * at import time.
- */
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-  port: Number(process.env.EMAIL_PORT) || 587,
-  secure: String(process.env.EMAIL_PORT) === '465', // true for 465 (SSL), false for 587 (STARTTLS)
-  auth: {
-    /**
-     * Accept both EMAIL_USERNAME / EMAIL_PASSWORD (legacy)
-     * and EMAIL_USER / EMAIL_PASS (canonical, matches .env).
-     * Backend wins so a correctly-set old env var always has precedence.
-     */
-    user: process.env.EMAIL_USER ?? process.env.EMAIL_USERNAME ?? '',
-    pass: process.env.EMAIL_PASS ?? process.env.EMAIL_PASSWORD ?? '',
+// Mock transporter for when email credentials are not set or email sending is disabled
+const mockTransporter = {
+  verify: async () => {
+    console.log('📧 [MOCK] SMTP transporter verified (email sending disabled)');
+    return true;
   },
-});
+  sendMail: async (mailOptions) => {
+    console.log('📧 [MOCK] Password reset email sent (simulated):');
+    console.log('   to       :', mailOptions.to);
+    console.log('   subject  :', mailOptions.subject);
+    console.log('   resetUrl :', mailOptions.text.match(/https?:\/\/[^\s]+/)[0]);
+    return { messageId: `mock-${Date.now()}` };
+  }
+};
+
+// Use real transporter only if credentials are explicitly set, otherwise use mock
+const transporter = (process.env.EMAIL_USER && process.env.EMAIL_PASS) 
+  ? (() => {
+      const nodemailer = require('nodemailer');
+      return nodemailer.createTransport({
+        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+        port: Number(process.env.EMAIL_PORT) || 587,
+        secure: String(process.env.EMAIL_PORT) === '465', // true for 465 (SSL), false for 587 (STARTTLS)
+        auth: {
+          user: process.env.EMAIL_USER ?? process.env.EMAIL_USERNAME ?? '',
+          pass: process.env.EMAIL_PASS ?? process.env.EMAIL_PASSWORD ?? '',
+        },
+      });
+    })()
+  : mockTransporter;
 
 /**
  * Lightweight preflight check — never throws, always logs its result.
  */
 const verifyTransporter = async () => {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.warn('⚠️  EMAIL_USER or EMAIL_PASS is not set — transporter verification skipped');
-    return;
-  }
   try {
     await transporter.verify();
-    console.log('✅ SMTP transporter verified');
+    if (transporter === mockTransporter) {
+      console.log('📧 [MOCK] SMTP transporter verified (email sending disabled)');
+    } else {
+      console.log('✅ SMTP transporter verified');
+    }
   } catch (err) {
     console.error('❌ SMTP transporter verification failed:', err.message);
   }
@@ -68,7 +72,7 @@ if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
   const hostLabel = process.env.EMAIL_HOST || 'smtp.gmail.com:587';
   console.log(`📧 SMTP ready → ${hostLabel} (user: ${process.env.EMAIL_USER})`);
 } else {
-  console.warn('⚠️  EMAIL_USER / EMAIL_PASS not set — password reset emails will fail silently on send.');
+  console.warn('⚠️  EMAIL_USER / EMAIL_PASS not set — password reset emails will be simulated (no actual sending).');
 }
 
 /**
@@ -122,9 +126,15 @@ export const sendPasswordResetEmail = async (email, resetUrl) => {
   try {
     const info = await transporter.sendMail(mailOptions);
 
-    console.log('✅ Password reset email sent');
-    console.log('   to       :', email);
-    console.log('   messageId:', info.messageId);
+    if (transporter === mockTransporter) {
+      console.log('📧 [MOCK] Password reset email sent (simulated):');
+      console.log('   to       :', email);
+      console.log('   messageId:', info.messageId);
+    } else {
+      console.log('✅ Password reset email sent');
+      console.log('   to       :', email);
+      console.log('   messageId:', info.messageId);
+    }
 
   } catch (err) {
     // Nodemailer wraps the SMTP server's response inside err.response
