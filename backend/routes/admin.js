@@ -273,61 +273,200 @@ router.get('/products', async (req, res) => {
  });
 
 router.post('/products', async (req, res) => {
-  try {
-    const { name, description, short_description, category, price, sale_price, price_on_request,
-            images, brand, origin, in_stock, featured, is_new, best_seller, specifications } = req.body;
+   try {
+     const { name, description, short_description, category, price, sale_price, price_on_request,
+             images, brand, origin, in_stock, featured, is_new, best_seller, specifications } = req.body;
 
-    if (!name || !description || !category) {
-      return res.status(400).json({ message: 'Name, description and category are required' });
-    }
-    const result = await query(
-      `INSERT INTO products (name,description,short_description,category,price,sale_price,price_on_request,
-        images,brand,origin,in_stock,featured,is_new,best_seller,specifications)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING *`,
-      [name, description, short_description||'', category,
-       price||null, sale_price||null, price_on_request||false,
-       images||[], brand||'', origin||'',
-       in_stock !== false, featured||false, is_new||false, best_seller||false,
-       JSON.stringify(specifications||[])]
-    );
-    res.status(201).json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+     // Validate required fields
+     if (!name || !description || !category) {
+       return res.status(400).json({ message: 'Name, description and category are required' });
+     }
+
+     // Validate images is an array
+     if (!Array.isArray(images)) {
+       return res.status(400).json({ message: 'Images must be an array' });
+     }
+
+     // Validate price if provided
+     if (price !== undefined && price !== null && isNaN(parseFloat(price))) {
+       return res.status(400).json({ message: 'Price must be a valid number' });
+     }
+
+     // Validate sale_price if provided
+     if (sale_price !== undefined && sale_price !== null && isNaN(parseFloat(sale_price))) {
+       return res.status(400).json({ message: 'Sale price must be a valid number' });
+     }
+
+     // Validate boolean fields
+     const featuredBool = featured === true || featured === 'true' || featured === 1 || featured === '1';
+     const isNewBool = is_new === true || is_new === 'true' || is_new === 1 || is_new === '1';
+     const bestSellerBool = best_seller === true || best_seller === 'true' || best_seller === 1 || best_seller === '1';
+     const inStockBool = in_stock !== false && in_stock !== 'false' && in_stock !== 0 && in_stock !== '0';
+     const priceOnRequestBool = price_on_request === true || price_on_request === 'true' || price_on_request === 1 || price_on_request === '1';
+
+     // Validate specifications is an array
+     if (!Array.isArray(specifications)) {
+       return res.status(400).json({ message: 'Specifications must be an array' });
+     }
+
+     const result = await query(
+       `INSERT INTO products (name,description,short_description,category,price,sale_price,price_on_request,
+         images,brand,origin,in_stock,featured,is_new,best_seller,specifications)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING *`,
+       [name, description, short_description||'', category,
+        price===null || price===undefined ? null : parseFloat(price),
+        sale_price===null || sale_price===undefined ? null : parseFloat(sale_price),
+        priceOnRequestBool,
+        images, // Already validated as array
+        brand||'', origin||'',
+        inStockBool,
+        featuredBool,
+        isNewBool,
+        bestSellerBool,
+        JSON.stringify(specifications)]
+     );
+     
+     // Format the response to match frontend expectations
+     const product = result.rows[0];
+     const formattedProduct = {
+       id: String(product.id),
+       name: product.name,
+       description: product.description,
+       shortDescription: product.short_description,
+       category: product.category,
+       price: product.price ? parseFloat(product.price) : null,
+       salePrice: product.sale_price ? parseFloat(product.sale_price) : null,
+       priceOnRequest: product.price_on_request,
+       images: product.images || [],
+       brand: product.brand,
+       origin: product.origin,
+       inStock: product.in_stock,
+       featured: product.featured,
+       isNew: product.is_new,
+       bestSeller: product.best_seller,
+       specifications: product.specifications ? JSON.parse(product.specifications) : [],
+       createdAt: product.created_at
+     };
+     
+     res.status(201).json(formattedProduct);
+   } catch (err) {
+     console.error('Create product error:', err.message);
+     // Don't expose internal error details in production
+     if (process.env.NODE_ENV === 'production') {
+       res.status(500).json({ message: 'Failed to create product' });
+     } else {
+       res.status(500).json({ message: 'Failed to create product: ' + err.message });
+     }
+   }
+ });
 
 router.put('/products/:id', async (req, res) => {
-  try {
-    const { name, description, short_description, category, price, sale_price, price_on_request,
-            images, brand, origin, in_stock, featured, is_new, best_seller, specifications } = req.body;
+   try {
+     const { name, description, short_description, category, price, sale_price, price_on_request,
+             images, brand, origin, in_stock, featured, is_new, best_seller, specifications } = req.body;
 
-    const result = await query(
-      `UPDATE products SET
-        name=$1, description=$2, short_description=$3, category=$4,
-        price=$5, sale_price=$6, price_on_request=$7, images=$8, brand=$9, origin=$10,
-        in_stock=$11, featured=$12, is_new=$13, best_seller=$14, specifications=$15
-       WHERE id=$16 RETURNING *`,
-      [name, description, short_description||'', category,
-       price||null, sale_price||null, price_on_request||false,
-       images||[], brand||'', origin||'',
-       in_stock !== false, featured||false, is_new||false, best_seller||false,
-       JSON.stringify(specifications||[]), req.params.id]
-    );
-    if (!result.rows.length) return res.status(404).json({ message: 'Product not found' });
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+     // Validate price if provided
+     if (price !== undefined && price !== null && isNaN(parseFloat(price))) {
+       return res.status(400).json({ message: 'Price must be a valid number' });
+     }
+
+     // Validate sale_price if provided
+     if (sale_price !== undefined && sale_price !== null && isNaN(parseFloat(sale_price))) {
+       return res.status(400).json({ message: 'Sale price must be a valid number' });
+     }
+
+     // Validate images is an array if provided
+     if (images !== undefined && images !== null && !Array.isArray(images)) {
+       return res.status(400).json({ message: 'Images must be an array' });
+     }
+
+     // Validate specifications is an array if provided
+     if (specifications !== undefined && specifications !== null && !Array.isArray(specifications)) {
+       return res.status(400).json({ message: 'Specifications must be an array' });
+     }
+
+     // Validate boolean fields
+     const featuredBool = featured === true || featured === 'true' || featured === 1 || featured === '1';
+     const isNewBool = is_new === true || is_new === 'true' || is_new === 1 || is_new === '1';
+     const bestSellerBool = best_seller === true || best_seller === 'true' || best_seller === 1 || best_seller === '1';
+     const inStockBool = in_stock !== false && in_stock !== 'false' && in_stock !== 0 && in_stock !== '0';
+     const priceOnRequestBool = price_on_request === true || price_on_request === 'true' || price_on_request === 1 || price_on_request === '1';
+
+     const result = await query(
+       `UPDATE products SET
+         name=$1, description=$2, short_description=$3, category=$4,
+         price=$5, sale_price=$6, price_on_request=$7, images=$8, brand=$9, origin=$10,
+         in_stock=$11, featured=$12, is_new=$13, best_seller=$14, specifications=$15
+        WHERE id=$16 RETURNING *`,
+       [name, description, short_description||'', category,
+        price===null || price===undefined ? null : parseFloat(price),
+        sale_price===null || sale_price===undefined ? null : parseFloat(sale_price),
+        priceOnRequestBool,
+        images===undefined || images===null ? [] : images, // Use empty array if undefined/null
+        brand||'', origin||'',
+        inStockBool,
+        featuredBool,
+        isNewBool,
+        bestSellerBool,
+        JSON.stringify(specifications||[]), req.params.id]
+     );
+     
+     if (!result.rows.length) return res.status(404).json({ message: 'Product not found' });
+     
+     // Format the response to match frontend expectations
+     const product = result.rows[0];
+     const formattedProduct = {
+       id: String(product.id),
+       name: product.name,
+       description: product.description,
+       shortDescription: product.short_description,
+       category: product.category,
+       price: product.price ? parseFloat(product.price) : null,
+       salePrice: product.sale_price ? parseFloat(product.sale_price) : null,
+       priceOnRequest: product.price_on_request,
+       images: product.images || [],
+       brand: product.brand,
+       origin: product.origin,
+       inStock: product.in_stock,
+       featured: product.featured,
+       isNew: product.is_new,
+       bestSeller: product.best_seller,
+       specifications: product.specifications ? JSON.parse(product.specifications) : [],
+       createdAt: product.created_at
+     };
+     
+     res.json(formattedProduct);
+   } catch (err) {
+     console.error('Update product error:', err.message);
+     // Don't expose internal error details in production
+     if (process.env.NODE_ENV === 'production') {
+       res.status(500).json({ message: 'Failed to update product' });
+     } else {
+       res.status(500).json({ message: 'Failed to update product: ' + err.message });
+     }
+   }
+ });
 
 router.delete('/products/:id', async (req, res) => {
-  try {
-    await query(`DELETE FROM products WHERE id=$1`, [req.params.id]);
-    res.json({ message: 'Product deleted' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+   try {
+     // Validate product ID parameter
+     const productId = parseInt(req.params.id);
+     if (isNaN(productId)) {
+       return res.status(400).json({ message: 'Invalid product ID' });
+     }
+     
+     await query(`DELETE FROM products WHERE id=$1`, [productId]);
+     res.json({ message: 'Product deleted' });
+   } catch (err) {
+     console.error('Delete product error:', err.message);
+     // Don't expose internal error details in production
+     if (process.env.NODE_ENV === 'production') {
+       res.status(500).json({ message: 'Failed to delete product' });
+     } else {
+       res.status(500).json({ message: 'Failed to delete product: ' + err.message });
+     }
+   }
+ });
 
 // ── ORDERS ────────────────────────────────────────────────────────────────────
 router.get('/orders', async (req, res) => {
