@@ -170,7 +170,8 @@ router.get('/products', async (req, res) => {
 
     res.json({ products: dataRes.rows, total, pages: Math.ceil(total / parseInt(limit)), page: parseInt(page) });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('Admin products error:', err.message);
+    res.status(500).json({ message: 'Failed to load products: ' + err.message });
   }
 });
 
