@@ -1,19 +1,14 @@
 import { v2 as cloudinary } from 'cloudinary';
 
-const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-const apiKey = process.env.CLOUDINARY_API_KEY;
-const apiSecret = process.env.CLOUDINARY_API_SECRET;
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME?.trim();
+const apiKey = process.env.CLOUDINARY_API_KEY?.trim();
+const apiSecret = process.env.CLOUDINARY_API_SECRET?.trim();
 
-// Validate configuration
-if (!cloudName) {
-  console.error('❌ CLOUDINARY_CLOUD_NAME is not set');
-}
-if (!apiKey) {
-  console.error('❌ CLOUDINARY_API_KEY is not set');
-}
-if (!apiSecret) {
-  console.error('❌ CLOUDINARY_API_SECRET is not set');
-}
+// Debug logging
+console.log('Cloudinary config check:', { 
+  cloud_name: cloudName, 
+  api_key: apiKey ? '***' + apiKey.slice(-4) : undefined 
+});
 
 cloudinary.config({
   cloud_name: cloudName,
