@@ -5,7 +5,6 @@ import { ShoppingCart, FileText, ArrowLeft, ArrowRight, CheckCircle, Package, Ph
 import { useCart } from '../context/CartContext.jsx';
 import toast from 'react-hot-toast';
 import { PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
-import { resolveAssetUrl } from '../utils/assets.js';
 import './ProductDetailPage.css';
 
 export default function ProductDetailPage() {
@@ -14,6 +13,8 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
   const [imgIdx, setImgIdx] = useState(0);
+  const [quoteForm, setQuoteForm] = useState({ quantity: 1, notes: '' });
+  const [submittingQuote, setSubmittingQuote] = useState(false);
   const { addItem } = useCart();
   const hasDiscount = !product?.priceOnRequest && product?.salePrice && product?.price && product.salePrice < product.price;
   const discountPercent = hasDiscount ? Math.round(((product.price - product.salePrice) / product.price) * 100) : 0;
@@ -54,6 +55,25 @@ export default function ProductDetailPage() {
     toast.success(`${product.name} added to cart`);
   };
 
+  const handleRequestQuote = async () => {
+    setSubmittingQuote(true);
+    try {
+      const quantity = quoteForm.quantity === '' || quoteForm.quantity === null ? 1 : Number(quoteForm.quantity);
+      await axios.post('/api/quotes', {
+        productId: product.id,
+        productName: product.name,
+        quantity: quantity,
+        notes: quoteForm.notes
+      });
+      toast.success('Quote request submitted successfully');
+      setQuoteForm({ quantity: 1, notes: '' });
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to submit quote');
+    } finally {
+      setSubmittingQuote(false);
+    }
+  };
+
   return (
     <div className="product-detail-page">
       {/* Breadcrumb */}
@@ -71,7 +91,7 @@ export default function ProductDetailPage() {
         {/* Images */}
         <div className="product-images">
           <div className="product-main-img">
-            <img src={resolveAssetUrl(product.images?.[imgIdx]) || '/placeholder.jpg'} alt={product.name} />
+            <img src={product.images?.[imgIdx] || '/placeholder.jpg'} alt={product.name} />
             {!product.inStock && <div className="out-of-stock-overlay">Out of Stock</div>}
 
             {/* Navigation arrows */}
@@ -103,7 +123,7 @@ export default function ProductDetailPage() {
             <div className="product-thumbs">
               {product.images.map((img, i) => (
                 <button key={i} className={`thumb${imgIdx === i ? ' active' : ''}`} onClick={() => setImgIdx(i)}>
-                  <img src={resolveAssetUrl(img)} alt="" />
+                  <img src={img} alt="" />
                 </button>
               ))}
             </div>
@@ -147,6 +167,42 @@ export default function ProductDetailPage() {
             {product.brand && <div className="meta-row"><span>Brand</span><strong>{product.brand}</strong></div>}
             {product.origin && <div className="meta-row"><span>Origin</span><strong>{product.origin}</strong></div>}
           </div>
+
+          {/* Quote Request Form for Price on Request products */}
+          {product.priceOnRequest && (
+            <div className="quote-request-section">
+              <h4>Request a Quote</h4>
+              <div className="quote-form">
+                <div className="form-group">
+                  <label className="form-label">Quantity</label>
+                  <input
+                    type="number"
+                    className="form-input"
+                    min="1"
+                    value={quoteForm.quantity}
+                    onChange={e => setQuoteForm(f => ({ ...f, quantity: e.target.value }))}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Special Instructions</label>
+                  <textarea
+                    className="form-textarea"
+                    rows="3"
+                    placeholder="Any specific requirements..."
+                    value={quoteForm.notes}
+                    onChange={e => setQuoteForm(f => ({ ...f, notes: e.target.value }))}
+                  />
+                </div>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleRequestQuote}
+                  disabled={submittingQuote}
+                >
+                  {submittingQuote ? 'Submitting...' : 'Submit Quote Request'}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="product-actions">

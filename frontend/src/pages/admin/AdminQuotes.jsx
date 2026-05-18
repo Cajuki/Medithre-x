@@ -37,18 +37,35 @@ export default function AdminQuotes() {
     try {
       const r = await axios.get(`/api/admin/quotes/${id}`);
       setSelected(r.data);
-      setUpdateForm({ status: r.data.status, quoted_price: r.data.quoted_price || '', admin_notes: r.data.admin_notes || '' });
+      setUpdateForm({ 
+        status: r.data.status, 
+        quoted_price: r.data.quoted_price || '', 
+        admin_notes: r.data.admin_notes || '' 
+      });
     } catch { toast.error('Failed to load quote'); }
   };
 
+  /**
+   * UPDATED: Sanitizes input before sending to prevent 500 errors
+   */
   const submitUpdate = async () => {
     setUpdating(true);
+
+    // Prepare payload: convert empty price string to null to avoid database numeric errors
+    const payload = {
+      ...updateForm,
+      quoted_price: updateForm.quoted_price === '' ? null : Number(updateForm.quoted_price)
+    };
+
     try {
-      await axios.put(`/api/admin/quotes/${selected.id}`, updateForm);
+      await axios.put(`/api/admin/quotes/${selected.id}`, payload);
       toast.success('Quote updated');
       load();
       setSelected(null);
-    } catch { toast.error('Update failed'); }
+    } catch (err) { 
+      console.error('Update failed:', err);
+      toast.error('Update failed. Ensure database schema is up to date.'); 
+    }
     finally { setUpdating(false); }
   };
 

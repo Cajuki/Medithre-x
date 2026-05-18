@@ -297,3 +297,14 @@ ul { list-style: none; }
 @media (max-width: 480px) {
   .products-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
 }
+
+/* Tables - responsive */
+@media (max-width: 768px) {
+  table { font-size: 0.85rem; }
+  th, td { padding: 8px 6px; }
+}
+
+/* Cards - responsive */
+@media (max-width: 768px) {
+  .product-card { margin-bottom: 16px; }
+}

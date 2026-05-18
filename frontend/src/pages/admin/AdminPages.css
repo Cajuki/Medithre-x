@@ -123,6 +123,68 @@
 .spec-row { display: flex; gap: 8px; align-items: center; }
 .spec-row input { flex: 1; }
 
+/* --- Global Responsive Utilities --- */
+
+/* 1. Admin container */
+.admin-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* 2. Responsive tables */
+@media (max-width: 768px) {
+  .admin-table { font-size: 0.85rem; }
+  .admin-table th,
+  .admin-table td { padding: 8px 6px; }
+  .td-bold { font-size: 0.8rem; }
+  .td-sub { font-size: 0.68rem; }
+  .td-img { width: 36px; height: 30px; }
+}
+
+/* 3. Responsive cards */
+@media (max-width: 768px) {
+  .admin-page-header { padding: 20px 0 16px; }
+  .admin-page-header h1 { font-size: 1.5rem; }
+  .admin-card { margin: 16px 0; }
+  .admin-card-header { padding: 12px 16px; }
+}
+
+/* 4. Responsive modal */
+@media (max-width: 768px) {
+  .admin-modal { max-width: 95%; margin: 10px; }
+  .admin-modal-header { padding: 16px 20px; }
+  .admin-modal-body { padding: 16px 20px; }
+  .modal-grid-2 { grid-template-columns: 1fr; gap: 10px; }
+}
+
+/* 5. Responsive pagination */
+@media (max-width: 768px) {
+  .admin-pagination { padding: 12px 16px; font-size: 0.85rem; }
+  .admin-page-btn { min-width: 32px; height: 32px; padding: 0 8px; }
+}
+
+/* 6. Responsive filters */
+@media (max-width: 768px) {
+  .admin-filters { flex-direction: column; gap: 10px; }
+  .admin-search-wrap { width: 100%; }
+  .admin-search-wrap input { width: 100%; }
+  .admin-select { width: 100%; }
+}
+
+/* 7. Responsive forms */
+@media (max-width: 768px) {
+  .product-form-grid { grid-template-columns: 1fr; gap: 12px; }
+  .toggles-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+}
+
+/* 8. Responsive message cards */
+@media (max-width: 768px) {
+  .msg-card-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .msg-card-meta { gap: 8px; }
+}
+
 /* User table avatar */
 .user-table-avatar {
   width: 34px; height: 34px;
