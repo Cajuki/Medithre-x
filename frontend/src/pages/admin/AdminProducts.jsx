@@ -6,15 +6,22 @@ import {
   ChevronLeft, ChevronRight, X, Save,
   Upload, ImagePlus, Loader
 } from 'lucide-react';
-import { resolveAssetUrl } from '../../utils/assets.js';
 import './AdminPages.css';
 import './AdminProducts.css';
 
+// Loaded dynamically from API
+const CATEGORIES_FALLBACK = [
+  'Diagnostic Equipment','Laboratory Equipment','Surgical Instruments',
+  'Patient Monitoring','Imaging Equipment','Consumables & Supplies',
+  'Rehabilitation Equipment','Dental Equipment',
+];
+
 const EMPTY = {
-  name:'', description:'', short_description:'', category:'',
-  price:'', sale_price:'', price_on_request:false, brand:'', origin:'',
-  in_stock:true, featured:false, is_new:false, best_seller:false,
-  images: [],
+  name:'', sku:'', description:'', short_description:'', category:'',
+  price:'', price_on_request:false, brand:'', origin:'',
+  in_stock:true, featured:false,
+  images: [],          // array of URLs (from Cloudinary)
+  tags:'',
   specifications:[{ key:'', value:'' }],
 };
 
@@ -29,7 +36,7 @@ export default function AdminProducts() {
   const [modal,    setModal]    = useState(null);   // null | 'add' | 'edit'
   const [form,     setForm]     = useState(EMPTY);
   const [saving,   setSaving]   = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(CATEGORIES_FALLBACK);
 
   // Image upload state
   const [uploading,    setUploading]    = useState(false);
@@ -69,8 +76,8 @@ export default function AdminProducts() {
     setForm({
       ...p,
       price:          p.price || '',
-      sale_price:     p.sale_price || p.salePrice || '',
       images:         Array.isArray(p.images) ? p.images : [],
+      tags:           Array.isArray(p.tags)   ? p.tags.join(', ') : (p.tags || ''),
       specifications: p.specifications?.length ? p.specifications : [{ key:'', value:'' }],
     });
     setUploadQueue([]);
@@ -116,7 +123,7 @@ export default function AdminProducts() {
   const removeUploaded = async (url, idx) => {
     try {
       if (modal === 'edit' && form.id) {
-        await axios.delete('/api/upload/image', {
+        await axios.delete('/api/upload/product-image', {
           data: { imageUrl: url, productId: form.id }
         });
       }
@@ -158,8 +165,10 @@ export default function AdminProducts() {
       const payload = {
         ...form,
         price: form.price_on_request ? null : (parseFloat(form.price) || null),
-        sale_price: form.price_on_request || !form.sale_price ? null : (parseFloat(form.sale_price) || null),
         images: [...(form.images || []), ...newUrls],
+        tags:   typeof form.tags === 'string'
+                  ? form.tags.split(',').map(t => t.trim()).filter(Boolean)
+                  : form.tags,
         specifications: (form.specifications || []).filter(s => s.key),
       };
 
@@ -209,11 +218,10 @@ export default function AdminProducts() {
           <div className="admin-filters">
             <div className="admin-search-wrap">
               <Search size={15} />
-              <input id="product-search" className="admin-search" placeholder="Search by name, brand or category…" value={search}
+              <input className="admin-search" placeholder="Search by name or SKU…" value={search}
                 onChange={e => { setSearch(e.target.value); setPage(1); }} />
             </div>
-            <label htmlFor="product-category-filter" className="sr-only">Filter by category</label>
-            <select id="product-category-filter" className="admin-select" value={category} onChange={e => { setCategory(e.target.value); setPage(1); }}>
+            <select className="admin-select" value={category} onChange={e => { setCategory(e.target.value); setPage(1); }}>
               <option value="">All Categories</option>
               {categories.map(c => <option key={c}>{c}</option>)}
             </select>
@@ -225,19 +233,19 @@ export default function AdminProducts() {
             <table className="admin-table">
               <thead>
                 <tr>
-                  <th>Product</th><th>Category</th>
-                  <th>Price</th><th>Images</th><th>Status</th><th></th>
+                  <th>Product</th><th>SKU</th><th>Category</th>
+                  <th>Price</th><th>Images</th><th>Stock</th><th>Featured</th><th></th>
                 </tr>
               </thead>
               <tbody>
                 {products.length === 0 ? (
-                  <tr><td colSpan={6}><div className="admin-empty"><p>No products found</p></div></td></tr>
+                  <tr><td colSpan={8}><div className="admin-empty"><p>No products found</p></div></td></tr>
                 ) : products.map(p => (
                   <tr key={p.id}>
                     <td>
                       <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                         {p.images?.[0]
-                          ? <img className="td-img" src={resolveAssetUrl(p.images[0])} alt={p.name} />
+                          ? <img className="td-img" src={p.images[0]} alt={p.name} />
                           : <div className="td-img-placeholder"><ImagePlus size={16} /></div>
                         }
                         <div>
@@ -246,27 +254,21 @@ export default function AdminProducts() {
                         </div>
                       </div>
                     </td>
+                    <td className="td-sub">{p.sku || '—'}</td>
                     <td className="td-sub">{p.category}</td>
                     <td className="td-bold">
-                      {p.price_on_request ? 'On Request' : (
-                        p.sale_price
-                          ? `KES ${parseFloat(p.sale_price).toLocaleString()}`
-                          : `KES ${parseFloat(p.price||0).toLocaleString()}`
-                      )}
+                      {p.price_on_request ? 'On Request' : `KES ${parseFloat(p.price||0).toLocaleString()}`}
                     </td>
                     <td>
                       <span className="img-count-badge">{p.images?.length || 0}/10</span>
                     </td>
                     <td>
-                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                        <span className={`badge ${p.in_stock ? 'badge-green' : 'badge-red'}`}>
-                          {p.in_stock ? 'In Stock' : 'Out'}
-                        </span>
-                        {p.featured && <span className="badge badge-yellow">Featured</span>}
-                        {p.is_new && <span className="badge badge-dark">New</span>}
-                        {p.best_seller && <span className="badge badge-green">Best Seller</span>}
-                        {p.sale_price && <span className="badge badge-red">Discounted</span>}
-                      </div>
+                      <span className={`badge ${p.in_stock ? 'badge-green' : 'badge-red'}`}>
+                        {p.in_stock ? 'In Stock' : 'Out'}
+                      </span>
+                    </td>
+                    <td>
+                      {p.featured ? <span className="badge badge-yellow">⭐ Yes</span> : <span className="td-sub">—</span>}
                     </td>
                     <td>
                       <div className="action-btns">
@@ -316,7 +318,7 @@ export default function AdminProducts() {
                 <div className="img-grid">
                   {form.images.map((url, i) => (
                     <div key={url} className="img-thumb">
-                      <img src={resolveAssetUrl(url)} alt={`Product image ${i+1}`} />
+                      <img src={url} alt={`Product image ${i+1}`} />
                       <div className="img-thumb-overlay">
                         <span className="img-thumb-num">#{i+1}</span>
                         <button
@@ -384,88 +386,78 @@ export default function AdminProducts() {
                 <h4>Product Details</h4>
                 <div className="product-form-grid">
                   <div className="form-group full-width">
-                    <label className="form-label" htmlFor="product-name">Product Name *</label>
-                    <input id="product-name" className="form-input" value={form.name}
+                    <label className="form-label">Product Name *</label>
+                    <input className="form-input" value={form.name}
                       onChange={e => setF('name', e.target.value)}
                       placeholder="e.g. Hematology Analyzer BC-6800" />
                   </div>
                   <div className="form-group">
-                    <label className="form-label" htmlFor="product-category">Category *</label>
-                    <select id="product-category" className="form-select" value={form.category}
+                    <label className="form-label">SKU</label>
+                    <input className="form-input" value={form.sku}
+                      onChange={e => setF('sku', e.target.value)}
+                      placeholder="MTX-LAB-001" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Category *</label>
+                    <select className="form-select" value={form.category}
                       onChange={e => setF('category', e.target.value)}>
                       <option value="">Select category</option>
                       {categories.map(c => <option key={c}>{c}</option>)}
                     </select>
                   </div>
                   <div className="form-group full-width">
-                    <label className="form-label" htmlFor="product-description">Description *</label>
-                    <textarea id="product-description" className="form-textarea" rows={3} value={form.description}
+                    <label className="form-label">Description *</label>
+                    <textarea className="form-textarea" rows={3} value={form.description}
                       onChange={e => setF('description', e.target.value)}
                       placeholder="Full product description…" />
                   </div>
                   <div className="form-group full-width">
-                    <label className="form-label" htmlFor="product-short-desc">Short Description</label>
-                    <input id="product-short-desc" className="form-input" value={form.short_description}
+                    <label className="form-label">Short Description</label>
+                    <input className="form-input" value={form.short_description}
                       onChange={e => setF('short_description', e.target.value)}
                       placeholder="One-line summary shown on product cards" />
                   </div>
                   <div className="form-group">
-                    <label className="form-label" htmlFor="product-brand">Brand</label>
-                    <input id="product-brand" className="form-input" value={form.brand}
+                    <label className="form-label">Brand</label>
+                    <input className="form-input" value={form.brand}
                       onChange={e => setF('brand', e.target.value)}
                       placeholder="e.g. Mindray" />
                   </div>
                   <div className="form-group">
-                    <label className="form-label" htmlFor="product-origin">Country of Origin</label>
-                    <input id="product-origin" className="form-input" value={form.origin}
+                    <label className="form-label">Country of Origin</label>
+                    <input className="form-input" value={form.origin}
                       onChange={e => setF('origin', e.target.value)}
                       placeholder="e.g. China" />
                   </div>
                   <div className="form-group">
-                    <label className="form-label" htmlFor="product-price">Price (KES)</label>
-                    <input id="product-price" className="form-input" type="number" value={form.price}
+                    <label className="form-label">Price (KES)</label>
+                    <input className="form-input" type="number" value={form.price}
                       onChange={e => setF('price', e.target.value)}
                       placeholder="0.00"
                       disabled={form.price_on_request} />
                   </div>
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="product-sale-price">Discounted Price (KES)</label>
-                    <input id="product-sale-price" className="form-input" type="number" value={form.sale_price}
-                      onChange={e => setF('sale_price', e.target.value)}
-                      placeholder="Optional sale price"
-                      disabled={form.price_on_request} />
-                    {!form.price_on_request && form.price && form.sale_price && parseFloat(form.sale_price) < parseFloat(form.price) && (
-                      <p style={{ fontSize: '0.72rem', color: 'var(--grey)', marginTop: 6 }}>
-                        Discount: {Math.round(((parseFloat(form.price) - parseFloat(form.sale_price)) / parseFloat(form.price)) * 100)}%
-                      </p>
-                    )}
-                  </div>
                   <div className="form-group toggles-col">
                     <label className="filter-check">
-                      <input id="product-price-on-request" type="checkbox" checked={form.price_on_request}
+                      <input type="checkbox" checked={form.price_on_request}
                         onChange={e => setF('price_on_request', e.target.checked)} />
                       Price on Request
                     </label>
                     <label className="filter-check">
-                      <input id="product-in-stock" type="checkbox" checked={form.in_stock}
+                      <input type="checkbox" checked={form.in_stock}
                         onChange={e => setF('in_stock', e.target.checked)} />
                       In Stock
                     </label>
                     <label className="filter-check">
-                      <input id="product-featured" type="checkbox" checked={form.featured}
+                      <input type="checkbox" checked={form.featured}
                         onChange={e => setF('featured', e.target.checked)} />
                       Featured Product
                     </label>
-                    <label className="filter-check">
-                      <input id="product-is-new" type="checkbox" checked={form.is_new}
-                        onChange={e => setF('is_new', e.target.checked)} />
-                      New Arrival
-                    </label>
-                    <label className="filter-check">
-                      <input id="product-best-seller" type="checkbox" checked={form.best_seller}
-                        onChange={e => setF('best_seller', e.target.checked)} />
-                      Best Seller
-                    </label>
+                  </div>
+                  <div className="form-group full-width">
+                    <label className="form-label">Tags <span style={{fontWeight:400,textTransform:'none'}}>( comma separated )</span></label>
+                    <input className="form-input" value={form.tags}
+                      onChange={e => setF('tags', e.target.value)}
+                      placeholder="hematology, CBC, blood count" />
                   </div>
                 </div>
               </div>
@@ -476,10 +468,10 @@ export default function AdminProducts() {
                 <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                   {(form.specifications || []).map((s, i) => (
                     <div key={i} className="spec-row">
-                      <input id={`spec-key-${i}`} className="form-input" value={s.key}
+                      <input className="form-input" value={s.key}
                         onChange={e => setSpec(i, 'key', e.target.value)}
                         placeholder="Property (e.g. Throughput)" />
-                      <input id={`spec-value-${i}`} className="form-input" value={s.value}
+                      <input className="form-input" value={s.value}
                         onChange={e => setSpec(i, 'value', e.target.value)}
                         placeholder="Value (e.g. 60 samples/hr)" />
                       <button type="button" className="action-btn danger"
