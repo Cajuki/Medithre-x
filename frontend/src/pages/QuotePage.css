@@ -31,21 +31,108 @@
 .quote-success-contact a { display: flex; align-items: center; gap: 6px; font-family: var(--font-condensed); font-size: 0.83rem; font-weight: 700; color: var(--black); padding: 8px 16px; border: 1.5px solid var(--black); border-radius: var(--radius); transition: var(--transition); }
 .quote-success-contact a:hover { background: var(--yellow); border-color: var(--yellow); }
 
-/* ── Large tablets / small desktop (1100px) ─────── */
+/* ── Request order enhancements ─────────────────────────────── */
+
+/*  Page hero underline */
+.quote-layout-wrap { border-bottom: 1px solid var(--white-3); margin-bottom: 0; }
+
+/*  Request identifier badge shown above form  */
+.quote-request-id {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-condensed); font-size: 0.82rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--black-3);
+  background: var(--white-2); border: 1px solid var(--white-3);
+  padding: 4px 14px; border-radius: 100px; margin-bottom: 14px;
+}
+.quote-request-id span { color: var(--yellow-dark); }
+
+/*  Item tracking duration pill (brief hover note) */
+.quote-item-track {
+  display: inline-flex; align-items: center; gap: 4px;
+  position: relative; margin-left: 4px;
+}
+.quote-item-track::after {
+  content: attr(data-tooltip);
+  position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+  background: var(--black); color: var(--white);
+  font-family: var(--font-condensed); font-size: 0.72rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 4px; white-space: nowrap;
+  pointer-events: none; opacity: 0;
+  transition: opacity var(--transition);
+}
+.quote-item-track:hover::after { opacity: 1; }
+
+/*  Section meta row (label + value in one row) */
+.quote-meta-row { display: flex; align-items: baseline; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--white-3); }
+.quote-meta-row + .quote-meta-row { padding-top: 10px; }
+.quote-meta-row:nth-last-child(1) { border-bottom: none; }
+.quote-meta-label {
+  min-width: 130px; font-family: var(--font-condensed); font-size: 0.8rem;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey);
+}
+.quote-meta-value { font-size: 0.88rem; color: var(--black); }
+
+/*  Status grade badge (for request pages / quotes list) */
+.quote-grade-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--font-condensed); font-size: 0.78rem; font-weight: 700;
+  padding: 3px 10px; border-radius: 2px; border: 1px solid;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.quote-grade-badge.grade-A { background: #DCFCE7; border-color: #86EFAC; color: #15803D; }
+.quote-grade-badge.grade-B { background: #FEF9C3; border-color: #FDE047; color: #A16207; }
+.quote-grade-badge.grade-C { background: #FFE4E6; border-color: #FECACA; color: #BE123C; }
+
+/*  Signature block (quote response footer) */
+.quote-signature { border-top: 1px solid var(--white-3); padding-top: 14px; margin-top: 6px; }
+.quote-signatory { font-family: var(--font-condensed); font-size: 0.85rem; font-weight: 700; color: var(--black); }
+.quote-sign-role { font-size: 0.78rem; color: var(--grey); }
+
+/*  Mascot illustration placeholder */
+.quote-mascot-wrap { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 18px 20px; background: var(--white-2); border: 1px solid var(--white-3); border-radius: var(--radius-md); }
+.quote-mascot-icon { color: var(--yellow-dark); flex-shrink: 0; }
+.quote-mascot-text { font-size: 0.82rem; color: var(--black-3); line-height: 1.5; }
+.quote-mascot-text strong { color: var(--black); font-family: var(--font-condensed); letter-spacing: 0.02em; }
+
+/*  Activity / timeline indicator */
+.quote-activity { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--white-3); border-radius: var(--radius); overflow: hidden; }
+.quote-activity-item { display: flex; gap: 0; align-items: flex-start; padding: 10px 14px; font-size: 0.82rem; border-bottom: 1px solid var(--white-3); }
+.quote-activity-item:last-child { border-bottom: none; }
+.quote-activity-icon { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.quote-activity-icon.color-blue { background: #DBEAFE; color: #2563EB; }
+.quote-activity-icon.color-green { background: #DCFCE7; color: #16A34A; }
+.quote-activity-icon.color-amber { background: #FEF9C3; color: #D97706; }
+.quote-activity-body { flex: 1; }
+.quote-activity-title { font-weight: 600; color: var(--black); }
+.quote-activity-sub { color: var(--grey); font-size: 0.76rem; margin-top: 1px; }
+
+/*  Two-col summary card (used on request page below form) */
+.quote-summary-card {
+  background: var(--white); border: 1.5px solid var(--white-3);
+  border-radius: var(--radius-md); padding: 24px 28px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 18px 32px;
+}
+.quote-summary-card .qs-title { font-family: var(--font-condensed); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--grey); margin-bottom: 12px; }
+.quote-summary-row { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--white-3); font-size: 0.85rem; }
+.quote-summary-row:last-child { border-bottom: none; }
+.quote-summary-label { color: var(--black-3); font-weight: 500; }
+.quote-summary-val { color: var(--black); font-weight: 600; }
+
+/* ── Large tablets / small desktop (1100px) ─────────────────── */
 @media (max-width: 1100px) {
   .quote-layout { gap: 24px; padding: 32px 0 48px; }
   .quote-side { top: 80px; }
   .form-section-card { padding: 24px 26px; }
 }
 
-/* ── Tablets (900px) ─────────────────────────────── */
+/* ── Tablets (900px) ────────────────────────────────────────── */
 @media (max-width: 900px) {
   .quote-layout { grid-template-columns: 1fr; }
   .form-grid-2 { grid-template-columns: 1fr; gap: 0 16px; }
   .quote-side { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 }
 
-/* ── Small tablets / large phones (700px) ────────── */
+/* ── Small tablets / large phones (700px) ───────────────────── */
 @media (max-width: 700px) {
   .quote-layout { padding: 24px 0 40px; gap: 18px; }
   .form-section-card { padding: 20px 18px; border-radius: var(--radius-sm, 6px); }
@@ -55,16 +142,20 @@
   .quote-item { padding: 14px; gap: 10px; }
 
   .quote-side { grid-template-columns: 1fr; }
+
+  .quote-summary-card { grid-template-columns: 1fr; padding: 20px; gap: 0; }
 }
 
-/* ── Phones (600px) ──────────────────────────────── */
+/* ── Phones (600px) ─────────────────────────────────────────── */
 @media (max-width: 600px) {
   .quote-form { gap: 14px; }
   .form-section-card { padding: 18px 14px; }
   .form-section-card h3 { font-size: 1.15rem; margin-bottom: 14px; }
   .form-grid-2 { grid-template-columns: 1fr; gap: 0; }
 
-  .quote-item { flex-direction: column; gap: 8px; padding: 12px; }
+  .quote-item { flex-direction: column; gap: 8px; padding: 12px; border-bottom: 1px solid var(--white-3); border-radius: var(--radius); }
+  .quote-item { margin-bottom: 8px; }
+  .quote-item:last-child { margin-bottom: 0; border-bottom: none; }
   .quote-item-num { margin-top: 0; width: 26px; height: 26px; font-size: 0.78rem; }
   .quote-item-row2 { flex-direction: column; align-items: stretch; gap: 8px; }
   .quote-item-row2 > div { width: 100%; }
@@ -81,9 +172,13 @@
   /* Success card tighter on mobile */
   .success-card { padding: 40px 24px; border-radius: var(--radius-md); }
   .success-card h2 { font-size: 1.8rem; }
+
+  /* Quote summary card adjustments */
+  .quote-summary-row { flex-direction: column; gap: 2px; align-items: flex-start; }
+  .quote-mascot-wrap { flex-direction: column; text-align: center; }
 }
 
-/* ── Small phones (480px) ────────────────────────── */
+/* ── Small phones (480px) ───────────────────────────────────── */
 @media (max-width: 480px) {
   .quote-layout { padding: 16px 0 32px; }
 
@@ -95,8 +190,19 @@
   .form-textarea { padding: 11px 13px; font-size: 17px; }
 
   .quote-side-card h4 { font-size: 0.76rem; letter-spacing: 0.08em; }
+  .quote-side-card ul li { font-size: 0.76rem; }
 
   .success-card { padding: 36px 20px; }
   .success-card h2 { font-size: 1.6rem; }
   .order-num { font-size: 0.9rem; }
+
+  /* Status grade badge smaller */
+  .quote-grade-badge { font-size: 0.72rem; padding: 2px 8px; }
+
+  /* Activity items tighter */
+  .quote-activity-item { padding: 8px 12px; font-size: 0.78rem; }
+  .quote-activity-icon { width: 22px; height: 22px; }
+
+  /* Signature block */
+  .quote-signature { margin-top: 12px; }
 }

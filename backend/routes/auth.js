@@ -235,4 +235,9 @@ router.put('/password', protect, async (req, res) => {
   }
 });
 
+// ── LOGOUT ─────────────────────────────────────────────────────────────────────
+router.post('/logout', async (req, res) => {
+  res.json({ message: 'Logged out successfully' });
+});
+
 export default router;

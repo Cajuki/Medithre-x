@@ -17,6 +17,18 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+        axios.post('/api/auth/logout').catch(() => {});
+        logout();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, [token]);
+
   const fetchProfile = async () => {
     try {
       const res = await axios.get('/api/auth/profile');

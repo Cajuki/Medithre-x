@@ -12,6 +12,12 @@ const formatAdminQuote = (quote, items = null) => ({
   items,
 });
 
+const formatAdminOrder = (order, items = []) => ({
+  ...order,
+  total_amount: order.total_amount ? parseFloat(order.total_amount) : 0,
+  items,
+});
+
 // All admin routes require authentication + admin role
 router.use(protect, admin);
 
@@ -383,6 +389,348 @@ router.delete('/users/:id', async (req, res) => {
   } catch (err) {
     console.error('Admin delete user error:', err.message);
     res.status(500).json({ message: 'Failed to delete user' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// MESSAGES — admin CRUD for contact_messages
+// ═══════════════════════════════════════════════════════════════════
+
+// GET /api/admin/messages — list with pagination + read filter
+router.get('/messages', async (req, res) => {
+  try {
+    const { search, is_read, page = 1, limit = 15 } = req.query;
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+
+    const conditions = [];
+    const params = [];
+    let idx = 1;
+
+    if (search) {
+      conditions.push(`(name ILIKE $${idx} OR email ILIKE $${idx} OR subject ILIKE $${idx} OR message ILIKE $${idx})`);
+      params.push(`%${search}%`);
+      idx++;
+    }
+
+    if (is_read !== undefined) {
+      const readVal = is_read === 'true';
+      conditions.push(`is_read = $${idx}`);
+      params.push(readVal);
+      idx++;
+    }
+
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const countRes = await query(`SELECT COUNT(*) FROM contact_messages ${where}`, params);
+    const total = parseInt(countRes.rows[0].count) || 0;
+    const offset = (pageNum - 1) * limitNum;
+
+    const dataRes = await query(
+      `SELECT * FROM contact_messages ${where}
+       ORDER BY created_at DESC
+       LIMIT $${idx} OFFSET $${idx + 1}`,
+      [...params, limitNum, offset]
+    );
+
+    res.json({
+      messages: dataRes.rows,
+      total,
+      pages: Math.ceil(total / limitNum),
+      page: pageNum
+    });
+  } catch (err) {
+    console.error('Admin messages error:', err.message);
+    res.status(500).json({ message: 'Failed to load messages' });
+  }
+});
+
+// PUT /api/admin/messages/:id/read — mark a single message as read
+router.put('/messages/:id/read', async (req, res) => {
+  try {
+    const msgId = parseInt(req.params.id, 10);
+    const result = await query(
+      `UPDATE contact_messages SET is_read = TRUE WHERE id = $1 RETURNING *`,
+      [msgId]
+    );
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'Message not found' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Admin mark-read error:', err.message);
+    res.status(500).json({ message: 'Failed to update message' });
+  }
+});
+
+// DELETE /api/admin/messages/:id — remove a message
+router.delete('/messages/:id', async (req, res) => {
+  try {
+    const msgId = parseInt(req.params.id, 10);
+    const result = await query(`DELETE FROM contact_messages WHERE id = $1 RETURNING id`, [msgId]);
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'Message not found' });
+    }
+    res.json({ message: 'Message deleted' });
+  } catch (err) {
+    console.error('Admin delete message error:', err.message);
+    res.status(500).json({ message: 'Failed to delete message' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// QUOTES — admin list, detail, update
+// ═══════════════════════════════════════════════════════════════════
+
+// GET /api/admin/quotes — list with pagination + filter
+router.get('/quotes', async (req, res) => {
+  try {
+    const { search, status, page = 1, limit = 15 } = req.query;
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+
+    const conditions = [];
+    const params = [];
+    let idx = 1;
+
+    if (search) {
+      conditions.push(`(q.quote_number ILIKE $${idx} OR q.name ILIKE $${idx} OR q.email ILIKE $${idx} OR q.company ILIKE $${idx})`);
+      params.push(`%${search}%`);
+      idx++;
+    }
+
+    if (status) {
+      conditions.push(`q.status = $${idx}`);
+      params.push(status);
+      idx++;
+    }
+
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const countRes = await query(
+      `SELECT COUNT(*) FROM quotes q ${where}`,
+      params
+    );
+    const total = parseInt(countRes.rows[0].count) || 0;
+    const offset = (pageNum - 1) * limitNum;
+
+    const dataRes = await query(
+      `SELECT q.*, u.name AS customer_name, u.email AS customer_email
+       FROM quotes q
+       LEFT JOIN users u ON q.user_id = u.id
+       ${where}
+       ORDER BY q.created_at DESC
+       LIMIT $${idx} OFFSET $${idx + 1}`,
+      [...params, limitNum, offset]
+    );
+
+    res.json({
+      quotes: dataRes.rows.map(q => formatAdminQuote(q)),
+      total,
+      pages: Math.ceil(total / limitNum),
+      page: pageNum
+    });
+  } catch (err) {
+    console.error('Admin quotes error:', err.message);
+    res.status(500).json({ message: 'Failed to load quotes' });
+  }
+});
+
+// GET /api/admin/quotes/:id — single quote with items
+router.get('/quotes/:id', async (req, res) => {
+  try {
+    const quoteId = parseInt(req.params.id, 10);
+
+    const qRes = await query(
+      `SELECT q.*, u.name AS customer_name, u.email AS customer_email
+       FROM quotes q
+       LEFT JOIN users u ON q.user_id = u.id
+       WHERE q.id = $1`,
+      [quoteId]
+    );
+
+    if (!qRes.rows.length) {
+      return res.status(404).json({ message: 'Quote not found' });
+    }
+
+    const itemsRes = await query(
+      `SELECT * FROM quote_items WHERE quote_id = $1`,
+      [quoteId]
+    );
+
+    res.json(formatAdminQuote({ ...qRes.rows[0], items_count: itemsRes.rows.length }, itemsRes.rows));
+  } catch (err) {
+    console.error('Admin get quote error:', err.message);
+    res.status(500).json({ message: 'Failed to load quote' });
+  }
+});
+
+// PUT /api/admin/quotes/:id — update status / quoted_price / response_message / admin_notes
+router.put('/quotes/:id', async (req, res) => {
+  try {
+    const quoteId = parseInt(req.params.id, 10);
+    const { status, quoted_price, response_message, admin_notes } = req.body;
+
+    const result = await query(
+      `UPDATE quotes SET
+         status = COALESCE($1, status),
+         quoted_price = COALESCE($2, quoted_price),
+         response_message = COALESCE($3, response_message),
+         admin_notes = COALESCE($4, admin_notes),
+         responded_at = COALESCE($5, responded_at)
+       WHERE id = $6
+       RETURNING *`,
+      [
+        status,
+        quoted_price ?? null,
+        response_message,
+        admin_notes,
+        (status === 'Quoted' || status === 'Accepted' || status === 'Declined')
+          ? new Date().toISOString()
+          : null,
+        quoteId
+      ]
+    );
+
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'Quote not found' });
+    }
+
+    const itemsRes = await query(`SELECT * FROM quote_items WHERE quote_id = $1`, [quoteId]);
+    res.json(formatAdminQuote(result.rows[0], itemsRes.rows));
+  } catch (err) {
+    console.error('Admin update quote error:', err.message);
+    res.status(500).json({ message: 'Failed to update quote' });
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// ORDERS — admin list, detail, status update
+// ═══════════════════════════════════════════════════════════════════
+
+// GET /api/admin/orders — list with pagination + filter
+router.get('/orders', async (req, res) => {
+  try {
+    const { search, status, page = 1, limit = 15 } = req.query;
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+
+    const conditions = [];
+    const params = [];
+    let idx = 1;
+
+    if (search) {
+      conditions.push(
+        `(o.order_number ILIKE $${idx} OR u.name ILIKE $${idx} OR u.email ILIKE $${idx})`
+      );
+      params.push(`%${search}%`);
+      idx++;
+    }
+
+    if (status) {
+      conditions.push(`o.status = $${idx}`);
+      params.push(status);
+      idx++;
+    }
+
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+    const countRes = await query(
+      `SELECT COUNT(*) FROM orders o LEFT JOIN users u ON o.user_id = u.id ${where}`,
+      params
+    );
+    const total = parseInt(countRes.rows[0].count) || 0;
+    const offset = (pageNum - 1) * limitNum;
+
+    const dataRes = await query(
+      `SELECT o.*, u.name AS customer_name, u.email AS customer_email, u.phone AS customer_phone
+       FROM orders o
+       LEFT JOIN users u ON o.user_id = u.id
+       ${where}
+       ORDER BY o.created_at DESC
+       LIMIT $${idx} OFFSET $${idx + 1}`,
+      [...params, limitNum, offset]
+    );
+
+    res.json({
+      orders: dataRes.rows.map(o => formatAdminOrder(o)),
+      total,
+      pages: Math.ceil(total / limitNum),
+      page: pageNum
+    });
+  } catch (err) {
+    console.error('Admin orders error:', err.message);
+    res.status(500).json({ message: 'Failed to load orders' });
+  }
+});
+
+// GET /api/admin/orders/:id — single order with items
+router.get('/orders/:id', async (req, res) => {
+  try {
+    const orderId = parseInt(req.params.id, 10);
+
+    const oRes = await query(
+      `SELECT o.*, u.name AS customer_name, u.email AS customer_email, u.phone AS customer_phone
+       FROM orders o
+       LEFT JOIN users u ON o.user_id = u.id
+       WHERE o.id = $1`,
+      [orderId]
+    );
+
+    if (!oRes.rows.length) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    const itemsRes = await query(
+      `SELECT * FROM order_items WHERE order_id = $1`,
+      [orderId]
+    );
+
+    res.json(formatAdminOrder(oRes.rows[0], itemsRes.rows));
+  } catch (err) {
+    console.error('Admin get order error:', err.message);
+    res.status(500).json({ message: 'Failed to load order' });
+  }
+});
+
+// PUT /api/admin/orders/:id/status — update order status and/or payment status
+router.put('/orders/:id/status', async (req, res) => {
+  try {
+    const orderId = parseInt(req.params.id, 10);
+    const { status, payment_status } = req.body;
+
+    if (!status && !payment_status) {
+      return res.status(400).json({ message: 'Provide at least status or payment_status' });
+    }
+
+    const updates = [];
+    const values = [];
+    let idx = 1;
+
+    if (status) {
+      updates.push(`status = $${idx++}`);
+      values.push(status);
+    }
+    if (payment_status) {
+      updates.push(`payment_status = $${idx++}`);
+      values.push(payment_status);
+    }
+
+    values.push(orderId);
+
+    const result = await query(
+      `UPDATE orders SET ${updates.join(', ')} WHERE id = $${idx} RETURNING *`,
+      values
+    );
+
+    if (!result.rows.length) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Admin update order error:', err.message);
+    res.status(500).json({ message: 'Failed to update order' });
   }
 });
 

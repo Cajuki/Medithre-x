@@ -123,20 +123,43 @@
   .product-main-img { aspect-ratio: 16/10; }
 }
 
+/* ── Small tablets / landscape phones (768px) ─────────────── */
+@media (max-width: 768px) {
+  .product-detail-grid { gap: 28px; padding: 40px 0; }
+  .product-meta { flex-wrap: wrap; flex-direction: row; gap: 10px 20px; }
+  .meta-row { flex: 1 1 auto; min-width: 140px; }
+  .product-trust { gap: 12px; }
+  .product-actions { gap: 10px; }
+}
+
+/* ── Phones (600px) ─────────────────────────────────────────── */
 @media (max-width: 600px) {
   .product-detail-grid { gap: 24px; padding: 32px 0; }
   .product-main-img { aspect-ratio: 1/1; border-radius: var(--radius); }
+
   .img-nav-btn { width: 38px; height: 38px; }
   .img-nav-prev { left: 8px; }
   .img-nav-next { right: 8px; }
   .img-nav-btn svg { width: 18px; height: 18px; }
   .img-counter { font-size: 0.72rem; bottom: 10px; padding: 3px 10px; }
 
-  .product-thumbs { gap: 6px; }
-  .thumb { width: 56px; height: 56px; border-radius: var(--radius-sm, 4px); }
+  .product-thumbs {
+    gap: 6px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+  .thumb {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    width: 56px; height: 56px; border-radius: var(--radius-sm, 4px);
+  }
 
   .product-info-price { padding: 12px 0; }
   .price-big { font-size: 1.7rem; }
+  .por-label { font-size: 0.95rem; }
 
   .product-actions { flex-direction: column; }
   .product-actions .btn { width: 100%; justify-content: center; }
@@ -147,8 +170,44 @@
   .breadcrumb { font-size: 0.72rem; gap: 6px; }
 }
 
+/* ── Small phones (480px) and below ─────────────────────────── */
 @media (max-width: 480px) {
-  .product-trust { gap: 10px; }
+  .product-detail-page { min-height: 70vh; }
+
+  .product-thumbs { gap: 4px; }
+  .thumb { width: 50px; height: 50px; }
+
+  .product-trust { gap: 10px; flex-direction: column; align-items: flex-start; }
   .trust-item { font-size: 0.75rem; }
   .trust-item svg { width: 14px; height: 14px; }
+
+  .product-meta { flex-direction: column; gap: 6px; }
+  .meta-row { min-width: 100%; }
+
+  .specs-table { border-radius: var(--radius); }
+  .spec-row { grid-template-columns: 140px 1fr; font-size: 0.82rem; padding: 10px 14px; }
+  .spec-key { font-size: 0.8rem; }
+
+  .product-info-name { font-size: clamp(1.4rem, 5vw, 2rem); }
+  .product-info-desc { font-size: 0.88rem; }
+  .price-big { font-size: 1.5rem; }
+
+  .product-main-img { aspect-ratio: 3/4; }
+}
+
+/* ── Extra-small phones (360px) ─────────────────────────────── */
+@media (max-width: 360px) {
+  .product-images { gap: 4px; }
+  .thumb { width: 44px; height: 44px; }
+  .img-nav-btn { width: 34px; height: 34px; }
+  .img-nav-prev { left: 6px; }
+  .img-nav-next { right: 6px; }
+  .img-nav-btn svg { width: 16px; height: 16px; }
+  .img-counter { font-size: 0.68rem; padding: 2px 8px; bottom: 8px; }
+
+  .product-info-price { padding: 10px 0; }
+  .price-big { font-size: 1.35rem; }
+  .product-actions .btn-lg { padding: 14px 28px; font-size: 0.92rem; }
+
+  .breadcrumb { font-size: 0.66rem; }
 }
