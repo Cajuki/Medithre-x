@@ -8,6 +8,8 @@ const router = express.Router();
 const formatAdminQuote = (quote, items = null) => ({
   ...quote,
   quoted_price: quote.quoted_price ? parseFloat(quote.quoted_price) : null,
+  response_message: quote.response_message || '',
+  admin_notes: quote.admin_notes || '',
   item_count: quote.item_count ? parseInt(quote.item_count, 10) : items ? items.length : 0,
   items,
 });
@@ -494,13 +496,13 @@ router.get('/quotes', async (req, res) => {
     let idx = 1;
 
     if (search) {
-      conditions.push(`(q.quote_number ILIKE $${idx} OR q.name ILIKE $${idx} OR q.email ILIKE $${idx} OR q.company ILIKE $${idx})`);
+      conditions.push(`(quote_number ILIKE $${idx} OR name ILIKE $${idx} OR email ILIKE $${idx} OR company ILIKE $${idx})`);
       params.push(`%${search}%`);
       idx++;
     }
 
     if (status) {
-      conditions.push(`q.status = $${idx}`);
+      conditions.push(`status = $${idx}`);
       params.push(status);
       idx++;
     }
@@ -508,18 +510,15 @@ router.get('/quotes', async (req, res) => {
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
     const countRes = await query(
-      `SELECT COUNT(*) FROM quotes q ${where}`,
+      `SELECT COUNT(*) FROM quotes ${where}`,
       params
     );
     const total = parseInt(countRes.rows[0].count) || 0;
     const offset = (pageNum - 1) * limitNum;
 
     const dataRes = await query(
-      `SELECT q.*, u.name AS customer_name, u.email AS customer_email
-       FROM quotes q
-       LEFT JOIN users u ON q.user_id = u.id
-       ${where}
-       ORDER BY q.created_at DESC
+      `SELECT * FROM quotes ${where}
+       ORDER BY created_at DESC
        LIMIT $${idx} OFFSET $${idx + 1}`,
       [...params, limitNum, offset]
     );
@@ -542,10 +541,7 @@ router.get('/quotes/:id', async (req, res) => {
     const quoteId = parseInt(req.params.id, 10);
 
     const qRes = await query(
-      `SELECT q.*, u.name AS customer_name, u.email AS customer_email
-       FROM quotes q
-       LEFT JOIN users u ON q.user_id = u.id
-       WHERE q.id = $1`,
+      `SELECT * FROM quotes WHERE id = $1`,
       [quoteId]
     );
 
@@ -571,25 +567,39 @@ router.put('/quotes/:id', async (req, res) => {
     const quoteId = parseInt(req.params.id, 10);
     const { status, quoted_price, response_message, admin_notes } = req.body;
 
+    // Build dynamic update based on provided fields
+    const updates = [];
+    const values = [];
+    let idx = 1;
+
+    if (status !== undefined) {
+      updates.push(`status = $${idx++}`);
+      values.push(status);
+    }
+    if (quoted_price !== undefined) {
+      updates.push(`quoted_price = $${idx++}`);
+      values.push(quoted_price);
+    }
+    if (response_message !== undefined) {
+      updates.push(`response_message = $${idx++}`);
+      values.push(response_message);
+    }
+    if (admin_notes !== undefined) {
+      updates.push(`admin_notes = $${idx++}`);
+      values.push(admin_notes);
+    }
+
+    // Set responded_at when status moves to Quoted/Accepted/Declined
+    if (status === 'Quoted' || status === 'Accepted' || status === 'Declined') {
+      updates.push(`responded_at = $${idx++}`);
+      values.push(new Date().toISOString());
+    }
+
+    values.push(quoteId);
+
     const result = await query(
-      `UPDATE quotes SET
-         status = COALESCE($1, status),
-         quoted_price = COALESCE($2, quoted_price),
-         response_message = COALESCE($3, response_message),
-         admin_notes = COALESCE($4, admin_notes),
-         responded_at = COALESCE($5, responded_at)
-       WHERE id = $6
-       RETURNING *`,
-      [
-        status,
-        quoted_price ?? null,
-        response_message,
-        admin_notes,
-        (status === 'Quoted' || status === 'Accepted' || status === 'Declined')
-          ? new Date().toISOString()
-          : null,
-        quoteId
-      ]
+      `UPDATE quotes SET ${updates.join(', ')} WHERE id = $${idx} RETURNING *`,
+      values
     );
 
     if (!result.rows.length) {
@@ -620,15 +630,13 @@ router.get('/orders', async (req, res) => {
     let idx = 1;
 
     if (search) {
-      conditions.push(
-        `(o.order_number ILIKE $${idx} OR u.name ILIKE $${idx} OR u.email ILIKE $${idx})`
-      );
+      conditions.push(`order_number ILIKE $${idx}`);
       params.push(`%${search}%`);
       idx++;
     }
 
     if (status) {
-      conditions.push(`o.status = $${idx}`);
+      conditions.push(`status = $${idx}`);
       params.push(status);
       idx++;
     }
@@ -636,18 +644,15 @@ router.get('/orders', async (req, res) => {
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
     const countRes = await query(
-      `SELECT COUNT(*) FROM orders o LEFT JOIN users u ON o.user_id = u.id ${where}`,
+      `SELECT COUNT(*) FROM orders ${where}`,
       params
     );
     const total = parseInt(countRes.rows[0].count) || 0;
     const offset = (pageNum - 1) * limitNum;
 
     const dataRes = await query(
-      `SELECT o.*, u.name AS customer_name, u.email AS customer_email, u.phone AS customer_phone
-       FROM orders o
-       LEFT JOIN users u ON o.user_id = u.id
-       ${where}
-       ORDER BY o.created_at DESC
+      `SELECT * FROM orders ${where}
+       ORDER BY created_at DESC
        LIMIT $${idx} OFFSET $${idx + 1}`,
       [...params, limitNum, offset]
     );
@@ -670,10 +675,7 @@ router.get('/orders/:id', async (req, res) => {
     const orderId = parseInt(req.params.id, 10);
 
     const oRes = await query(
-      `SELECT o.*, u.name AS customer_name, u.email AS customer_email, u.phone AS customer_phone
-       FROM orders o
-       LEFT JOIN users u ON o.user_id = u.id
-       WHERE o.id = $1`,
+      `SELECT * FROM orders WHERE id = $1`,
       [orderId]
     );
 

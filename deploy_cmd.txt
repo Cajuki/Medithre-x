@@ -1,0 +1,4 @@
+gcloud run deploy medithre-x \
+  --image=gcr.io/famous-robot-473210-r0/medithrex:latest \
+  --region=europe-west1 \
+  --set-env-vars="PG_HOST=localhost,PG_PORT=5432,PG_DATABASE=medithrex,PG_USER=postgres,PG_PASSWORD=your_password_here,PG_ssl=false,DATABASE_URL=postgresql://neondb_owner:npg_9HMBCikzcq8w@ep-sparkling-surf-absbdv2x-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require,JWT_SECRET=medithrex_super_secret_key_2024,EMAIL_HOST=smtp.gmail.com,EMAIL_PORT=587,EMAIL_SECURE=false,EMAIL_USER=medithrexmedicalsolutions@gmail.com,EMAIL_PASS=rvlhxiinvifxjnzv,EMAIL_FROM=Medithrex <noreply@medithrex.com>,FRONTEND_URL=https://medithre-x.vercel.app,BACKEND_URL=https://medithre-x-180462915671.europe-west1.run.app,CLOUDINARY_CLOUD_NAME=chimzfix,CLOUDINARY_API_KEY=666252221762671,CLOUDINARY_API_SECRET=MJY5KRhZpyO39ApAzYs2mQHjCn8"

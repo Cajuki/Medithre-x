@@ -157,7 +157,9 @@ CREATE TABLE IF NOT EXISTS quotes (
                                    'New','Reviewed','Quoted','Accepted','Declined'
                                )),
     quoted_price  NUMERIC(14,2),
+    response_message TEXT,
     admin_notes   TEXT,
+    responded_at  TIMESTAMPTZ,
     created_at    TIMESTAMPTZ  DEFAULT NOW()
 );
 
