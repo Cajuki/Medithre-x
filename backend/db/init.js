@@ -103,26 +103,27 @@ const createTables = async () => {
   `);
   console.log('  ✅ order_items');
 
-  await query(`
-    CREATE TABLE IF NOT EXISTS quotes (
-      id           SERIAL      PRIMARY KEY,
-      quote_number VARCHAR(30) UNIQUE NOT NULL,
-      user_id      INTEGER     REFERENCES users(id) ON DELETE SET NULL,
-      name         VARCHAR(150) NOT NULL,
-      email        VARCHAR(150) NOT NULL,
-      phone        VARCHAR(30)  NOT NULL,
-      company      VARCHAR(150),
-      county       VARCHAR(80),
-      message      TEXT,
-      status       VARCHAR(30)  DEFAULT 'New'
-                                CHECK (status IN ('New','Reviewed','Quoted','Accepted','Declined')),
-      quoted_price  NUMERIC(14,2),
-      response_message TEXT,
-      admin_notes   TEXT,
-      responded_at  TIMESTAMPTZ,
-      created_at    TIMESTAMPTZ DEFAULT NOW()
-    );
-  `);
+    await query(`
+      CREATE TABLE IF NOT EXISTS quotes (
+        id           SERIAL      PRIMARY KEY,
+        quote_number VARCHAR(30) UNIQUE NOT NULL,
+        user_id      INTEGER     REFERENCES users(id) ON DELETE SET NULL,
+        name         VARCHAR(150) NOT NULL,
+        email        VARCHAR(150) NOT NULL,
+        phone        VARCHAR(30)  NOT NULL,
+        company      VARCHAR(150),
+        county       VARCHAR(80),
+        message      TEXT,
+        status       VARCHAR(30)  DEFAULT 'New'
+                                 CHECK (status IN ('New','Reviewed','Quoted','Accepted','Declined')),
+        quoted_price  NUMERIC(14,2),
+        response_message TEXT,
+        admin_notes   TEXT,
+        responded_at  TIMESTAMPTZ,
+        updated_at    TIMESTAMPTZ DEFAULT NOW(),
+        created_at    TIMESTAMPTZ DEFAULT NOW()
+      );
+    `);
   console.log('  ✅ quotes');
 
   await query(`
