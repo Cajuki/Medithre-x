@@ -1,13 +1,20 @@
-.quote-layout { display: grid; grid-template-columns: 1fr 300px; gap: 32px; padding: 40px 0 64px; align-items: start; }
+.quote-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 300px); gap: 32px; padding: 40px 0 64px; align-items: start; }
+.quote-form-wrap,
+.quote-form,
+.quote-item-fields,
+.quote-side,
+.quote-side-card { min-width: 0; }
 .quote-form { display: flex; flex-direction: column; gap: 20px; }
 .form-section-card { background: var(--white); border: 1.5px solid var(--white-3); border-radius: var(--radius-md); padding: 28px 30px; }
 .form-section-card h3 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 20px; }
 .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; }
+.quote-auth-actions { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 2rem; }
 .quote-items { display: flex; flex-direction: column; gap: 16px; }
 .quote-item { display: flex; align-items: flex-start; gap: 12px; padding: 16px; background: var(--white-2); border-radius: var(--radius); }
 .quote-item-num { width: 28px; height: 28px; background: var(--yellow); color: var(--black); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-condensed); font-weight: 700; font-size: 0.85rem; flex-shrink: 0; margin-top: 10px; }
 .quote-item-fields { flex: 1; display: flex; flex-direction: column; gap: 10px; }
 .quote-item-row2 { display: flex; gap: 12px; align-items: flex-end; }
+.quote-item-notes { flex: 1; min-width: 0; }
 .remove-item-btn { color: var(--grey); margin-top: 10px; transition: var(--transition); }
 .remove-item-btn:hover { color: var(--red); }
 
@@ -19,6 +26,13 @@
 .quote-contact-card { background: var(--black); border-color: var(--black); }
 .quote-contact-card h4 { color: var(--yellow); }
 .quote-contact-card p { font-size: 0.83rem; color: rgba(255,255,255,0.5); margin-bottom: 14px; }
+.quote-contact-card .btn,
+.quote-success-contact a {
+  min-width: 0;
+  white-space: normal;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
 
 /* ── Success state ────────────────────────────────── */
 .quote-success { min-height: 70vh; display: flex; align-items: center; justify-content: center; padding: 60px 20px; }
@@ -148,6 +162,8 @@
 
 /* ── Phones (600px) ─────────────────────────────────────────── */
 @media (max-width: 600px) {
+  .quote-auth-actions { flex-direction: column; align-items: stretch; gap: 10px; margin-top: 1.5rem; }
+  .quote-auth-actions .btn { width: 100%; justify-content: center; }
   .quote-form { gap: 14px; }
   .form-section-card { padding: 18px 14px; }
   .form-section-card h3 { font-size: 1.15rem; margin-bottom: 14px; }
@@ -160,6 +176,7 @@
   .quote-item-row2 { flex-direction: column; align-items: stretch; gap: 8px; }
   .quote-item-row2 > div { width: 100%; }
   .quote-item-row2 input[type="number"] { width: 100% !important; }
+  .remove-item-btn { align-self: flex-end; margin-top: -34px; min-width: 36px; min-height: 36px; }
 
   .quote-side-card { padding: 18px 16px; }
   .quote-side-card h4 { font-size: 0.8rem; }
@@ -184,6 +201,7 @@
 
   .form-section-card { padding: 16px 12px; }
   .form-section-card h3 { font-size: 1.05rem; }
+  .quote-item { padding: 12px 10px; }
 
   .form-input { padding: 11px 13px; font-size: 17px; }
   .form-select { padding: 11px 13px; font-size: 17px; }
@@ -194,7 +212,7 @@
 
   .success-card { padding: 36px 20px; }
   .success-card h2 { font-size: 1.6rem; }
-  .order-num { font-size: 0.9rem; }
+  .order-num { max-width: 100%; font-size: 0.9rem; white-space: normal; overflow-wrap: anywhere; }
 
   /* Status grade badge smaller */
   .quote-grade-badge { font-size: 0.72rem; padding: 2px 8px; }

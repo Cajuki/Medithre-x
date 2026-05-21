@@ -43,9 +43,9 @@ export default function QuotePage() {
             <p className="section-label">Access Required</p>
             <h1>Please Sign In</h1>
             <p>You need to be signed in to request a quote. Please log in or create an account.</p>
-            <div style={{ marginTop: '2rem' }}>
+            <div className="quote-auth-actions">
               <Link to="/login" className="btn btn-primary">Sign In</Link>
-              <Link to="/register" className="btn btn-outline" style={{ marginLeft: '1rem' }}>Create Account</Link>
+              <Link to="/register" className="btn btn-outline">Create Account</Link>
             </div>
           </div>
         </div>
@@ -165,7 +165,7 @@ export default function QuotePage() {
                           <label className="form-label">Quantity</label>
                           <input type="number" min="1" className="form-input" value={item.quantity} onChange={e => setItem(i, 'quantity', e.target.value)} style={{ width: '100px' }} />
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div className="quote-item-notes">
                           <label className="form-label">Specifications / Notes</label>
                           <input className="form-input" value={item.notes} onChange={e => setItem(i, 'notes', e.target.value)} placeholder="Model preference, features needed..." />
                         </div>

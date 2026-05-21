@@ -25,7 +25,7 @@ export default function ForgotPassword() {
       toast.success('If an account exists with that email, you will receive reset instructions.');
       setStep(2);
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to send reset email. Please try again.');
+      toast.error(err.response?.data?.message || err.response?.data?.error || 'Failed to send reset email. Please try again.');
     } finally {
       setLoading(false);
     }
