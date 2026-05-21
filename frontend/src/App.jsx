@@ -24,6 +24,9 @@ import RegisterPage      from './pages/RegisterPage.jsx';
 import ForgotPassword    from './pages/ForgotPassword.jsx';
 import ResetPassword     from './pages/ResetPassword.jsx';
 import AccountPage       from './pages/AccountPage.jsx';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage.jsx';
+import TermsOfServicePage from './pages/TermsOfServicePage.jsx';
+import ReturnsPage       from './pages/ReturnsPage.jsx';
 
 // Admin pages
 import AdminLayout      from './pages/admin/AdminLayout.jsx';
@@ -88,12 +91,15 @@ export default function App() {
                 <Route path="/checkout"    element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
                 <Route path="/quote"       element={<QuotePage />} />
                 <Route path="/contact"     element={<ContactPage />} />
-                <Route path="/about"       element={<AboutPage />} />
-                 <Route path="/login"       element={<LoginPage />} />
-                 <Route path="/register"    element={<RegisterPage />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/account/*"   element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
+                 <Route path="/about"       element={<AboutPage />} />
+                  <Route path="/privacy"     element={<PrivacyPolicyPage />} />
+                  <Route path="/terms"       element={<TermsOfServicePage />} />
+                  <Route path="/returns"     element={<ReturnsPage />} />
+                  <Route path="/login"       element={<LoginPage />} />
+                  <Route path="/register"    element={<RegisterPage />} />
+                   <Route path="/forgot-password" element={<ForgotPassword />} />
+                   <Route path="/reset-password" element={<ResetPassword />} />
+                   <Route path="/account/*"   element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
               </Routes>
             </PublicLayout>
           } />

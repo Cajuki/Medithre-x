@@ -1,156 +1,85 @@
 import { createHash } from 'crypto';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import { Resend } from 'resend';
 
-/**
- * Hash token (stored in DB)
- */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
+const resend = process.env.RESEND_API_KEY
+  ? new Resend(process.env.RESEND_API_KEY)
+  : null;
+
+const defaultFrom = 'MedithreX <medithrexmedicalsolutions@gmail.com>';
+
 export const hashToken = (token) => {
   return createHash('sha256').update(token).digest('hex');
 };
 
-/**
- * Verify a plain token against its stored hash.
- */
 export const verifyToken = (plainToken, storedHash) => {
   const hashed = createHash('sha256').update(plainToken).digest('hex');
   return hashed === storedHash;
 };
 
-// Mock transporter for when email credentials are not set or email sending is disabled
-const mockTransporter = {
-  verify: async () => {
-    console.log('📧 [MOCK] SMTP transporter verified (email sending disabled)');
-    return true;
-  },
-  sendMail: async (mailOptions) => {
-    console.log('📧 [MOCK] Password reset email sent (simulated):');
-    console.log('   to       :', mailOptions.to);
-    console.log('   subject  :', mailOptions.subject);
-    console.log('   resetUrl :', mailOptions.text.match(/https?:\/\/[^\s]+/)[0]);
-    return { messageId: `mock-${Date.now()}` };
+export const sendEmail = async ({ to, subject, html, text }) => {
+  if (!to) throw new Error('sendEmail: to is required');
+  if (!subject) throw new Error('sendEmail: subject is required');
+  if (!html && !text) throw new Error('sendEmail: html or text is required');
+  if (!resend) throw new Error('RESEND_API_KEY is not configured');
+
+  const response = await resend.emails.send({
+    from: process.env.EMAIL_FROM || defaultFrom,
+    to,
+    subject,
+    html,
+    text,
+  });
+
+  if (response.error) {
+    throw new Error(response.error.message || 'Resend failed to send email');
   }
+
+  console.log('Password/email sent via Resend:', {
+    to,
+    subject,
+    id: response.data?.id,
+  });
+
+  return response.data;
 };
 
-// Use real transporter only if credentials are explicitly set, otherwise use mock
-const transporter = (process.env.EMAIL_USER && process.env.EMAIL_PASS) 
-  ? (() => {
-      const nodemailer = require('nodemailer');
-      return nodemailer.createTransport({
-        host: process.env.EMAIL_HOST || 'smtp.gmail.com',
-        port: Number(process.env.EMAIL_PORT) || 587,
-        secure: String(process.env.EMAIL_PORT) === '465', // true for 465 (SSL), false for 587 (STARTTLS)
-        auth: {
-          user: process.env.EMAIL_USER ?? process.env.EMAIL_USERNAME ?? '',
-          pass: process.env.EMAIL_PASS ?? process.env.EMAIL_PASSWORD ?? '',
-        },
-      });
-    })()
-  : mockTransporter;
-
-/**
- * Lightweight preflight check — never throws, always logs its result.
- */
-const verifyTransporter = async () => {
-  try {
-    await transporter.verify();
-    if (transporter === mockTransporter) {
-      console.log('📧 [MOCK] SMTP transporter verified (email sending disabled)');
-    } else {
-      console.log('✅ SMTP transporter verified');
-    }
-  } catch (err) {
-    console.error('❌ SMTP transporter verification failed:', err.message);
-  }
-};
-verifyTransporter();
-
-/**
- * Smoke-test the transporter at module load.
- * If credentials or host are bad this is the single noisy line in logs
- * that tells you "email is broken" before any user request arrives.
- */
-if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-  const hostLabel = process.env.EMAIL_HOST || 'smtp.gmail.com:587';
-  console.log(`📧 SMTP ready → ${hostLabel} (user: ${process.env.EMAIL_USER})`);
-} else {
-  console.warn('⚠️  EMAIL_USER / EMAIL_PASS not set — password reset emails will be simulated (no actual sending).');
-}
-
-/**
- * Send password reset email.
- *
- * @param {string} email      Recipient e-mail address
- * @param {string} resetUrl   Full URL the user clicks to reset their password
- */
 export const sendPasswordResetEmail = async (email, resetUrl) => {
-  if (!email)    throw new Error('sendPasswordResetEmail: email is required');
+  if (!email) throw new Error('sendPasswordResetEmail: email is required');
   if (!resetUrl) throw new Error('sendPasswordResetEmail: resetUrl is required');
 
-  const mailOptions = {
-    from: process.env.EMAIL_FROM || `"Medithre-x" <${process.env.EMAIL_USER || 'noreply@example.com'}>`,
+  return sendEmail({
     to: email,
     subject: 'Reset Your Password',
     text: `Reset your password using this link:\n\n${resetUrl}\n\nThis link expires in 1 hour.`,
     html: `
-      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#333;max-width:500px;margin:0 auto">
-        <h2 style="color:#111">Password Reset Request</h2>
-        <p>You asked to reset your password. Click the button below to set a new one:</p>
-        <p>
+      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#333;max-width:520px;margin:0 auto">
+        <h2 style="color:#111;margin:0 0 16px">Password Reset Request</h2>
+        <p>You asked to reset your MedithreX password. Click the button below to set a new one:</p>
+        <p style="margin:24px 0">
           <a
             href="${resetUrl}"
-            style="
-              display:inline-block;
-              padding:12px 24px;
-              background:#2563eb;
-              color:#fff;
-              text-decoration:none;
-              font-weight:700;
-              border-radius:6px;
-              font-size:16px;"
+            style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;text-decoration:none;font-weight:700;border-radius:6px;font-size:16px"
           >Reset Password</a>
         </p>
         <p style="font-size:13px;color:#666">
           This link expires in <strong>1 hour</strong> and can only be used once.
         </p>
         <p style="font-size:13px;color:#666">
-          If you did not request this, you can safely ignore this email — your account
-          is not at risk.
+          If you did not request this, you can safely ignore this email.
         </p>
         <hr style="border:none;border-top:1px solid #eee;margin:24px 0" />
         <p style="font-size:11px;color:#999">
-          Medithre-x &copy; ${new Date().getFullYear()}
+          MedithreX &copy; ${new Date().getFullYear()}
         </p>
       </div>
     `,
-  };
-
-  try {
-    const info = await transporter.sendMail(mailOptions);
-
-    if (transporter === mockTransporter) {
-      console.log('📧 [MOCK] Password reset email sent (simulated):');
-      console.log('   to       :', email);
-      console.log('   messageId:', info.messageId);
-    } else {
-      console.log('✅ Password reset email sent');
-      console.log('   to       :', email);
-      console.log('   messageId:', info.messageId);
-    }
-
-  } catch (err) {
-    // Nodemailer wraps the SMTP server's response inside err.response
-    const code    = err.code    ?? '(no code)';
-    const command = err.command ?? '(no command)';
-    const resp    = err.response ?? '(no response body)';
-    const summary = `[${code}] ${command}: ${String(resp).substring(0, 140)}`;
-
-    console.error('❌ Email send failed —', summary);
-    console.error('   SMTP code   :', code);
-    console.error('   SMTP command:', command);
-    console.error('   SMTP reply  :', resp);
-    console.error('   recipient   :', email);
-
-    // Throw the full SMTP summary so auth.js catch block can log
-    // and forward it to the client in every environment.
-    throw new TypeError(summary);
-  }
+  });
 };

@@ -104,9 +104,9 @@ export default function Footer() {
         <div className="container">
           <p>© {new Date().getFullYear()} medithrex Medical Solutions. All rights reserved.</p>
           <div className="footer-bottom-links">
-            <a href={`mailto:${BUSINESS_EMAIL}?subject=Privacy%20Policy%20Request`}>Privacy Policy</a>
-            <a href={`mailto:${BUSINESS_EMAIL}?subject=Terms%20of%20Service%20Request`}>Terms of Service</a>
-            <a href={`mailto:${BUSINESS_EMAIL}?subject=Returns%20Policy%20Request`}>Returns Policy</a>
+            <Link to="/privacy">Privacy Policy</Link>
+            <Link to="/terms">Terms of Service</Link>
+            <Link to="/returns">Returns Policy</Link>
           </div>
         </div>
       </div>

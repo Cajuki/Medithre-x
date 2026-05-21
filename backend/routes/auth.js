@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { query } from '../db/pool.js';
 import { protect } from '../middleware/auth.js';
-import { sendPasswordResetEmail, hashToken, verifyToken } from '../utils/email.js';
+import { sendPasswordResetEmail, hashToken } from '../utils/email.js';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'medithrex_secret_2024';
