@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { RotateCcw, ChevronRight, AlertTriangle, CheckCircle, XCircle, Phone, Mail, Clock } from 'lucide-react';
+import './PolicyPages.css';
 
 const LAST_UPDATED = '1 June 2025';
 
@@ -45,9 +46,9 @@ const TOC = [
 
 export default function ReturnsPage() {
   return (
-    <div>
+    <div className="policy-page">
       {/* Hero */}
-      <div style={{ background: 'var(--black)', padding: '52px 0 44px', position: 'relative', overflow: 'hidden' }}>
+      <div className="policy-hero" style={{ background: 'var(--black)', padding: '52px 0 44px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', right: 0, top: 0, width: '40%', height: '100%', background: 'linear-gradient(135deg, transparent 40%, rgba(245,195,0,0.04))', pointerEvents: 'none' }}/>
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)', marginBottom: 16 }}>
@@ -83,11 +84,11 @@ export default function ReturnsPage() {
         </div>
       </div>
 
-      <div className="container" style={{ padding: '52px 24px 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 52, alignItems: 'start' }}>
+      <div className="container policy-shell" style={{ padding: '52px 24px 80px' }}>
+        <div className="policy-layout" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 52, alignItems: 'start' }}>
 
           {/* TOC */}
-          <nav style={{ position: 'sticky', top: 90, background: 'var(--white)', border: '1px solid var(--white-200)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+          <nav className="policy-toc" style={{ position: 'sticky', top: 90, background: 'var(--white)', border: '1px solid var(--white-200)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
             <div style={{ background: 'var(--black)', padding: '14px 18px' }}>
               <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.8rem', color: 'var(--white)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Contents</span>
             </div>
@@ -111,13 +112,13 @@ export default function ReturnsPage() {
           </nav>
 
           {/* Content */}
-          <div>
+          <div className="policy-content">
             <Section id="overview" title="1. Policy Overview">
               <P>At Medithrex Medical Solutions, we are committed to supplying high-quality, certified medical and laboratory equipment. We understand that occasionally a return may be necessary, and we are committed to handling all return requests fairly and efficiently.</P>
               <P><strong>We accept returns.</strong> However, to protect both our customers and the integrity of medical equipment in the healthcare supply chain, all returns must comply strictly with the conditions set out in this policy.</P>
 
               {/* Summary cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, margin: '24px 0' }}>
+              <div className="policy-stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, margin: '24px 0' }}>
                 {[
                   { icon: <Clock size={22}/>, title: '24 Hours', desc: 'Return window from delivery', color: '#FEF3C7', border: 'rgba(245,195,0,0.3)', iconColor: 'var(--yellow-600)' },
                   { icon: <CheckCircle size={22}/>, title: 'Good Condition', desc: 'Goods must be undamaged & unused', color: 'var(--green-light)', border: 'rgba(5,150,105,0.2)', iconColor: 'var(--green)' },
@@ -157,7 +158,7 @@ export default function ReturnsPage() {
             <Section id="condition" title="3. Condition of Returned Goods">
               <P>Medithrex will only accept returned goods that meet the following condition requirements. This policy exists to maintain the safety and integrity of medical equipment re-entering the supply chain.</P>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, margin: '20px 0' }}>
+              <div className="policy-split-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, margin: '20px 0' }}>
                 {/* Acceptable */}
                 <div style={{ background: 'var(--green-light)', border: '1px solid rgba(5,150,105,0.2)', borderRadius: 'var(--radius-md)', padding: '18px 20px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
@@ -223,7 +224,7 @@ export default function ReturnsPage() {
                 { step: '04', title: 'Arrange Collection or Drop-Off', desc: 'For large equipment, we will arrange collection at our cost if the return is approved and our fault. For smaller items, you may drop off at Pramukh Plaza — Shop 19, Nairobi CBD, or use a reputable courier at your cost.' },
                 { step: '05', title: 'Inspection & Resolution', desc: 'We will inspect the returned goods within 2 business days. You will receive a written outcome — either a full refund, replacement, or repair — within 5 business days of receipt.' },
               ].map(step => (
-                <div key={step.step} style={{ display: 'flex', gap: 20, marginBottom: 20 }}>
+                <div key={step.step} className="policy-step-row" style={{ display: 'flex', gap: 20, marginBottom: 20 }}>
                   <div style={{ width: 44, height: 44, background: 'var(--black)', color: 'var(--yellow)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '0.9rem', flexShrink: 0 }}>{step.step}</div>
                   <div>
                     <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.9375rem', color: 'var(--black)', marginBottom: 5 }}>{step.title}</div>

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FileText, ChevronRight } from 'lucide-react';
+import './PolicyPages.css';
 
 const LAST_UPDATED = '1 June 2025';
 
@@ -49,9 +50,9 @@ const TOC = [
 
 export default function TermsOfServicePage() {
   return (
-    <div>
+    <div className="policy-page">
       {/* Hero */}
-      <div style={{ background: 'var(--black)', padding: '52px 0 44px', position: 'relative', overflow: 'hidden' }}>
+      <div className="policy-hero" style={{ background: 'var(--black)', padding: '52px 0 44px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', right: 0, top: 0, width: '40%', height: '100%', background: 'linear-gradient(135deg, transparent 40%, rgba(245,195,0,0.04))', pointerEvents: 'none' }}/>
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)', marginBottom: 16 }}>
@@ -74,11 +75,11 @@ export default function TermsOfServicePage() {
         </div>
       </div>
 
-      <div className="container" style={{ padding: '52px 24px 80px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 52, alignItems: 'start' }}>
+      <div className="container policy-shell" style={{ padding: '52px 24px 80px' }}>
+        <div className="policy-layout" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: 52, alignItems: 'start' }}>
 
           {/* Sticky TOC */}
-          <nav style={{ position: 'sticky', top: 90, background: 'var(--white)', border: '1px solid var(--white-200)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+          <nav className="policy-toc" style={{ position: 'sticky', top: 90, background: 'var(--white)', border: '1px solid var(--white-200)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
             <div style={{ background: 'var(--black)', padding: '14px 18px' }}>
               <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.8rem', color: 'var(--white)', letterSpacing: '0.06em', textTransform: 'uppercase' }}>Contents</span>
             </div>
@@ -96,7 +97,7 @@ export default function TermsOfServicePage() {
           </nav>
 
           {/* Content */}
-          <div>
+          <div className="policy-content">
             <div style={{ background: 'var(--yellow-50)', border: '1px solid rgba(245,195,0,0.3)', borderRadius: 'var(--radius-md)', padding: '16px 20px', marginBottom: 40, fontSize: '0.875rem', color: 'var(--grey-700)', lineHeight: 1.7 }}>
               <strong>Summary:</strong> These Terms of Service govern your use of the Medithrex Medical Solutions website and the purchase of products through our platform. These terms are governed by the laws of Kenya, including the <strong>Consumer Protection Act, 2012</strong>, the <strong>Electronic Transactions Act, 2023</strong>, and other applicable Kenyan legislation.
             </div>
