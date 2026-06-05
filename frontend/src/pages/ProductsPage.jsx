@@ -132,7 +132,7 @@ export default function ProductsPage() {
   // Section toggle helper
   const Section = ({ label, expanded, toggle, children }) => (
     <div className="filter-section">
-      <button className="filter-section-head" onClick={toggle}>
+      <button type="button" className="filter-section-head" onClick={toggle}>
         <span>{label}</span>
         {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
       </button>
@@ -190,12 +190,13 @@ export default function ProductsPage() {
                   <div className="filter-panel-inner">
                     <div className="filter-panel-header">
                       <span>Filters {activeFilterCount > 0 && <em>({activeFilterCount} active)</em>}</span>
-                      <button className="filter-panel-close" onClick={() => setPanelOpen(false)}><X size={16} /></button>
+                      <button type="button" className="filter-panel-close" onClick={() => setPanelOpen(false)}><X size={16} /></button>
                     </div>
 
                   {/* Category */}
                   <Section label="Category" expanded={catExpanded} toggle={() => setCatExpanded(o => !o)}>
                     <button
+                      type="button"
                       className={`fp-cat-btn${!category ? ' active' : ''}`}
                       onClick={() => setParam('category', '')}
                     >
@@ -203,6 +204,7 @@ export default function ProductsPage() {
                     </button>
                     {categories.map(cat => (
                       <button
+                        type="button"
                         key={cat}
                         className={`fp-cat-btn${category === cat ? ' active' : ''}`}
                         onClick={() => { setParam('category', cat); }}
@@ -216,6 +218,7 @@ export default function ProductsPage() {
                   <Section label="Price Range" expanded={priceExpanded} toggle={() => setPriceExpanded(o => !o)}>
                     {PRICE_RANGES.map(r => (
                       <button
+                        type="button"
                         key={r.label}
                         className={`fp-cat-btn${priceRange.label === r.label ? ' active' : ''}`}
                         onClick={() => setPriceRange(r)}
@@ -241,6 +244,7 @@ export default function ProductsPage() {
                   <Section label="Sort By" expanded={sortExpanded} toggle={() => setSortExpanded(o => !o)}>
                     {SORT_OPTIONS.map(opt => (
                       <button
+                        type="button"
                         key={opt.value}
                         className={`fp-cat-btn${sortBy === opt.value ? ' active' : ''}`}
                         onClick={() => setSortBy(opt.value)}
@@ -251,10 +255,10 @@ export default function ProductsPage() {
                   </Section>
 
                   <div className="filter-panel-footer">
-                    <button className="btn btn-outline btn-sm" onClick={() => { clearAll(); setPanelOpen(false); }}>
+                    <button type="button" className="btn btn-outline btn-sm" onClick={() => { clearAll(); setPanelOpen(false); }}>
                       <X size={13} /> Clear All
                     </button>
-                    <button className="btn btn-primary btn-sm" onClick={() => setPanelOpen(false)}>
+                    <button type="button" className="btn btn-primary btn-sm" onClick={() => setPanelOpen(false)}>
                       Apply Filters
                     </button>
                   </div>

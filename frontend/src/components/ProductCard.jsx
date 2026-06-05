@@ -56,12 +56,23 @@ export default function ProductCard({ product }) {
           </div>
           <div className="product-card-actions">
             {product.priceOnRequest ? (
-              <Link to={`/quote?product=${product.id}&name=${encodeURIComponent(product.name)}`} className="btn btn-primary btn-sm">
-                <FileText size={14} /> Quote
+              <Link
+                to={`/quote?product=${product.id}&name=${encodeURIComponent(product.name)}`}
+                className="product-action-btn quote-action"
+                aria-label={`Request quote for ${product.name}`}
+                title="Request quote"
+              >
+                <FileText size={17} />
               </Link>
             ) : (
-              <button onClick={handleAddToCart} className="btn btn-dark btn-sm" disabled={!product.inStock}>
-                <ShoppingCart size={14} /> {product.inStock ? 'Add to Cart' : 'Unavailable'}
+              <button
+                onClick={handleAddToCart}
+                className="product-action-btn cart-action"
+                disabled={!product.inStock}
+                aria-label={product.inStock ? `Add ${product.name} to cart` : `${product.name} is unavailable`}
+                title={product.inStock ? 'Add to cart' : 'Unavailable'}
+              >
+                <ShoppingCart size={17} />
               </button>
             )}
           </div>
