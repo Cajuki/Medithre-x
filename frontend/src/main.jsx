@@ -8,7 +8,7 @@ import './index.css';
 // ── API Base URL ──────────────────────────────────────────────────────────────
 // In development: Vite proxy handles /api → localhost:8080
 // In production: set VITE_API_URL in your .env.production file to your Cloud Run URL
-//   e.g. VITE_API_URL=https://medithrex-backend-xxxxx-uc.a.run.app
+//   e.g. VITE_API_URL=https://api.meditrex.site
 const API_URL = import.meta.env.VITE_API_URL || '';
 axios.defaults.baseURL = API_URL;
 axios.defaults.headers.common['Content-Type'] = 'application/json';
