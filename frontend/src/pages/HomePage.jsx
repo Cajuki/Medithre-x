@@ -40,7 +40,7 @@ const HERO_SLIDES = [
 const STATS = [
   { value: '200+',   label: 'Institutions Served' },
   { value: '1,500+', label: 'Products Available' },
-  { value: '8+',     label: 'Years Experience' },
+  { value: '2+',     label: 'Years Experience' },
   { value: '47',     label: 'Kenyan Counties' },
 ];
 
