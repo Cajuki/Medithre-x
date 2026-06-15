@@ -37,6 +37,16 @@ const corsOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || ''
   .map(origin => origin.trim())
   .filter(Boolean);
 
+// Ensure we have at least the known frontend origins if env vars are not set
+if (corsOrigins.length === 0) {
+  corsOrigins.push('https://medithrex.site', 'https://www.medithrex.site');
+}
+
+// Add localhost origins for development
+if (process.env.NODE_ENV !== 'production') {
+  corsOrigins.push('http://localhost:5173', 'http://localhost:3000');
+}
+
 app.use(cors({
   origin: corsOrigins,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
