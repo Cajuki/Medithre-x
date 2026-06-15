@@ -6,6 +6,10 @@
   ],
   "rewrites": [
     {
+      "source": "/sitemap.xml",
+      "destination": "https://medithre-x-180462915671.europe-west1.run.app/sitemap.xml"
+    },
+    {
       "source": "/api/:path*",
       "destination": "https://medithre-x-180462915671.europe-west1.run.app/api/:path*"
     },
