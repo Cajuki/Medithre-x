@@ -1,11 +1,16 @@
 {
+  "routes": [
+    { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
+    { "src": "/robots.txt", "dest": "/robots.txt" },
+    { "src": "/favicon.svg", "dest": "/favicon.svg" }
+  ],
   "rewrites": [
     {
       "source": "/api/:path*",
       "destination": "https://medithre-x-180462915671.europe-west1.run.app/api/:path*"
     },
     {
-      "source": "/(?!sitemap\\.xml|robots\\.txt|favicon\\.svg|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.webp|.*\\.gif|.*\\.ico|.*\\.css|.*\\.js).*",
+      "source": "/*",
       "destination": "/index.html"
     }
   ],
@@ -13,19 +18,13 @@
     {
       "source": "/sitemap.xml",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/xml; charset=utf-8"
-        }
+        { "key": "Content-Type", "value": "application/xml; charset=utf-8" }
       ]
     },
     {
       "source": "/robots.txt",
       "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/plain; charset=utf-8"
-        }
+        { "key": "Content-Type", "value": "text/plain; charset=utf-8" }
       ]
     }
   ]
