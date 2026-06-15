@@ -38,12 +38,7 @@ const corsOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || ''
   .filter(Boolean);
 
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || corsOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    callback(new Error(`CORS policy does not allow access from ${origin}`));
-  },
+  origin: corsOrigins,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
