@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { Phone, Mail, MapPin, Clock, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { isValidEmail, isValidKenyanPhone, normalizeKenyanPhone, KENYAN_PHONE_HINT } from '../utils/validation.js';
+import Seo from '../components/Seo.jsx';
 import { BUSINESS_EMAIL, BUSINESS_LOCATION, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
 import './ContactPage.css';
 
@@ -46,6 +47,11 @@ export default function ContactPage() {
 
   return (
     <div>
+      <Seo
+        title="Contact Us"
+        description="Contact Medithrex for product enquiries, quotes, or technical support for medical and laboratory equipment in Kenya."
+        url={window.location.href}
+      />
       <div className="page-hero">
         <div className="container page-hero-content">
           <p className="section-label">Get In Touch</p>

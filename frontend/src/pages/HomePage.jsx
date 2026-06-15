@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import Seo from '../components/Seo.jsx';
 import {
   ArrowRight, CheckCircle, Phone, Star,
   Shield, Truck, Headphones, Award, ChevronRight, ImagePlus
@@ -92,6 +93,11 @@ export default function HomePage() {
 
   return (
     <div className="home">
+      <Seo
+        title="Kenya's Leading Medical Equipment Supplier"
+        description="Medithrex supplies hospitals, clinics, and laboratories in Kenya with medical and laboratory equipment, installation support, and trusted brands."
+        url="https://medithrex.site/"
+      />
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
       <section className="hero">

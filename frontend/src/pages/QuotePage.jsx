@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { CheckCircle, Plus, Trash2, Phone, Mail } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { isValidEmail, isValidKenyanPhone, normalizeKenyanPhone, KENYAN_PHONE_HINT } from '../utils/validation.js';
+import Seo from '../components/Seo.jsx';
 import { BUSINESS_EMAIL, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
 import './QuotePage.css';
 
@@ -38,6 +39,12 @@ export default function QuotePage() {
   if (!user) {
     return (
       <div>
+        <Seo
+          title="Request a Quote"
+          description="Sign in to request a quote for medical or laboratory equipment with Medithrex. Secure competitive pricing and delivery across Kenya."
+          url={window.location.href}
+          noindex={true}
+        />
         <div className="page-hero">
           <div className="container page-hero-content">
             <p className="section-label">Access Required</p>
@@ -99,6 +106,11 @@ export default function QuotePage() {
 
   return (
     <div>
+      <Seo
+        title="Request a Quote"
+        description="Submit a quote request for medical and laboratory equipment from Medithrex and receive a tailored offer within 24 hours."
+        url={window.location.href}
+      />
       <div className="page-hero">
         <div className="container page-hero-content">
           <p className="section-label">Get Competitive Pricing</p>

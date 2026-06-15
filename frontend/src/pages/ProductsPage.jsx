@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Search, SlidersHorizontal, X, ChevronDown, ChevronUp, Check } from 'lucide-react';
+import Seo from '../components/Seo.jsx';
 import ProductCard from '../components/ProductCard.jsx';
 import './ProductsPage.css';
 
@@ -123,6 +124,14 @@ export default function ProductsPage() {
     setSearchParams({});
   };
 
+  const pageTitle = category
+    ? `${category} Equipment — medithrex`
+    : 'Medical & Laboratory Equipment — medithrex';
+
+  const pageDescription = category
+    ? `Browse medithrex's ${category} category for certified medical and laboratory equipment with delivery across Kenya.`
+    : 'Explore medithrex’s catalogue of certified medical and laboratory equipment for hospitals, clinics, and labs across Kenya.';
+
   const activeFilterCount = [
     category, search, inStock === 'true',
     priceRange.min !== null || priceRange.max !== null,
@@ -142,6 +151,12 @@ export default function ProductsPage() {
 
   return (
     <div className="products-page">
+      <Seo
+        title={pageTitle}
+        description={pageDescription}
+        url={window.location.href}
+      />
+
       {/* Page hero */}
       <div className="page-hero">
         <div className="container page-hero-content">

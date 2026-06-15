@@ -4,6 +4,8 @@ import axios from 'axios';
 import { ShoppingCart, FileText, ArrowLeft, ArrowRight, CheckCircle, Package, Phone, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext.jsx';
 import toast from 'react-hot-toast';
+import { resolveAssetUrl } from '../utils/assets.js';
+import Seo from '../components/Seo.jsx';
 import { PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
 import './ProductDetailPage.css';
 
@@ -76,6 +78,13 @@ export default function ProductDetailPage() {
 
   return (
     <div className="product-detail-page">
+      <Seo
+        title={product.name}
+        description={product.description || `Buy ${product.name} from Medithrex with delivery across Kenya, installation support, and manufacturer warranty.`}
+        image={resolveAssetUrl(product.images?.[0] || '')}
+        url={window.location.href}
+      />
+
       {/* Breadcrumb */}
       <div className="breadcrumb-bar">
         <div className="container breadcrumb">

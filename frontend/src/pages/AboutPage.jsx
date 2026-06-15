@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle, Users, MapPin, Award, Truck } from 'lucide-react';
+import Seo from '../components/Seo.jsx';
 import fidelPhoto from '../Assets/fidel.png';
 import christlayPhoto from '../Assets/chris.png';
 import { BUSINESS_LOCATION, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
@@ -20,6 +21,11 @@ const VALUES = [
 export default function AboutPage() {
   return (
     <div className="about-page">
+      <Seo
+        title="About Medithrex"
+        description="Learn about Medithrex, a Kenyan medical equipment supplier providing certified products, nationwide delivery, and after-sales support."
+        url={window.location.href}
+      />
 
       {/* Hero */}
       <div className="page-hero">
