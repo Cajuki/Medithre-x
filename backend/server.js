@@ -32,23 +32,26 @@ app.set('trust proxy', 1);
 // ─────────────────────────────────────────────
 // CORS CONFIG (FIXED for frontend stability)
 // ─────────────────────────────────────────────
-const corsOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || '')
-  .split(',')
-  .map(origin => origin.trim())
-  .filter(Boolean);
-
-// Ensure we have at least the known frontend origins if env vars are not set
-if (corsOrigins.length === 0) {
-  corsOrigins.push('https://medithrex.site', 'https://www.medithrex.site');
-}
-
-// Add localhost origins for development
-if (process.env.NODE_ENV !== 'production') {
-  corsOrigins.push('http://localhost:5173', 'http://localhost:3000');
-}
-
 app.use(cors({
-  origin: corsOrigins,
+  origin: (origin, callback) => {
+    // Allow specific origins
+    const allowedOrigins = [
+      'https://medithrex.site',
+      'https://www.medithrex.site',
+      'http://localhost:5173',
+      'http://localhost:3000'
+    ];
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      console.error(`CORS blocked: ${origin}`);
+      return callback(new Error(`CORS policy does not allow access from ${origin}`));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
