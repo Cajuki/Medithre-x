@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://medithrex.site/sitemap.xml
+Sitemap: https://medithre-x-180462915671.europe-west1.run.app/sitemap.xml
+Host: medithrex.site
