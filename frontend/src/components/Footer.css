@@ -10,7 +10,7 @@
 
 .footer-logo { margin-bottom: 16px; }
 .footer-logo-image {
-  height: 55px;
+  height: 65px;
   width: auto;
   object-fit: contain;
   transition: var(--transition);
