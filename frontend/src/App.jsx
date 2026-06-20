@@ -48,7 +48,7 @@ function PublicLayout({ children }) {
   return (
     <>
       <Navbar />
-      <main>{children}</main>
+      <main className="public-shell">{children}</main>
       <Footer />
     </>
   );
@@ -62,8 +62,8 @@ export default function App() {
         <Toaster
           position="top-right"
           toastOptions={{
-            style: { background: '#111', color: '#fff', borderRadius: '4px', fontSize: '0.9rem' },
-            success: { iconTheme: { primary: '#F5C300', secondary: '#111' } },
+            style: { background: '#0b1726', color: '#ffffff', borderRadius: '16px', fontSize: '0.9rem' },
+            success: { iconTheme: { primary: '#0f766e', secondary: '#ffffff' } },
           }}
         />
 
