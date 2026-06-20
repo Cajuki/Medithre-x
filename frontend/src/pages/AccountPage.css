@@ -415,3 +415,21 @@
   .order-card-item { align-items: flex-start; flex-wrap: wrap; }
   .profile-section { padding: 18px 16px; }
 }
+
+@media (max-width: 360px) {
+  .account-page-header h2 { font-size: 1.35rem; }
+  .account-page-header p { font-size: 0.92rem; }
+  .dashboard-stats { grid-template-columns: 1fr; }
+  .dash-stat-card { padding: 14px; }
+  .dash-stat-label { font-size: 0.7rem; }
+  .dash-stat-val { font-size: 1.35rem; }
+  .account-nav { padding: 10px; }
+  .account-nav-link,
+  .logout-btn {
+    font-size: 0.76rem;
+    padding-inline: 12px;
+  }
+  .quick-action { padding: 14px 14px; font-size: 0.8rem; }
+  .profile-section { padding: 16px 14px; }
+  .profile-info-row { font-size: 0.82rem; gap: 12px; }
+}

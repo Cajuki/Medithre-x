@@ -607,3 +607,66 @@
     display: none;
   }
 }
+
+@media (max-width: 480px) {
+  .admin-topbar {
+    padding: 0 12px;
+    min-height: 60px;
+  }
+
+  .topbar-left {
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .topbar-title {
+    font-size: 0.92rem;
+  }
+
+  .topbar-subtitle {
+    display: none;
+  }
+
+  .admin-content {
+    padding: 10px;
+  }
+
+  .admin-card,
+  .admin-panel {
+    border-radius: 16px;
+  }
+
+  .admin-table {
+    min-width: 540px;
+  }
+
+  .admin-table-wrapper {
+    margin-inline: -10px;
+    padding-inline: 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .admin-topbar {
+    padding: 0 10px;
+  }
+
+  .mobile-menu-btn,
+  .topbar-icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .admin-content {
+    padding: 8px;
+  }
+
+  .admin-section-head {
+    gap: 8px;
+  }
+
+  .admin-page-btn {
+    padding: 7px 10px;
+    font-size: 0.72rem;
+  }
+}

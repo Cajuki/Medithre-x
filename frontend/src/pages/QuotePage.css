@@ -224,3 +224,21 @@
   /* Signature block */
   .quote-signature { margin-top: 12px; }
 }
+
+@media (max-width: 360px) {
+  .quote-auth-actions .btn,
+  .quote-success-contact a {
+    width: 100%;
+  }
+
+  .form-section-card,
+  .quote-side-card,
+  .success-card {
+    padding: 14px 12px;
+  }
+
+  .quote-item-num {
+    width: 24px;
+    height: 24px;
+  }
+}

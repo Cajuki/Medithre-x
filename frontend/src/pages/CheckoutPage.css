@@ -97,3 +97,68 @@
   .checkout-layout { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
 }
+
+@media (max-width: 700px) {
+  .checkout-layout {
+    padding: 28px 0 44px;
+    gap: 20px;
+  }
+
+  .checkout-steps {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .step-line {
+    display: none;
+  }
+
+  .form-section,
+  .checkout-summary {
+    padding: 20px 16px;
+  }
+
+  .checkout-nav {
+    flex-direction: column;
+  }
+
+  .checkout-nav .btn {
+    width: 100%;
+  }
+
+  .checkout-item {
+    align-items: flex-start;
+  }
+
+  .checkout-item img {
+    width: 46px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-success {
+    padding: 40px 16px;
+  }
+
+  .success-card {
+    padding: 34px 18px;
+  }
+
+  .success-card h2 {
+    font-size: 1.7rem;
+  }
+
+  .success-actions .btn {
+    width: 100%;
+  }
+
+  .checkout-item {
+    gap: 10px;
+  }
+
+  .checkout-item strong {
+    white-space: normal;
+    text-align: right;
+  }
+}

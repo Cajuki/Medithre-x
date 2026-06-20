@@ -234,3 +234,16 @@
   .form-row-2 { grid-template-columns: 1fr; }
   .auth-contact { line-height: 1.6; }
 }
+
+@media (max-width: 360px) {
+  .auth-form-panel { padding: 24px 14px 40px; }
+  .auth-form-icon { width: 42px; height: 42px; }
+  .auth-form-header h1 { font-size: 1.5rem; }
+  .auth-form-header p { font-size: 0.84rem; }
+  .auth-submit { font-size: 0.92rem; }
+  .password-strength,
+  .password-match {
+    align-items: flex-start;
+  }
+  .auth-divider { margin: 20px 0; }
+}

@@ -331,3 +331,51 @@
     height: 150px;
   }
 }
+
+@media (max-width: 480px) {
+  .dash-charts-grid,
+  .dash-tables-grid {
+    gap: 12px;
+  }
+
+  .dash-stat-card,
+  .revenue-chart,
+  .status-chart {
+    padding: 14px;
+  }
+
+  .mini-bar-track {
+    width: 84px;
+  }
+
+  .status-bar-label {
+    width: 68px;
+  }
+
+  .bar-chart {
+    height: 132px;
+  }
+}
+
+@media (max-width: 360px) {
+  .dash-stat-val {
+    font-size: 1.35rem;
+  }
+
+  .dash-stat-label {
+    font-size: 0.68rem;
+  }
+
+  .mini-bar-row,
+  .status-bar-row {
+    gap: 8px;
+  }
+
+  .mini-bar-track {
+    width: 72px;
+  }
+
+  .status-bar-count {
+    min-width: 18px;
+  }
+}

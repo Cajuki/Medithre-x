@@ -123,3 +123,32 @@
   .cart-price::before { content: 'Unit: '; color: var(--grey); }
   .cart-subtotal::before { content: 'Subtotal: '; color: var(--grey); }
 }
+
+@media (max-width: 600px) {
+  .cart-layout {
+    padding: 28px 0 44px;
+    gap: 22px;
+  }
+
+  .cart-items,
+  .cart-summary {
+    border-radius: var(--radius);
+  }
+
+  .cart-row {
+    padding: 16px;
+  }
+
+  .cart-product img {
+    width: 60px;
+    height: 50px;
+  }
+
+  .cart-footer-bar {
+    flex-direction: column;
+  }
+
+  .cart-footer-bar .btn {
+    width: 100%;
+  }
+}
