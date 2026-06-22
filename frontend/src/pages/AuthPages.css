@@ -28,14 +28,23 @@
   z-index: 1;
   max-width: 420px;
 }
-.auth-logo { display: flex; flex-direction: column; margin-bottom: 36px; }
-.auth-logo-image {
-  height: 70px;
-  width: auto;
-  object-fit: contain;
+.auth-logo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 36px;
+  text-decoration: none;
+}
+.auth-logo-text {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
+  text-transform: lowercase;
+  color: var(--white);
   transition: var(--transition);
 }
-.auth-logo:hover .auth-logo-image {
+.auth-logo:hover .auth-logo-text {
   transform: scale(1.05);
 }
 .auth-brand-content h2 {

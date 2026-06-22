@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Package, ShoppingCart, FileText,
   Users, MessageSquare, LogOut, Menu, X,
@@ -82,6 +82,10 @@ export default function AdminLayout() {
           <button className="mobile-menu-btn" onClick={() => setMobileOpen(true)}>
             <Menu size={22} />
           </button>
+          <Link to="/admin" className="admin-topbar-brand">
+            <span className="admin-topbar-wordmark">medithrex</span>
+            <span className="admin-topbar-tag">Admin</span>
+          </Link>
           <div className="admin-topbar-right" style={{ marginLeft: 'auto' }}>
             <a href="/" target="_blank" rel="noreferrer" className="topbar-site-btn">View Site ↗</a>
             <div className="topbar-avatar">{user?.name?.slice(0, 2).toUpperCase()}</div>

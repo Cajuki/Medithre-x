@@ -23,14 +23,18 @@
   margin-bottom: 18px;
 }
 
-.footer-logo-image {
-  height: 64px;
-  width: auto;
-  object-fit: contain;
+.footer-logo-text {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  text-transform: lowercase;
+  color: var(--paper-2);
   transition: transform 0.25s ease;
 }
 
-.footer-logo:hover .footer-logo-image {
+.footer-logo:hover .footer-logo-text {
   transform: scale(1.04);
 }
 

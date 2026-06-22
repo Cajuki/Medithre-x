@@ -5,7 +5,6 @@ import { ShoppingCart, User, Menu, X, ChevronDown, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useCart } from '../context/CartContext.jsx';
 import { BUSINESS_LOCATION, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
-import medLogo from '../Assets/med.png';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -71,7 +70,7 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link to="/" className="navbar-logo">
-            <img src={medLogo} alt="Medithrex Logo" className="logo-image" />
+            <span className="navbar-wordmark">medithrex</span>
           </Link>
 
           {/* Desktop links */}

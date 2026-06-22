@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { isValidEmail, isValidKenyanPhone, normalizeKenyanPhone, KENYAN_PHONE_HINT } from '../utils/validation.js';
 import toast from 'react-hot-toast';
 import { BUSINESS_EMAIL, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
-import medLogo from '../Assets/med.png';
 import './AuthPages.css';
 
 const KENYAN_COUNTIES = ['Nairobi','Mombasa','Kisumu','Nakuru','Eldoret','Thika','Malindi','Kitale','Garissa','Kakamega','Nyeri','Machakos','Meru','Embu','Kisii','Kilifi','Lamu','Isiolo','Marsabit','Mandera','Wajir','Turkana','West Pokot','Samburu','Trans Nzoia','Uasin Gishu','Elgeyo Marakwet','Nandi','Baringo','Laikipia','Nakuru','Narok','Kajiado','Kericho','Bomet','Kakamega','Vihiga','Bungoma','Busia','Siaya','Kisumu','Homa Bay','Migori','Kisii','Nyamira','Nairobi','Kiambu','Murang\'a','Kirinyaga','Nyeri','Nyandarua','Meru','Tharaka Nithi','Embu','Kitui','Machakos','Makueni','Garissa','Wajir','Mandera','Marsabit','Isiolo','Mombasa','Kwale','Kilifi','Tana River','Lamu','Taita Taveta'];
@@ -77,7 +76,7 @@ export default function RegisterPage() {
         <div className="auth-brand">
           <div className="auth-brand-content">
             <Link to="/" className="auth-logo">
-              <img src={medLogo} alt="Medithrex Logo" className="auth-logo-image" />
+              <span className="auth-logo-text">medithrex</span>
             </Link>
             <h2>Join Kenya's Healthcare Network</h2>
             <p>Create a free account to unlock seamless ordering, quote tracking, and personalized support for your facility.</p>

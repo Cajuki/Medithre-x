@@ -5,7 +5,6 @@ import { isValidEmail } from '../utils/validation.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import toast from 'react-hot-toast';
 import { PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
-import medLogo from '../Assets/med.png';
 import './AuthPages.css';
 
 export default function ForgotPassword() {
@@ -39,7 +38,7 @@ export default function ForgotPassword() {
         <div className="auth-brand">
           <div className="auth-brand-content">
             <Link to="/" className="auth-logo">
-              <img src={medLogo} alt="Medithrex Logo" className="auth-logo-image" />
+              <span className="auth-logo-text">medithrex</span>
             </Link>
             <h1>Reset Your Password</h1>
             <p>Enter your email address to receive password reset instructions.</p>

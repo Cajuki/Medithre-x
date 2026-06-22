@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { isValidEmail } from '../utils/validation.js';
 import toast from 'react-hot-toast';
 import { PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
-import medLogo from '../Assets/med.png';
 import './AuthPages.css';
 
 export default function LoginPage() {
@@ -41,7 +40,7 @@ export default function LoginPage() {
         <div className="auth-brand">
           <div className="auth-brand-content">
             <Link to="/" className="auth-logo">
-              <img src={medLogo} alt="Medithrex Logo" className="auth-logo-image" />
+              <span className="auth-logo-text">medithrex</span>
             </Link>
             <h2>Kenya's Premier Medical Equipment Platform</h2>
             <p>Sign in to your account to manage orders, track quotes, and access exclusive pricing for your healthcare institution.</p>

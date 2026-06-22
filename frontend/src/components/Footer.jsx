@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Phone, Mail, MapPin, Facebook, Twitter, Linkedin, Instagram, ArrowRight } from 'lucide-react';
 import { BUSINESS_EMAIL, BUSINESS_LOCATION, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
-import medLogo from '../Assets/med.png';
 import './Footer.css';
 
 export default function Footer() {
@@ -22,8 +21,8 @@ export default function Footer() {
 
           {/* Brand */}
           <div className="footer-brand">
-            <div className="footer-logo">
-              <img src={medLogo} alt="Medithrex Logo" className="footer-logo-image" />
+            <div className="footer-logo" aria-label="Medithrex">
+              <span className="footer-logo-text">medithrex</span>
             </div>
             <p>
               Kenya's premier supplier of medical and laboratory equipment. Delivering quality,
