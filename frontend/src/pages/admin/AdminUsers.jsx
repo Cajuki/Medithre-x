@@ -58,8 +58,8 @@ export default function AdminUsers() {
   };
 
   return (
-    <div>
-      <div className="admin-page-header">
+     <>
+       <div className="admin-page-header">
         <div><h1>Users</h1><p>{total} registered accounts</p></div>
       </div>
 
@@ -209,7 +209,7 @@ export default function AdminUsers() {
             </div>
           </div>
         </div>
-      )}
-    </div>
+       )}
+     </>
   );
 }

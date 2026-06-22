@@ -141,7 +141,7 @@ export default function AdminCategories() {
   const currentImage = previewFile?.preview || resolveAssetUrl(form.image_url);
 
   return (
-    <div>
+    <>
       <div className="admin-page-header">
         <div>
           <h1>Categories</h1>
@@ -262,7 +262,7 @@ export default function AdminCategories() {
                       {previewFile && (
                         <div className="cat-img-pending-badge">Pending upload</div>
                       )}
-                    </div>
+                    </div>  
                   ) : (
                     <button
                       className="cat-img-drop-zone"
@@ -362,6 +362,6 @@ export default function AdminCategories() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

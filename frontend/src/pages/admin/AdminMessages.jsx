@@ -43,8 +43,8 @@ export default function AdminMessages() {
   };
 
   return (
-    <div>
-      <div className="admin-page-header">
+     <>
+       <div className="admin-page-header">
         <div><h1>Contact Messages</h1><p>{total} total messages</p></div>
       </div>
 
@@ -115,7 +115,7 @@ export default function AdminMessages() {
             </div>
           )}
         </>
-      )}
-    </div>
+       )}
+     </>
   );
 }

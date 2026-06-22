@@ -8,17 +8,20 @@ import { BUSINESS_LOCATION, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/con
 import './Navbar.css';
 
 export default function Navbar() {
-  const [scrolled, setScrolled]         = useState(false);
-  const [menuOpen, setMenuOpen]         = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
-  const [userOpen, setUserOpen]         = useState(false);
-  const [categories, setCategories]     = useState([]);
+  const [userOpen, setUserOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
+
   const productsTimer = useRef(null);
-  const userTimer     = useRef(null);
+  const userTimer = useRef(null);
+
   const { user, logout } = useAuth();
-  const { count }        = useCart();
-  const location         = useLocation();
-  const navigate         = useNavigate();
+  const { count } = useCart();
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const adminLinks = [
     { to: '/admin', label: 'Dashboard' },
     { to: '/admin/categories', label: 'Categories' },
@@ -42,20 +45,38 @@ export default function Navbar() {
       .catch(() => setCategories([]));
   }, []);
 
-  useEffect(() => { setMenuOpen(false); setProductsOpen(false); setUserOpen(false); }, [location]);
+  useEffect(() => {
+    setMenuOpen(false);
+    setProductsOpen(false);
+    setUserOpen(false);
+  }, [location]);
 
-  // Products dropdown hover with delay so it doesn't snap shut
-  const openProducts  = () => { clearTimeout(productsTimer.current); setProductsOpen(true); };
-  const closeProducts = () => { productsTimer.current = setTimeout(() => setProductsOpen(false), 150); };
+  const openProducts = () => {
+    clearTimeout(productsTimer.current);
+    setProductsOpen(true);
+  };
 
-  const openUser  = () => { clearTimeout(userTimer.current); setUserOpen(true); };
-  const closeUser = () => { userTimer.current = setTimeout(() => setUserOpen(false), 150); };
+  const closeProducts = () => {
+    productsTimer.current = setTimeout(() => setProductsOpen(false), 150);
+  };
 
-  const handleLogout = () => { logout(); navigate('/'); };
+  const openUser = () => {
+    clearTimeout(userTimer.current);
+    setUserOpen(true);
+  };
+
+  const closeUser = () => {
+    userTimer.current = setTimeout(() => setUserOpen(false), 150);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <>
-      {/* ── Topbar ─────────────────────────────────────────────────────────── */}
+      {/* Topbar */}
       <div className="navbar-topbar">
         <div className="container">
           <span><Phone size={12} /> {PRIMARY_PHONE.display} / {SECONDARY_PHONE.display}</span>
@@ -64,7 +85,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* ── Main nav ────────────────────────────────────────────────────────── */}
+      {/* Navbar */}
       <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
         <div className="container navbar-inner">
 
@@ -73,28 +94,27 @@ export default function Navbar() {
             <span className="navbar-wordmark">medithrex</span>
           </Link>
 
-          {/* Desktop links */}
+          {/* Links */}
           <ul className="navbar-links">
-            <li>
-              <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
-            </li>
+            <li><Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link></li>
 
-            {/* Products mega-dropdown */}
-            <li className="has-dropdown" onMouseEnter={openProducts} onMouseLeave={closeProducts}>
-              <Link to="/products" className={location.pathname.startsWith('/products') ? 'active' : ''}>
-                Products <ChevronDown size={14} className={`chevron${productsOpen ? ' open' : ''}`} />
+            <li
+              className="has-dropdown"
+              onMouseEnter={openProducts}
+              onMouseLeave={closeProducts}
+            >
+              <Link to="/products">
+                Products <ChevronDown size={14} />
               </Link>
 
               {productsOpen && (
-                <div className="dropdown mega-dropdown" onMouseEnter={openProducts} onMouseLeave={closeProducts}>
+                <div className="dropdown mega-dropdown">
                   <div className="mega-inner">
                     <div className="mega-header">
-                      <Link to="/products" className="mega-all-link">
-                        View All Products
-                        <span className="mega-all-arrow">→</span>
-                      </Link>
-                      <p>Browse our complete catalogue of medical &amp; laboratory equipment</p>
+                      <Link to="/products">View All Products →</Link>
+                      <p>Browse our catalogue</p>
                     </div>
+
                     <div className="mega-grid">
                       {categories.map(cat => (
                         <Link
@@ -102,111 +122,95 @@ export default function Navbar() {
                           to={`/products?category=${encodeURIComponent(cat.name)}`}
                           className="mega-item"
                         >
-                          <span className="mega-item-name">{cat.name}</span>
-                          <span className="mega-item-desc">{cat.description || 'Browse products in this category'}</span>
+                          {cat.name}
                         </Link>
                       ))}
-                    </div>
-                    <div className="mega-footer">
-                      <Link to="/quote" className="btn btn-primary btn-sm">Request a Quote</Link>
-                      <Link to="/contact" className="btn btn-outline btn-sm">Talk to Sales</Link>
                     </div>
                   </div>
                 </div>
               )}
             </li>
 
-            <li><Link to="/quote"   className={location.pathname === '/quote'   ? 'active' : ''}>Request Quote</Link></li>
-            <li><Link to="/about"   className={location.pathname === '/about'   ? 'active' : ''}>About</Link></li>
-            <li><Link to="/contact" className={location.pathname === '/contact' ? 'active' : ''}>Contact</Link></li>
+            <li><Link to="/quote">Request Quote</Link></li>
+            <li><Link to="/about">About</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
           </ul>
 
-           {/* Actions */}
-           <div className="navbar-actions">
-             {user ? (
-               <div className="user-menu" onMouseEnter={openUser} onMouseLeave={closeUser}>
-                 <button className="user-btn" onClick={() => setUserOpen(o => !o)}>
-                   <User size={18} />
-                   <span>{user.name.split(' ')[0]}</span>
-                   <ChevronDown size={13} className={`chevron${userOpen ? ' open' : ''}`} />
-                 </button>
-                 {userOpen && (
-                   <div className="user-dropdown" onMouseEnter={openUser} onMouseLeave={closeUser}>
-                     {user.role === 'admin' ? (
-                       <>
-                         <Link to="/admin" className="admin-dash-link">⚡ Admin Dashboard</Link>
-                         {adminLinks.slice(1).map((link) => (
-                           <Link key={link.to} to={link.to}>{link.label}</Link>
-                         ))}
-                       </>
-                     ) : (
-                       <>
-                         <Link to="/account">My Account</Link>
-                         <Link to="/account/orders">My Orders</Link>
-                         <Link to="/account/quotes">My Quotes</Link>
-                       </>
-                     )}
-                     <hr />
-                     <button onClick={handleLogout}>Sign Out</button>
-                   </div>
-                 )}
-               </div>
-             ) : (
-               <Link to="/login" className="btn btn-primary btn-sm">Sign In</Link>
-             )}
-             <Link to="/cart" className="cart-btn ms-auto" aria-label="Cart">
-               <ShoppingCart size={20} />
-               {count > 0 && <span className="cart-badge">{count}</span>}
-             </Link>
+          {/* Actions */}
+          <div className="navbar-actions">
 
-             <button className="mobile-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
-               {menuOpen ? <X size={22} /> : <Menu size={22} />}
-             </button>
-           </div>
+            {user ? (
+              <div
+                className="user-menu"
+                onMouseEnter={openUser}
+                onMouseLeave={closeUser}
+              >
+                <button className="user-btn" onClick={() => setUserOpen(o => !o)}>
+                  <User size={18} />
+                  <span>{user.name?.split(' ')[0]}</span>
+                  <ChevronDown size={13} />
+                </button>
+
+                {userOpen && (
+                  <div className="user-dropdown">
+                    {user.role === 'admin' ? (
+                      <>
+                        <Link to="/admin">Dashboard</Link>
+                        {adminLinks.slice(1).map(link => (
+                          <Link key={link.to} to={link.to}>{link.label}</Link>
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        <Link to="/account">My Account</Link>
+                        <Link to="/account/orders">Orders</Link>
+                        <Link to="/account/quotes">Quotes</Link>
+                      </>
+                    )}
+
+                    <hr />
+                    <button onClick={handleLogout}>Sign Out</button>
+                  </div>
                 )}
               </div>
             ) : (
               <Link to="/login" className="btn btn-primary btn-sm">Sign In</Link>
             )}
 
-            <button className="mobile-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
-              {menuOpen ? <X size={22} /> : <Menu size={22} />}
+            <Link to="/cart" className="cart-btn">
+              <ShoppingCart size={20} />
+              {count > 0 && <span className="cart-badge">{count}</span>}
+            </Link>
+
+            <button
+              className="mobile-toggle"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              {menuOpen ? <X /> : <Menu />}
             </button>
           </div>
         </div>
 
-        {/* ── Mobile menu ─────────────────────────────────────────────────── */}
+        {/* Mobile Menu */}
         {menuOpen && (
           <div className="mobile-menu">
             <Link to="/">Home</Link>
-            <div className="mobile-section-label">Products</div>
-            <Link to="/products" className="mobile-view-all">All Products →</Link>
-            {categories.map(cat => (
-              <Link key={cat.name} to={`/products?category=${encodeURIComponent(cat.name)}`} className="mobile-sub">
-                {cat.name}
-              </Link>
-            ))}
+            <Link to="/products">Products</Link>
             <Link to="/quote">Request Quote</Link>
-            <Link to="/about">About Us</Link>
+            <Link to="/about">About</Link>
             <Link to="/contact">Contact</Link>
-            <div className="mobile-divider" />
+
+            <hr />
+
             {user ? (
               <>
-                {user.role === 'admin' ? (
-                  <>
-                    {adminLinks.map((link) => (
-                      <Link key={link.to} to={link.to} className={link.to === '/admin' ? 'mobile-admin' : ''}>{link.label}</Link>
-                    ))}
-                  </>
-                ) : (
-                  <Link to="/account">My Account</Link>
-                )}
-                <button onClick={handleLogout} className="mobile-logout">Sign Out</button>
+                <Link to="/account">My Account</Link>
+                <button onClick={handleLogout}>Sign Out</button>
               </>
             ) : (
               <>
                 <Link to="/login">Sign In</Link>
-                <Link to="/register">Create Account</Link>
+                <Link to="/register">Register</Link>
               </>
             )}
           </div>

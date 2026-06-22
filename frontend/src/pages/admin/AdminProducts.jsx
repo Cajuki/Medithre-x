@@ -248,10 +248,10 @@ export default function AdminProducts() {
                           ? <img className="td-img" src={p.images[0]} alt={p.name} />
                           : <div className="td-img-placeholder"><ImagePlus size={16} /></div>
                         }
-                        <div>
+     <>
                           <div className="td-name">{p.name}</div>
                           <div className="td-sub">{p.brand}</div>
-                        </div>
+     </>
                       </div>
                     </td>
                     <td className="td-sub">{p.sku || '—'}</td>

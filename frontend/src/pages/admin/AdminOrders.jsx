@@ -59,8 +59,8 @@ export default function AdminOrders() {
   };
 
   return (
-    <div>
-      <div className="admin-page-header">
+     <>
+       <div className="admin-page-header">
         <div><h1>Orders</h1><p>{total} total orders</p></div>
       </div>
 
@@ -205,7 +205,7 @@ export default function AdminOrders() {
             </div>
           </div>
         </div>
-      )}
-    </div>
+       )}
+     </>
   );
 }
