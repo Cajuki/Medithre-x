@@ -121,39 +121,48 @@ export default function Navbar() {
             <li><Link to="/contact" className={location.pathname === '/contact' ? 'active' : ''}>Contact</Link></li>
           </ul>
 
-          {/* Actions */}
-          <div className="navbar-actions">
-            <Link to="/cart" className="cart-btn" aria-label="Cart">
-              <ShoppingCart size={20} />
-              {count > 0 && <span className="cart-badge">{count}</span>}
-            </Link>
+           {/* Actions */}
+           <div className="navbar-actions">
+             {user ? (
+               <div className="user-menu" onMouseEnter={openUser} onMouseLeave={closeUser}>
+                 <button className="user-btn" onClick={() => setUserOpen(o => !o)}>
+                   <User size={18} />
+                   <span>{user.name.split(' ')[0]}</span>
+                   <ChevronDown size={13} className={`chevron${userOpen ? ' open' : ''}`} />
+                 </button>
+                 {userOpen && (
+                   <div className="user-dropdown" onMouseEnter={openUser} onMouseLeave={closeUser}>
+                     {user.role === 'admin' ? (
+                       <>
+                         <Link to="/admin" className="admin-dash-link">⚡ Admin Dashboard</Link>
+                         {adminLinks.slice(1).map((link) => (
+                           <Link key={link.to} to={link.to}>{link.label}</Link>
+                         ))}
+                       </>
+                     ) : (
+                       <>
+                         <Link to="/account">My Account</Link>
+                         <Link to="/account/orders">My Orders</Link>
+                         <Link to="/account/quotes">My Quotes</Link>
+                       </>
+                     )}
+                     <hr />
+                     <button onClick={handleLogout}>Sign Out</button>
+                   </div>
+                 )}
+               </div>
+             ) : (
+               <Link to="/login" className="btn btn-primary btn-sm">Sign In</Link>
+             )}
+             <Link to="/cart" className="cart-btn ms-auto" aria-label="Cart">
+               <ShoppingCart size={20} />
+               {count > 0 && <span className="cart-badge">{count}</span>}
+             </Link>
 
-            {user ? (
-              <div className="user-menu" onMouseEnter={openUser} onMouseLeave={closeUser}>
-                <button className="user-btn" onClick={() => setUserOpen(o => !o)}>
-                  <User size={18} />
-                  <span>{user.name.split(' ')[0]}</span>
-                  <ChevronDown size={13} className={`chevron${userOpen ? ' open' : ''}`} />
-                </button>
-                {userOpen && (
-                  <div className="user-dropdown" onMouseEnter={openUser} onMouseLeave={closeUser}>
-                    {user.role === 'admin' ? (
-                      <>
-                        <Link to="/admin" className="admin-dash-link">⚡ Admin Dashboard</Link>
-                        {adminLinks.slice(1).map((link) => (
-                          <Link key={link.to} to={link.to}>{link.label}</Link>
-                        ))}
-                      </>
-                    ) : (
-                      <>
-                        <Link to="/account">My Account</Link>
-                        <Link to="/account/orders">My Orders</Link>
-                        <Link to="/account/quotes">My Quotes</Link>
-                      </>
-                    )}
-                    <hr />
-                    <button onClick={handleLogout}>Sign Out</button>
-                  </div>
+             <button className="mobile-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
+               {menuOpen ? <X size={22} /> : <Menu size={22} />}
+             </button>
+           </div>
                 )}
               </div>
             ) : (

@@ -490,7 +490,11 @@
     height: 40px;
   }
 
-  .user-btn span {
-    display: none;
-  }
+   .user-btn span {
+     display: none;
+   }
+}
+
+.ms-auto {
+  margin-left: auto;
 }

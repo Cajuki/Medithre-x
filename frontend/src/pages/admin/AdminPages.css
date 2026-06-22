@@ -178,13 +178,42 @@
 }
 
 @media (max-width: 768px) {
-  .admin-modal {
-    width: calc(100vw - 16px);
-  }
+   .admin-modal {
+     width: calc(100vw - 16px);
+   }
 
-  .admin-modal-header,
-  .modal-body {
-    padding-left: 16px;
-    padding-right: 16px;
+   .admin-modal-header,
+   .modal-body {
+     padding-left: 16px;
+     padding-right: 16px;
+   }
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 1rem 0;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .admin-table {
+    min-width: 100%;
+  }
+  .admin-table th,
+  .admin-table td {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
   }
 }
