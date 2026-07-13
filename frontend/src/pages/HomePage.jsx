@@ -55,9 +55,9 @@ const WHY_US = [
 ];
 
 const TESTIMONIALS = [
-  { text: 'Medithrex delivered our entire ICU setup on time and within budget. Their after-sales support and engineer installation has been truly exceptional.', author: 'Dr. James Kariuki', role: 'Chief Medical Officer, Nairobi Hospital' },
-  { text: "We've sourced our hematology and biochemistry analyzers from Medithrex for years. Reliable equipment, genuine parts, and a team that always picks up the phone.", author: 'Grace Wanjiku', role: 'Lab Manager, Aga Khan University Hospital' },
-  { text: 'The quote-to-delivery process was seamless. A highly professional team that understands the Kenyan healthcare context and the urgency of our work.', author: 'Peter Kamau', role: 'Procurement Director, Ministry of Health' },
+  { text: 'Medithrex delivered our entire ICU setup on time and within budget. Their after-sales support and engineer installation has been truly exceptional.' },
+  { text: "We've sourced our hematology and biochemistry analyzers from Medithrex for years. Reliable equipment, genuine parts, and a team that always picks up the phone." },
+  { text: 'The quote-to-delivery process was seamless. A highly professional team that understands the Kenyan healthcare context and the urgency of our work.' },
 ];
 
 const CATEGORY_ICONS = {
@@ -635,29 +635,25 @@ export default function HomePage() {
             <p className="section-subtitle mx-auto">Hear from our satisfied clients across the healthcare sector</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((t, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="premium-card p-6 relative"
-              >
-                <div className="flex items-center gap-0.5 mb-4">
-                  {[...Array(5)].map((_, s) => (
-                    <Star key={s} size={14} className="fill-warning text-warning" />
-                  ))}
-                </div>
-                <p className="text-sm text-charcoal-600 leading-relaxed mb-4 italic">"{t.text}"</p>
-                <div className="border-t border-border pt-4">
-                  <p className="text-sm font-bold text-charcoal">{t.author}</p>
-                  <p className="text-xs text-charcoal-400">{t.role}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+<div className="grid md:grid-cols-3 gap-6">
+             {TESTIMONIALS.map((t, i) => (
+               <motion.div
+                 key={i}
+                 initial={{ opacity: 0, y: 20 }}
+                 whileInView={{ opacity: 1, y: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ delay: i * 0.1 }}
+                 className="premium-card p-6 relative"
+               >
+                 <div className="flex items-center gap-0.5 mb-4">
+                   {[...Array(5)].map((_, s) => (
+                     <Star key={s} size={14} className="fill-warning text-warning" />
+                   ))}
+                 </div>
+                 <p className="text-sm text-charcoal-600 leading-relaxed mb-4 italic">"{t.text}"</p>
+               </motion.div>
+             ))}
+           </div>
         </div>
       </section>
 
