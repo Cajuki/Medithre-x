@@ -3,17 +3,17 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: var(--yellow-pale);
-  border: 1.5px solid var(--yellow);
+  background: #EFF6FF;
+  border: 1.5px solid #0B5CAD;
   border-radius: var(--radius-md);
   padding: 14px 18px;
   margin-bottom: 20px;
   font-size: 0.85rem;
-  color: var(--black-3);
+  color: #2F3E46;
   line-height: 1.6;
 }
 .cat-info-banner span { font-size: 1.2rem; flex-shrink: 0; }
-.cat-info-banner strong { color: var(--black); }
+.cat-info-banner strong { color: #0B5CAD; }
 
 /* ── Admin category grid ─────────────────────────────────────────────────── */
 .cat-admin-grid {
@@ -24,14 +24,14 @@
 
 .cat-admin-card {
   background: var(--white);
-  border: 1.5px solid var(--white-3);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-md);
   overflow: hidden;
   transition: var(--transition);
   display: flex;
   flex-direction: column;
 }
-.cat-admin-card:hover { border-color: var(--yellow); box-shadow: var(--shadow); }
+.cat-admin-card:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
 .cat-admin-card.inactive { opacity: 0.65; }
 .cat-admin-card.inactive:hover { opacity: 1; }
 
@@ -39,7 +39,7 @@
 .cat-admin-img {
   position: relative;
   aspect-ratio: 16/9;
-  background: var(--white-2);
+  background: var(--section);
   overflow: hidden;
 }
 .cat-admin-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -49,7 +49,7 @@
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 8px;
-  color: var(--grey-light);
+  color: var(--charcoal-400);
   font-family: var(--font-condensed);
   font-size: 0.72rem;
   text-transform: uppercase;
@@ -59,7 +59,7 @@
 .cat-admin-hidden-badge {
   position: absolute;
   top: 8px; left: 8px;
-  background: rgba(0,0,0,0.7);
+  background: rgba(47,62,70,0.7);
   color: var(--white);
   font-family: var(--font-condensed);
   font-size: 0.65rem;
@@ -79,22 +79,26 @@
 .cat-admin-order {
   font-family: var(--font-condensed);
   font-size: 0.7rem; font-weight: 700;
-  background: var(--black); color: var(--yellow);
+  background: var(--primary);
+  color: var(--white);
   padding: 1px 7px; border-radius: 3px;
 }
 .cat-admin-count {
   font-family: var(--font-condensed);
   font-size: 0.7rem; font-weight: 600;
-  color: var(--grey); letter-spacing: 0.04em;
+  color: var(--charcoal-400);
+  letter-spacing: 0.04em;
 }
 .cat-admin-name {
   font-family: var(--font-condensed);
   font-size: 0.95rem; font-weight: 800;
-  color: var(--black); line-height: 1.2;
+  color: var(--charcoal);
+  line-height: 1.2;
   margin-bottom: 4px;
 }
 .cat-admin-desc {
-  font-size: 0.78rem; color: var(--grey);
+  font-size: 0.78rem;
+  color: var(--charcoal-400);
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -106,27 +110,28 @@
 .cat-admin-actions {
   display: flex; align-items: center; gap: 6px;
   padding: 10px 12px;
-  border-top: 1px solid var(--white-3);
-  background: var(--white-2);
+  border-top: 1px solid var(--border);
+  background: var(--section);
 }
 .cat-toggle-btn {
   display: flex; align-items: center; gap: 5px;
   padding: 6px 12px;
-  border: 1.5px solid var(--white-3);
+  border: 1.5px solid var(--border);
   border-radius: 4px;
   font-family: var(--font-condensed);
   font-size: 0.72rem; font-weight: 700;
   letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--grey); background: var(--white);
+  color: var(--charcoal-400);
+  background: var(--white);
   flex: 1; justify-content: center;
   transition: var(--transition);
 }
 .cat-toggle-btn.active {
-  border-color: var(--green);
-  color: var(--green);
-  background: rgba(22,163,74,0.06);
+  border-color: var(--accent);
+  color: var(--accent-dark);
+  background: var(--accent-light);
 }
-.cat-toggle-btn:hover { border-color: var(--black); color: var(--black); }
+.cat-toggle-btn:hover { border-color: var(--charcoal); color: var(--charcoal); }
 
 /* ── Category modal ──────────────────────────────────────────────────────── */
 .cat-modal { max-width: 560px !important; }
@@ -140,23 +145,23 @@
   gap: 10px;
   width: 100%;
   aspect-ratio: 16/9;
-  border: 2px dashed var(--white-3);
+  border: 2px dashed var(--border);
   border-radius: var(--radius-md);
-  background: var(--white-2);
-  color: var(--grey);
+  background: var(--section);
+  color: var(--charcoal-400);
   cursor: pointer;
   transition: var(--transition);
   text-align: center;
   padding: 20px;
 }
 .cat-img-drop-zone:hover {
-  border-color: var(--yellow);
-  background: var(--yellow-pale);
-  color: var(--black);
+  border-color: var(--primary);
+  background: var(--primary-50);
+  color: var(--charcoal);
 }
 .cat-img-drop-zone svg { opacity: 0.5; }
-.cat-img-drop-zone strong { font-family: var(--font-condensed); font-size: 0.88rem; font-weight: 700; }
-.cat-img-drop-zone span  { font-size: 0.72rem; color: var(--grey); }
+.cat-img-drop-zone strong { font-family: var(--font-condensed); font-size: 0.88rem; font-weight: 700; color: var(--charcoal); }
+.cat-img-drop-zone span  { font-size: 0.72rem; color: var(--charcoal-400); }
 
 /* Image preview */
 .cat-img-preview {
@@ -165,13 +170,13 @@
   aspect-ratio: 16/9;
   border-radius: var(--radius-md);
   overflow: hidden;
-  border: 2px solid var(--white-3);
+  border: 2px solid var(--border);
 }
 .cat-img-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 .cat-img-preview-overlay {
   position: absolute; inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(47,62,70,0.5);
   display: flex; align-items: center; justify-content: center;
   gap: 10px;
   opacity: 0; transition: var(--transition);
@@ -188,14 +193,15 @@
   letter-spacing: 0.04em; text-transform: uppercase;
   transition: var(--transition);
 }
-.cat-img-change-btn { background: var(--yellow); color: var(--black); }
-.cat-img-change-btn:hover { background: var(--yellow-light); }
-.cat-img-remove-btn { background: rgba(220,38,38,0.9); color: var(--white); }
-.cat-img-remove-btn:hover { background: var(--red); }
+.cat-img-change-btn { background: var(--primary); color: var(--white); }
+.cat-img-change-btn:hover { background: var(--primary-700); }
+.cat-img-remove-btn { background: rgba(220,53,69,0.9); color: var(--white); }
+.cat-img-remove-btn:hover { background: var(--danger); }
 
 .cat-img-pending-badge {
   position: absolute; bottom: 8px; left: 8px;
-  background: var(--yellow); color: var(--black);
+  background: var(--primary);
+  color: var(--white);
   font-family: var(--font-condensed); font-size: 0.65rem; font-weight: 800;
   padding: 2px 8px; border-radius: 3px;
   letter-spacing: 0.06em; text-transform: uppercase;

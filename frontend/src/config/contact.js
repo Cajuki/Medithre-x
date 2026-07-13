@@ -1,4 +1,5 @@
 export const BUSINESS_EMAIL = 'medithrexmedicalsolutions@gmail.com';
+export const EMAIL = BUSINESS_EMAIL;
 
 export const PRIMARY_PHONE = {
   display: '0790 080 903',
@@ -13,3 +14,4 @@ export const SECONDARY_PHONE = {
 };
 
 export const BUSINESS_LOCATION = 'Pramukh Plaza - 3rd Floor Shop 19';
+export const ADDRESS = BUSINESS_LOCATION;

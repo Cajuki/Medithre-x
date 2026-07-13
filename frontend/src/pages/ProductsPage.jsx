@@ -1,399 +1,351 @@
 import { useState, useEffect, useRef } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { Search, SlidersHorizontal, X, ChevronDown, ChevronUp, Check } from 'lucide-react';
-import Seo from '../components/Seo.jsx';
 import ProductCard from '../components/ProductCard.jsx';
-import './ProductsPage.css';
-
-const PRICE_RANGES = [
-  { label: 'Any Price',        min: null,   max: null    },
-  { label: 'Under KES 50K',   min: null,   max: 50000   },
-  { label: 'KES 50K – 200K',  min: 50000,  max: 200000  },
-  { label: 'KES 200K – 500K', min: 200000, max: 500000  },
-  { label: 'KES 500K – 1M',   min: 500000, max: 1000000 },
-  { label: 'Over KES 1M',     min: 1000000, max: null   },
-];
-
-const SORT_OPTIONS = [
-  { label: 'Default (Featured)',   value: '' },
-  { label: 'Name A – Z',          value: 'name_asc' },
-  { label: 'Price: Low to High',  value: 'price_asc' },
-  { label: 'Price: High to Low',  value: 'price_desc' },
-  { label: 'Newest First',        value: 'newest' },
-];
+import Seo from '../components/Seo.jsx';
+import {
+  Search, SlidersHorizontal, Grid3X3, List, X, ChevronDown,
+  Filter, ArrowUpDown, Loader2, Package, AlertCircle, ChevronLeft, ChevronRight
+} from 'lucide-react';
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-
-  // URL-driven filters
-  const category = searchParams.get('category') || '';
-  const search   = searchParams.get('search')   || '';
-  const inStock  = searchParams.get('inStock')  || '';
-  const page     = parseInt(searchParams.get('page') || '1');
-
-  // Local UI state
-  const [searchInput, setSearchInput] = useState(search);
-  const [priceRange,  setPriceRange]  = useState(PRICE_RANGES[0]);
-  const [sortBy,      setSortBy]      = useState('');
-  const [featured,    setFeatured]    = useState(false);
-
-  // Filter panel
-  const [panelOpen,       setPanelOpen]       = useState(false);
-  const [catExpanded,     setCatExpanded]      = useState(true);
-  const [priceExpanded,   setPriceExpanded]    = useState(true);
-  const [stockExpanded,   setStockExpanded]    = useState(true);
-  const [sortExpanded,    setSortExpanded]     = useState(true);
-  const filterRef = useRef(null);
-
-  // Data
   const [products, setProducts] = useState([]);
-  const [total,    setTotal]    = useState(0);
-  const [pages,    setPages]    = useState(1);
-  const [loading,  setLoading]  = useState(true);
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState('grid');
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [sort, setSort] = useState('newest');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
+
+  const searchTimeout = useRef(null);
+
+  const limit = 12;
 
   useEffect(() => {
     axios.get('/api/categories')
-      .then(r => setCategories((r.data || []).map(c => c.name)))
-      .catch(() => setCategories([]));
+      .then(r => setCategories(r.data || []))
+      .catch(() => {});
   }, []);
 
-  // Close panel when clicking outside
   useEffect(() => {
-    const handler = (e) => {
-      if (filterRef.current && !filterRef.current.contains(e.target)) {
-        setPanelOpen(false);
-      }
-    };
-    if (panelOpen) document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [panelOpen]);
+    fetchProducts();
+  }, [page, sort, selectedCategory, searchParams]);
 
-  // Fetch products whenever filters change
-  useEffect(() => {
+  const fetchProducts = async () => {
     setLoading(true);
-    const params = new URLSearchParams();
-    if (category)              params.set('category', category);
-    if (search)                params.set('search',   search);
-    if (inStock === 'true')    params.set('inStock',  'true');
-    if (featured)              params.set('featured', 'true');
-    params.set('page',  page);
-    params.set('limit', 12);
+    try {
+      const params = new URLSearchParams();
+      params.set('limit', limit.toString());
+      params.set('page', page.toString());
+      params.set('sort', sort);
 
-    axios.get(`/api/products?${params}`)
-      .then(r => {
-        let prods = r.data.products || [];
+      const cat = selectedCategory || searchParams.get('category');
+      if (cat) params.set('category', cat);
 
-        // Client-side price filter (backend doesn't have this yet)
-        if (priceRange.min !== null) prods = prods.filter(p => !p.price || p.price >= priceRange.min);
-        if (priceRange.max !== null) prods = prods.filter(p => !p.price || p.price <= priceRange.max);
+      const search = searchTerm || searchParams.get('search');
+      if (search) params.set('search', search);
 
-        // Client-side sort
-        if (sortBy === 'name_asc')   prods = [...prods].sort((a,b) => a.name.localeCompare(b.name));
-        if (sortBy === 'price_asc')  prods = [...prods].sort((a,b) => (a.price||0) - (b.price||0));
-        if (sortBy === 'price_desc') prods = [...prods].sort((a,b) => (b.price||0) - (a.price||0));
-        if (sortBy === 'newest')     prods = [...prods].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+      if (priceRange.min) params.set('min_price', priceRange.min);
+      if (priceRange.max) params.set('max_price', priceRange.max);
 
-        setProducts(prods);
-        setTotal(r.data.total || 0);
-        setPages(r.data.pages || 1);
-      })
-      .catch(() => setProducts([]))
-      .finally(() => setLoading(false));
-  }, [category, search, inStock, featured, page, priceRange, sortBy]);
-
-  const setParam = (key, val) => {
-    const p = new URLSearchParams(searchParams);
-    if (val) p.set(key, val); else p.delete(key);
-    p.delete('page');
-    setSearchParams(p);
+      const { data } = await axios.get(`/api/products?${params.toString()}`);
+      setProducts(data.products || []);
+      setTotalPages(data.totalPages || 1);
+      setTotalProducts(data.total || 0);
+    } catch {
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setParam('search', searchInput.trim());
-    setPanelOpen(false);
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    clearTimeout(searchTimeout.current);
+    searchTimeout.current = setTimeout(() => {
+      setPage(1);
+      const params = new URLSearchParams(searchParams);
+      if (value) params.set('search', value);
+      else params.delete('search');
+      setSearchParams(params);
+    }, 400);
   };
 
-  const clearAll = () => {
-    setSearchInput('');
-    setPriceRange(PRICE_RANGES[0]);
-    setSortBy('');
-    setFeatured(false);
+  const handleCategorySelect = (cat) => {
+    setSelectedCategory(cat);
+    setPage(1);
+    const params = new URLSearchParams(searchParams);
+    if (cat) params.set('category', cat);
+    else params.delete('category');
+    setSearchParams(params);
+  };
+
+  const clearFilters = () => {
+    setSelectedCategory('');
+    setSearchTerm('');
+    setPriceRange({ min: '', max: '' });
+    setSort('newest');
+    setPage(1);
     setSearchParams({});
   };
 
-  const pageTitle = category
-    ? `${category} Equipment — medithrex`
-    : 'Medical & Laboratory Equipment — medithrex';
-
-  const pageDescription = category
-    ? `Browse medithrex's ${category} category for certified medical and laboratory equipment with delivery across Kenya.`
-    : 'Explore medithrex’s catalogue of certified medical and laboratory equipment for hospitals, clinics, and labs across Kenya.';
-
-  const activeFilterCount = [
-    category, search, inStock === 'true',
-    priceRange.min !== null || priceRange.max !== null,
-    sortBy, featured,
-  ].filter(Boolean).length;
-
-  // Section toggle helper
-  const Section = ({ label, expanded, toggle, children }) => (
-    <div className="filter-section">
-      <button type="button" className="filter-section-head" onClick={toggle}>
-        <span>{label}</span>
-        {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
-      </button>
-      {expanded && <div className="filter-section-body">{children}</div>}
-    </div>
-  );
+  const hasActiveFilters = selectedCategory || searchTerm || priceRange.min || priceRange.max;
 
   return (
-    <div className="products-page">
-      <Seo
-        title={pageTitle}
-        description={pageDescription}
-        url={window.location.href}
-      />
+    <div className="min-h-screen">
+      <Seo title="Medical Equipment & Supplies | Medithrex" description="Browse our comprehensive catalog of medical equipment, laboratory supplies, surgical instruments, and healthcare products." />
 
-      {/* Page hero */}
-      <div className="page-hero">
-        <div className="container page-hero-content">
-          <p className="section-label">medithrex product catalogue</p>
-          <h1>Medical & Laboratory Equipment</h1>
-          <p>Browse our extensive range of quality-certified medical and laboratory equipment for healthcare institutions across Kenya.</p>
+      {/* ── Page Hero ──────────────────────────────────────────────────── */}
+      <section className="page-hero pt-28 pb-16 lg:pt-36 lg:pb-20">
+        <div className="container-custom page-hero-content">
+          <div className="page-hero-breadcrumb">
+            <Link to="/">Home</Link> <ChevronRight size={10} /> <span>Products</span>
+          </div>
+          <h1>Medical Equipment & Supplies</h1>
+          <p>Browse {totalProducts > 0 ? `${totalProducts}+` : ''} products across all categories</p>
         </div>
-      </div>
+      </section>
 
-      <div className="container products-page-body">
-        {/* ── Toolbar ─────────────────────────────────────────────────────── */}
-        <div className="products-toolbar-bar">
-          <form onSubmit={handleSearch} className="search-form-bar">
-            <Search size={17} className="search-bar-icon" />
-            <input
-              type="text"
-              placeholder="Search equipment, brand, category…"
-              value={searchInput}
-              onChange={e => setSearchInput(e.target.value)}
-              className="search-bar-input"
-            />
-            {searchInput && (
-              <button type="button" className="search-bar-clear" onClick={() => { setSearchInput(''); setParam('search', ''); }}>
-                <X size={15} />
-              </button>
-            )}
-            <button type="submit" className="btn btn-primary btn-sm">Search</button>
-
-            {/* Filter icon button */}
-            <div className="filter-btn-wrap" ref={filterRef}>
-              <button
-                type="button"
-                className={`filter-icon-btn${panelOpen ? ' active' : ''}`}
-                onClick={() => setPanelOpen(o => !o)}
-                title="Filters"
-              >
-                <SlidersHorizontal size={18} />
-                {activeFilterCount > 0 && (
-                  <span className="filter-badge">{activeFilterCount}</span>
-                )}
-              </button>
-
-              {/* ── Filter Panel dropdown ──────────────────────────────── */}
-              {panelOpen && (
-                <div className="filter-panel">
-                  <div className="filter-panel-inner">
-                    <div className="filter-panel-header">
-                      <span>Filters {activeFilterCount > 0 && <em>({activeFilterCount} active)</em>}</span>
-                      <button type="button" className="filter-panel-close" onClick={() => setPanelOpen(false)}><X size={16} /></button>
-                    </div>
-
-                  {/* Category */}
-                  <Section label="Category" expanded={catExpanded} toggle={() => setCatExpanded(o => !o)}>
-                    <button
-                      type="button"
-                      className={`fp-cat-btn${!category ? ' active' : ''}`}
-                      onClick={() => setParam('category', '')}
-                    >
-                      All Categories
-                    </button>
-                    {categories.map(cat => (
-                      <button
-                        type="button"
-                        key={cat}
-                        className={`fp-cat-btn${category === cat ? ' active' : ''}`}
-                        onClick={() => { setParam('category', cat); }}
-                      >
-                        {category === cat && <Check size={12} />} {cat}
-                      </button>
-                    ))}
-                  </Section>
-
-                  {/* Price Range */}
-                  <Section label="Price Range" expanded={priceExpanded} toggle={() => setPriceExpanded(o => !o)}>
-                    {PRICE_RANGES.map(r => (
-                      <button
-                        type="button"
-                        key={r.label}
-                        className={`fp-cat-btn${priceRange.label === r.label ? ' active' : ''}`}
-                        onClick={() => setPriceRange(r)}
-                      >
-                        {priceRange.label === r.label && <Check size={12} />} {r.label}
-                      </button>
-                    ))}
-                  </Section>
-
-                  {/* Availability */}
-                  <Section label="Availability" expanded={stockExpanded} toggle={() => setStockExpanded(o => !o)}>
-                    <label className="fp-checkbox">
-                      <input type="checkbox" checked={inStock === 'true'} onChange={e => setParam('inStock', e.target.checked ? 'true' : '')} />
-                      In Stock Only
-                    </label>
-                    <label className="fp-checkbox">
-                      <input type="checkbox" checked={featured} onChange={e => setFeatured(e.target.checked)} />
-                      Featured Products
-                    </label>
-                  </Section>
-
-                  {/* Sort */}
-                  <Section label="Sort By" expanded={sortExpanded} toggle={() => setSortExpanded(o => !o)}>
-                    {SORT_OPTIONS.map(opt => (
-                      <button
-                        type="button"
-                        key={opt.value}
-                        className={`fp-cat-btn${sortBy === opt.value ? ' active' : ''}`}
-                        onClick={() => setSortBy(opt.value)}
-                      >
-                        {sortBy === opt.value && <Check size={12} />} {opt.label}
-                      </button>
-                    ))}
-                  </Section>
-
-                  <div className="filter-panel-footer">
-                    <button type="button" className="btn btn-outline btn-sm" onClick={() => { clearAll(); setPanelOpen(false); }}>
-                      <X size={13} /> Clear All
-                    </button>
-                    <button type="button" className="btn btn-primary btn-sm" onClick={() => setPanelOpen(false)}>
-                      Apply Filters
-                    </button>
-                  </div>
-                  </div>
-                </div>
+      {/* ── Search & Filter Bar ─────────────────────────────────────────── */}
+      <div className="sticky top-[73px] lg:top-[81px] z-40 bg-white/90 backdrop-blur-md border-b border-border shadow-sm">
+        <div className="container-custom py-3">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 relative">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-400" />
+              <input
+                type="text"
+                placeholder="Search products, brands, SKUs..."
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-section border border-border rounded-lg text-sm focus:outline-none focus:border-primary transition-all"
+              />
+              {searchTerm && (
+                <button onClick={() => handleSearch('')} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-charcoal-400 hover:text-charcoal">
+                  <X size={14} />
+                </button>
               )}
             </div>
-          </form>
 
-          {/* Result count & sort quick pick */}
-          <div className="toolbar-meta">
-            <span className="result-count">{total} product{total !== 1 ? 's' : ''}</span>
-            <select
-              className="sort-select"
-              value={sortBy}
-              onChange={e => setSortBy(e.target.value)}
-              title="Sort by"
+            <button
+              onClick={() => setFiltersOpen(!filtersOpen)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border text-sm font-medium transition-all ${
+                filtersOpen || hasActiveFilters
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-white text-charcoal-600 border-border hover:border-primary hover:text-primary'
+              }`}
             >
-              {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
-          </div>
-        </div>
+              <Filter size={15} />
+              <span className="hidden sm:inline">Filters</span>
+              {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-secondary" />}
+            </button>
 
-        {/* ── Active filter chips ─────────────────────────────────────────── */}
-        {activeFilterCount > 0 && (
-          <div className="active-filter-chips">
-            {category && (
-              <span className="filter-chip">
-                {category}
-                <button onClick={() => setParam('category', '')}><X size={11} /></button>
-              </span>
-            )}
-            {search && (
-              <span className="filter-chip">
-                "{search}"
-                <button onClick={() => { setSearchInput(''); setParam('search', ''); }}><X size={11} /></button>
-              </span>
-            )}
-            {inStock === 'true' && (
-              <span className="filter-chip">
-                In Stock
-                <button onClick={() => setParam('inStock', '')}><X size={11} /></button>
-              </span>
-            )}
-            {(priceRange.min !== null || priceRange.max !== null) && (
-              <span className="filter-chip">
-                {priceRange.label}
-                <button onClick={() => setPriceRange(PRICE_RANGES[0])}><X size={11} /></button>
-              </span>
-            )}
-            {featured && (
-              <span className="filter-chip">
-                Featured
-                <button onClick={() => setFeatured(false)}><X size={11} /></button>
-              </span>
-            )}
-            {sortBy && (
-              <span className="filter-chip">
-                {SORT_OPTIONS.find(o => o.value === sortBy)?.label}
-                <button onClick={() => setSortBy('')}><X size={11} /></button>
-              </span>
-            )}
-            <button className="clear-all-chips" onClick={clearAll}>Clear all</button>
-          </div>
-        )}
-
-        {/* ── Category quick links ─────────────────────────────────────────── */}
-        <div className="cat-pill-row">
-          <button
-            className={`cat-pill${!category ? ' active' : ''}`}
-            onClick={() => setParam('category', '')}
-          >All</button>
-          {categories.map(cat => (
-            <button
-              key={cat}
-              className={`cat-pill${category === cat ? ' active' : ''}`}
-              onClick={() => setParam('category', cat === category ? '' : cat)}
-            >{cat}</button>
-          ))}
-        </div>
-
-        {/* ── Products grid ─────────────────────────────────────────────────── */}
-        {loading ? (
-          <div className="products-loading"><div className="spinner" /></div>
-        ) : products.length === 0 ? (
-          <div className="products-empty">
-            <div className="empty-emoji">🔍</div>
-            <h3>No Products Found</h3>
-            <p>Try adjusting your search terms or clearing the filters.</p>
-            <button className="btn btn-dark" onClick={clearAll}>Clear Filters</button>
-          </div>
-        ) : (
-          <div className="products-grid">
-            {products.map(p => <ProductCard key={p.id} product={p} />)}
-          </div>
-        )}
-
-        {/* ── Pagination ────────────────────────────────────────────────────── */}
-        {pages > 1 && (
-          <div className="pagination">
-            <button
-              className="page-btn"
-              disabled={page <= 1}
-              onClick={() => { const p = new URLSearchParams(searchParams); p.set('page', page - 1); setSearchParams(p); }}
-            >←</button>
-            {[...Array(pages)].map((_, i) => (
+            <div className="hidden sm:flex items-center gap-1 border-l border-border pl-3">
               <button
-                key={i}
-                className={`page-btn${page === i + 1 ? ' active' : ''}`}
-                onClick={() => { const p = new URLSearchParams(searchParams); p.set('page', i + 1); setSearchParams(p); }}
-              >{i + 1}</button>
-            ))}
-            <button
-              className="page-btn"
-              disabled={page >= pages}
-              onClick={() => { const p = new URLSearchParams(searchParams); p.set('page', page + 1); setSearchParams(p); }}
-            >→</button>
+                onClick={() => setViewMode('grid')}
+                className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-primary text-white' : 'text-charcoal-400 hover:text-charcoal hover:bg-section'}`}
+                aria-label="Grid view"
+              >
+                <Grid3X3 size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-primary text-white' : 'text-charcoal-400 hover:text-charcoal hover:bg-section'}`}
+                aria-label="List view"
+              >
+                <List size={16} />
+              </button>
+            </div>
+
+            <div className="relative">
+              <select
+                value={sort}
+                onChange={(e) => { setSort(e.target.value); setPage(1); }}
+                className="appearance-none bg-white border border-border rounded-lg pl-3 pr-8 py-2.5 text-sm text-charcoal-600 font-medium focus:outline-none focus:border-primary cursor-pointer"
+              >
+                <option value="newest">Newest</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="name_asc">Name: A-Z</option>
+                <option value="name_desc">Name: Z-A</option>
+                <option value="popular">Most Popular</option>
+              </select>
+              <ArrowUpDown size={13} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-charcoal-400 pointer-events-none" />
+            </div>
           </div>
-        )}
+        </div>
+
+        {/* Expanded Filters */}
+        <AnimatePresence>
+          {filtersOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden border-t border-border bg-section"
+            >
+              <div className="container-custom py-4">
+                <div className="flex flex-wrap items-end gap-4">
+                  {/* Categories */}
+                  <div className="flex-1 min-w-[200px]">
+                    <label className="form-label">Category</label>
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => handleCategorySelect(e.target.value)}
+                      className="form-select"
+                    >
+                      <option value="">All Categories</option>
+                      {categories.map(cat => (
+                        <option key={cat.id} value={cat.name}>{cat.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Price Range */}
+                  <div className="flex-1 min-w-[200px]">
+                    <label className="form-label">Price Range (KSh)</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        value={priceRange.min}
+                        onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
+                        className="form-input"
+                      />
+                      <span className="text-charcoal-400">-</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        value={priceRange.max}
+                        onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+                        className="form-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => { setPage(1); fetchProducts(); }} className="btn btn-primary btn-sm">
+                      Apply Filters
+                    </button>
+                    {hasActiveFilters && (
+                      <button onClick={clearFilters} className="btn btn-ghost btn-sm text-danger">
+                        Clear All
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+
+      {/* ── Products Grid ───────────────────────────────────────────────── */}
+      <section className="section pt-8">
+        <div className="container-custom">
+          {/* Results Count */}
+          {!loading && (
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-sm text-charcoal-400">
+                Showing <span className="font-semibold text-charcoal">{products.length}</span> of{' '}
+                <span className="font-semibold text-charcoal">{totalProducts}</span> products
+              </p>
+              {selectedCategory && (
+                <button onClick={() => handleCategorySelect('')} className="flex items-center gap-1 text-xs text-primary hover:text-primary-700">
+                  <X size={12} /> Clear category
+                </button>
+              )}
+            </div>
+          )}
+
+          {loading ? (
+            <div className={viewMode === 'grid' ? 'products-grid' : 'space-y-4'}>
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="rounded-lg border border-border overflow-hidden">
+                  <div className={viewMode === 'grid' ? 'aspect-square skeleton' : 'h-32 skeleton'} />
+                  {viewMode === 'grid' && (
+                    <div className="p-4 space-y-3">
+                      <div className="h-3 skeleton w-1/3" />
+                      <div className="h-4 skeleton w-3/4" />
+                      <div className="h-3 skeleton w-1/2" />
+                      <div className="h-8 skeleton w-full" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="w-20 h-20 mx-auto rounded-2xl bg-section flex items-center justify-center mb-6">
+                <Package size={36} className="text-charcoal-400" />
+              </div>
+              <h3 className="text-xl font-bold text-charcoal mb-2">No products found</h3>
+              <p className="text-charcoal-400 text-sm mb-6 max-w-md mx-auto">
+                We couldn't find any products matching your search. Try adjusting your filters or browse our categories.
+              </p>
+              <button onClick={clearFilters} className="btn btn-primary">
+                Clear Filters
+              </button>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className={viewMode === 'grid' ? 'products-grid' : 'space-y-4'}
+            >
+              {products.map(product => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ProductCard product={product} />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-12">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="p-2.5 rounded-lg border border-border text-charcoal-600 hover:bg-section hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={`min-w-[40px] h-10 rounded-lg text-sm font-semibold transition-all ${
+                    p === page
+                      ? 'bg-primary text-white shadow-md'
+                      : 'border border-border text-charcoal-600 hover:bg-section hover:border-primary'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="p-2.5 rounded-lg border border-border text-charcoal-600 hover:bg-section hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

@@ -5,18 +5,17 @@
   min-width: 0;
   height: 100%;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 24px;
+  background: var(--ink-800);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(10px);
   transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
 }
 
 .product-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(15, 118, 110, 0.22);
-  box-shadow: 0 28px 60px rgba(9, 15, 27, 0.14);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-md);
 }
 
 .product-card-image {
@@ -25,8 +24,8 @@
   aspect-ratio: 4 / 3;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(15, 118, 110, 0.08), rgba(245, 158, 11, 0.08)),
-    var(--paper);
+    linear-gradient(180deg, rgba(13, 148, 136, 0.06), rgba(245, 158, 11, 0.05)),
+    var(--ink-900);
 }
 
 .product-card-image img {
@@ -36,9 +35,7 @@
   transition: transform 0.5s ease;
 }
 
-.product-card:hover .product-card-image img {
-  transform: scale(1.05);
-}
+.product-card:hover .product-card-image img { transform: scale(1.05); }
 
 .product-card-overlay {
   position: absolute;
@@ -49,18 +46,16 @@
   gap: 8px;
   color: var(--paper-2);
   font-family: var(--font-condensed);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   opacity: 0;
   transition: opacity 0.22s ease;
-  background: linear-gradient(180deg, rgba(9, 19, 34, 0.06), rgba(9, 19, 34, 0.6));
+  background: linear-gradient(180deg, rgba(5, 11, 20, 0.04), rgba(5, 11, 20, 0.55));
 }
 
-.product-card:hover .product-card-overlay {
-  opacity: 1;
-}
+.product-card:hover .product-card-overlay { opacity: 1; }
 
 .product-card-badges {
   position: absolute;
@@ -76,7 +71,7 @@
 .badge-green,
 .badge-yellow,
 .badge-dark {
-  box-shadow: 0 8px 20px rgba(9, 15, 27, 0.12);
+  box-shadow: var(--shadow-sm);
 }
 
 .product-card-body {
@@ -89,7 +84,7 @@
 
 .product-card-category {
   font-family: var(--font-condensed);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -98,10 +93,10 @@
 
 .product-card-name {
   font-family: var(--font-display);
-  font-size: 1.02rem;
-  line-height: 1.24;
+  font-size: 1rem;
+  line-height: 1.28;
   letter-spacing: -0.02em;
-  color: var(--ink-900);
+  color: var(--paper-2);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -109,8 +104,8 @@
 }
 
 .product-card-desc {
-  font-size: 0.84rem;
-  color: var(--slate-600);
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
   line-height: 1.55;
   flex: 1;
   display: -webkit-box;
@@ -120,13 +115,11 @@
 }
 
 .product-card-brand {
-  font-size: 0.8rem;
-  color: var(--slate-600);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.56);
 }
 
-.product-card-brand strong {
-  color: var(--ink-900);
-}
+.product-card-brand strong { color: rgba(255, 255, 255, 0.84); }
 
 .product-card-footer {
   display: flex;
@@ -135,13 +128,10 @@
   gap: 12px;
   margin-top: 8px;
   padding-top: 14px;
-  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  border-top: 1px solid var(--line);
 }
 
-.product-card-price {
-  min-width: 0;
-  flex: 1;
-}
+.product-card-price { min-width: 0; flex: 1; }
 
 .price-amount {
   display: flex;
@@ -149,28 +139,26 @@
   flex-wrap: wrap;
   row-gap: 2px;
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 0.96rem;
   color: var(--paper-2);
-  background: linear-gradient(135deg, var(--ink-900), var(--ink-800));
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
   padding: 8px 12px;
   border-radius: 999px;
   width: fit-content;
-  box-shadow: 0 10px 22px rgba(9, 15, 27, 0.12);
+  box-shadow: var(--shadow-teal);
 }
 
-.price-amount small {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
+.price-amount small { color: rgba(255, 255, 255, 0.8) !important; }
 
 .price-on-request {
   display: inline-flex;
   align-items: center;
   padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(15, 118, 110, 0.08);
+  background: var(--accent-soft);
   color: var(--accent);
   font-family: var(--font-condensed);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -189,60 +177,59 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--line);
+  background: var(--ink-900);
+  color: var(--paper-2);
   transition: var(--transition);
   flex-shrink: 0;
 }
 
 .product-action-btn:hover:not(:disabled) {
   transform: translateY(-2px);
+  border-color: var(--line-strong);
 }
 
 .cart-action {
-  background: linear-gradient(135deg, var(--ink-900), var(--ink-800));
+  background: var(--accent);
   color: var(--paper-2);
+  border-color: transparent;
 }
 
 .cart-action:hover:not(:disabled) {
-  box-shadow: 0 16px 26px rgba(9, 15, 27, 0.14);
+  background: var(--accent-strong);
+  box-shadow: var(--shadow-teal);
 }
 
 .quote-action {
-  background: rgba(15, 118, 110, 0.08);
+  background: var(--ink-900);
   color: var(--accent);
+  border-color: var(--line);
 }
 
 .quote-action:hover {
-  background: rgba(15, 118, 110, 0.14);
+  background: var(--accent-soft);
+  border-color: var(--accent);
 }
 
 .product-action-btn:disabled {
   cursor: not-allowed;
   opacity: 0.45;
-  background: rgba(15, 23, 42, 0.04);
-  color: var(--slate-500);
+  background: var(--ink-800);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 @media (max-width: 600px) {
-  .product-card-body {
-    padding: 15px;
-  }
+  .product-card-body { padding: 15px; }
 
-  .product-card-image {
-    aspect-ratio: 1.08 / 1;
-  }
+  .product-card-image { aspect-ratio: 1.08 / 1; }
 
-  .product-card-name {
-    font-size: 0.96rem;
-  }
+  .product-card-name { font-size: 0.94rem; }
 
   .product-card-desc,
-  .product-card-brand {
-    font-size: 0.76rem;
-  }
+  .product-card-brand { font-size: 0.76rem; }
 
   .price-amount {
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     padding: 7px 10px;
   }
 }
@@ -254,7 +241,5 @@
   }
 
   .product-card-actions,
-  .product-action-btn {
-    width: 100%;
-  }
+  .product-action-btn { width: 100%; }
 }

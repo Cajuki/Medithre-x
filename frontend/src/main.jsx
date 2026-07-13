@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import axios from 'axios';
 import App from './App.jsx';
 import './index.css';
+import { WishlistProvider } from './context/WishlistContext.jsx';
 
 // ── API Base URL ──────────────────────────────────────────────────────────────
 // In development: Vite proxy handles /api → localhost:8080
@@ -34,7 +35,9 @@ axios.interceptors.response.use(
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <WishlistProvider>
+        <App />
+      </WishlistProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

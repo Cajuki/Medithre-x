@@ -1,169 +1,240 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import Seo from '../components/Seo.jsx';
+import {
+  ChevronRight, Phone, Mail, MapPin, Clock, Send, Loader2,
+  MessageSquare, Headphones, FileText, ArrowRight, CheckCircle
+} from 'lucide-react';
+import { PRIMARY_PHONE, SECONDARY_PHONE, EMAIL, ADDRESS } from '../config/contact.js';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Phone, Mail, MapPin, Clock, CheckCircle } from 'lucide-react';
-import { useAuth } from '../context/AuthContext.jsx';
-import { isValidEmail, isValidKenyanPhone, normalizeKenyanPhone, KENYAN_PHONE_HINT } from '../utils/validation.js';
-import Seo from '../components/Seo.jsx';
-import { BUSINESS_EMAIL, BUSINESS_LOCATION, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
-import './ContactPage.css';
+
+const departments = [
+  { name: 'Sales', phone: PRIMARY_PHONE.display, email: EMAIL, icon: <FileText size={20} /> },
+  { name: 'Technical Support', phone: SECONDARY_PHONE.display, email: EMAIL, icon: <Headphones size={20} /> },
+  { name: 'Customer Service', phone: PRIMARY_PHONE.display, email: EMAIL, icon: <MessageSquare size={20} /> },
+];
 
 export default function ContactPage() {
-  const { user } = useAuth();
   const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
-  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-  const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
-
-  useEffect(() => {
-    if (!user) return;
-    setForm((prev) => ({
-      ...prev,
-      name: user.name || '',
-      email: user.email || '',
-      phone: user.phone || '',
-    }));
-  }, [user]);
+  const update = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isValidEmail(form.email)) return toast.error('Enter a valid email address');
-    if (form.phone && !isValidKenyanPhone(form.phone)) return toast.error(KENYAN_PHONE_HINT);
+    if (!form.name || !form.email || !form.message) {
+      toast.error('Please fill in required fields');
+      return;
+    }
     setLoading(true);
     try {
-      await axios.post('/api/contact', {
-        ...form,
-        email: form.email.trim().toLowerCase(),
-        phone: form.phone ? normalizeKenyanPhone(form.phone) : '',
-      });
+      await axios.post('/api/contact', form);
       setSubmitted(true);
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to send. Please try again.');
+      toast.success('Message sent successfully!');
+    } catch {
+      toast.error('Failed to send message. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  if (submitted) {
+    return (
+      <div className="min-h-screen pt-24 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-8">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-accent-light flex items-center justify-center">
+            <CheckCircle size={40} className="text-accent-dark" />
+          </div>
+          <h2 className="text-2xl font-bold text-charcoal mb-3">Message Sent Successfully!</h2>
+          <p className="text-sm text-charcoal-400 mb-6">Thank you for reaching out. Our team will get back to you within 24 hours.</p>
+          <Link to="/" className="btn btn-primary">Back to Home</Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <Seo
-        title="Contact Us"
-        description="Contact Medithrex for product enquiries, quotes, or technical support for medical and laboratory equipment in Kenya."
-        url={window.location.href}
-      />
-      <div className="page-hero">
-        <div className="container page-hero-content">
-          <p className="section-label">Get In Touch</p>
-          <h1>Contact Us</h1>
-          <p>Our team is ready to assist with product enquiries, quotes, and technical support.</p>
+    <div className="min-h-screen">
+      <Seo title="Contact Medithrex | Medical Equipment Kenya" description="Get in touch with Medithrex for medical equipment inquiries, quotes, and support." />
+
+      {/* ── Hero ────────────────────────────────────────────────────────── */}
+      <section className="page-hero pt-28 pb-16 lg:pt-36 lg:pb-20">
+        <div className="container-custom page-hero-content">
+          <div className="page-hero-breadcrumb">
+            <Link to="/">Home</Link> <ChevronRight size={10} /> <span>Contact</span>
+          </div>
+          <h1>Get in Touch</h1>
+          <p>We're here to help with your medical equipment needs</p>
         </div>
-      </div>
+      </section>
 
-      <div className="container contact-layout">
-        {/* Info cards */}
-        <div className="contact-info">
-          <div className="contact-info-card">
-            <div className="ci-icon"><Phone size={22} /></div>
-            <div>
-              <h4>Phone & WhatsApp</h4>
-              <a href={PRIMARY_PHONE.href}>{PRIMARY_PHONE.display}</a>
-              <a href={SECONDARY_PHONE.href}>{SECONDARY_PHONE.display}</a>
-              <p>Call or WhatsApp anytime</p>
-            </div>
+      {/* ── Contact Cards ───────────────────────────────────────────────── */}
+      <section className="section -mt-12 relative z-10">
+        <div className="container-custom">
+          <div className="grid md:grid-cols-3 gap-5 mb-16">
+            {[
+              { icon: <Phone size={22} />, title: 'Call Us', value: PRIMARY_PHONE.display, href: PRIMARY_PHONE.href, sub: 'Mon–Sat: 8AM–6PM' },
+              { icon: <Mail size={22} />, title: 'Email Us', value: EMAIL, href: `mailto:${EMAIL}`, sub: 'We respond within 24 hours' },
+              { icon: <MapPin size={22} />, title: 'Visit Us', value: ADDRESS || 'Nairobi, Kenya', href: '#', sub: 'By appointment only' },
+            ].map((item, i) => (
+              <motion.a
+                key={item.title}
+                href={item.href}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="premium-card p-6 flex items-start gap-4 hover:border-primary-100"
+              >
+                <div className="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center text-primary shrink-0">
+                  {item.icon}
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-charcoal-400 uppercase tracking-wider mb-1">{item.title}</p>
+                  <p className="text-sm font-bold text-charcoal">{item.value}</p>
+                  <p className="text-xs text-charcoal-400 mt-1">{item.sub}</p>
+                </div>
+              </motion.a>
+            ))}
           </div>
 
-             <div className="contact-info-card">
-               <div className="ci-icon"><Mail size={22} /></div>
-               <div>
-                 <h4>Email</h4>
-                 <a href={`mailto:${BUSINESS_EMAIL}`}>{BUSINESS_EMAIL}</a>
-                 <p>We reply within 24 hours</p>
-               </div>
-             </div>
-
-          <div className="contact-info-card">
-            <div className="ci-icon"><MapPin size={22} /></div>
-            <div>
-              <h4>Our Location</h4>
-              <p style={{ fontWeight: 600, color: 'var(--black)' }}>{BUSINESS_LOCATION}</p>
-              <p>Nairobi CBD, Nairobi, Kenya</p>
-            </div>
-          </div>
-
-          <div className="contact-info-card">
-            <div className="ci-icon"><Clock size={22} /></div>
-            <div>
-              <h4>Working Hours</h4>
-              <p>Monday – Friday: 8AM – 6PM</p>
-              <p>Saturday: 9AM – 2PM EAT</p>
-            </div>
-          </div>
-
-          {/* Embedded map */}
-          <div className="contact-map">
-            <iframe
-              title="medithrex — Pramukh Plaza, Nairobi CBD"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8185987700456!2d36.8175!3d-1.2833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f10d22ef9aaab%3A0x9da5b6c6c0b9c4e0!2sNairobi+CBD!5e0!3m2!1sen!2ske!4v1"
-              width="100%" height="200"
-              style={{ border: 0, borderRadius: '8px', display: 'block' }}
-              allowFullScreen loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          </div>
-        </div>
-
-        {/* Form */}
-        {submitted ? (
-          <div className="contact-success">
-            <CheckCircle size={48} />
-            <h3>Message Received!</h3>
-            <p>Thank you for reaching out. Our team will get back to you within 24 hours.</p>
-            <a href={PRIMARY_PHONE.href} className="btn btn-primary"><Phone size={16} /> {PRIMARY_PHONE.display}</a>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="contact-form">
-            <h3>Send Us a Message</h3>
-            {user && (
-              <p style={{ marginTop: '-4px', marginBottom: '16px', color: 'var(--grey)', fontSize: '0.9rem' }}>
-                Your account details have been filled in automatically.
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* ── Contact Form ──────────────────────────────────────────── */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className="section-eyebrow">Send a Message</span>
+              <h2 className="section-title mb-2">Let's Discuss Your Needs</h2>
+              <p className="text-sm text-charcoal-400 mb-8">
+                Fill out the form and our team will get back to you within 24 hours
               </p>
-            )}
-            <div className="form-grid-2">
-              <div className="form-group">
-                <label className="form-label">Full Name *</label>
-                <input className="form-input" value={form.name} onChange={e => set('name', e.target.value)} required placeholder="Your name" disabled={!!user} />
+
+              <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <div className="form-group">
+                    <label className="form-label">Full Name *</label>
+                    <input type="text" value={form.name} onChange={update('name')} className="form-input" placeholder="Your name" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Email Address *</label>
+                    <input type="email" value={form.email} onChange={update('email')} className="form-input" placeholder="you@example.com" />
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <div className="form-group">
+                    <label className="form-label">Phone Number</label>
+                    <input type="tel" value={form.phone} onChange={update('phone')} className="form-input" placeholder="+254 7XX XXX XXX" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Subject</label>
+                    <select value={form.subject} onChange={update('subject')} className="form-select">
+                      <option value="">Select a subject</option>
+                      <option value="product-inquiry">Product Inquiry</option>
+                      <option value="quote-request">Quote Request</option>
+                      <option value="support">Technical Support</option>
+                      <option value="partnership">Partnership</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Message *</label>
+                  <textarea
+                    value={form.message}
+                    onChange={update('message')}
+                    className="form-textarea"
+                    rows={5}
+                    placeholder="Tell us about your requirements..."
+                  />
+                </div>
+
+                <button type="submit" disabled={loading} className="btn btn-primary btn-lg w-full">
+                  {loading ? <Loader2 size={18} className="animate-spin" /> : <><Send size={16} /> Send Message</>}
+                </button>
+              </form>
+            </motion.div>
+
+            {/* ── Department Contacts ────────────────────────────────────── */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <div>
+                <span className="section-eyebrow">Department Contacts</span>
+                <h2 className="section-title mb-2">Reach Us Directly</h2>
+                <p className="text-sm text-charcoal-400 mb-8">Contact the right department for faster assistance</p>
               </div>
-              <div className="form-group">
-                <label className="form-label">Email *</label>
-                <input type="email" className="form-input" value={form.email} onChange={e => set('email', e.target.value)} required placeholder="your@email.com" disabled={!!user} />
+
+              <div className="space-y-4">
+                {departments.map((dept, i) => (
+                  <motion.div
+                    key={dept.name}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="premium-card p-5"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary-50 flex items-center justify-center text-primary shrink-0">
+                        {dept.icon}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-charcoal">{dept.name}</p>
+                        <p className="text-xs text-charcoal-400 mt-1">{dept.phone}</p>
+                        <p className="text-xs text-charcoal-400">{dept.email}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-              <div className="form-group">
-                <label className="form-label">Phone</label>
-                <input className="form-input" inputMode="tel" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="0700 000 000" disabled={!!user} />
+
+              {/* WhatsApp CTA */}
+              <div className="premium-card p-6 bg-gradient-to-br from-secondary-50 to-white border-secondary/20">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-white">
+                    <MessageSquare size={22} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-charcoal">Quick Response on WhatsApp</p>
+                    <p className="text-xs text-charcoal-400 mt-0.5">Get instant support via WhatsApp</p>
+                  </div>
+                  <a
+                    href={`https://wa.me/${PRIMARY_PHONE.display.replace(/[^0-9]/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-auto btn btn-sm bg-secondary text-white hover:bg-secondary-600"
+                  >
+                    Chat Now
+                  </a>
+                </div>
               </div>
-              <div className="form-group">
-                <label className="form-label">Subject</label>
-                <select className="form-select" value={form.subject} onChange={e => set('subject', e.target.value)}>
-                  <option value="">Select Subject</option>
-                  <option>Product Enquiry</option>
-                  <option>Quote Request</option>
-                  <option>Order Support</option>
-                  <option>Technical Support</option>
-                  <option>General Enquiry</option>
-                </select>
-              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Map ─────────────────────────────────────────────────────────── */}
+      <section className="section-muted py-12">
+        <div className="container-custom">
+          <div className="rounded-lg overflow-hidden border border-border h-[300px] bg-section flex items-center justify-center">
+            <div className="text-center">
+              <MapPin size={48} className="mx-auto text-charcoal-400 mb-3" />
+              <p className="text-sm text-charcoal-400">{ADDRESS || 'Nairobi, Kenya'}</p>
+              <p className="text-xs text-charcoal-200 mt-1">Interactive map coming soon</p>
             </div>
-            <div className="form-group">
-              <label className="form-label">Message *</label>
-              <textarea className="form-textarea" value={form.message} onChange={e => set('message', e.target.value)} required placeholder="How can we help you?" style={{ minHeight: '140px' }} />
-            </div>
-            <button type="submit" className="btn btn-primary btn-lg" disabled={loading} style={{ width: '100%', justifyContent: 'center' }}>
-              {loading ? 'Sending...' : 'Send Message'}
-            </button>
-          </form>
-        )}
-      </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

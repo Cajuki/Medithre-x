@@ -1,11 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   server: {
     port: 5173,
-    // Dev proxy — forwards /api requests to local backend
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
@@ -30,6 +30,9 @@ export default defineConfig({
           }
           if (id.includes('node_modules/lucide-react')) {
             return 'ui';
+          }
+          if (id.includes('node_modules/framer-motion')) {
+            return 'animations';
           }
           return undefined;
         },

@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard, Package, ShoppingCart, FileText,
   Users, MessageSquare, LogOut, Menu, X,
-  ChevronRight, Settings, Tag
+  ChevronRight, Settings, Tag, Search, Bell, BarChart3
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
-import './AdminLayout.css';
+import logo from '../../Assets/med.png';
 
 const NAV = [
   { to: '/admin',            label: 'Dashboard',   icon: <LayoutDashboard size={18} />, end: true },
@@ -20,78 +21,151 @@ const NAV = [
 ];
 
 export default function AdminLayout() {
-  const [collapsed,   setCollapsed]   = useState(false);
-  const [mobileOpen,  setMobileOpen]  = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => { logout(); navigate('/login'); };
 
   return (
-    <div className={`admin-shell${collapsed ? ' sidebar-collapsed' : ''}`}>
-      {/* Sidebar */}
-      <aside className={`admin-sidebar${mobileOpen ? ' mobile-open' : ''}`}>
-        <div className="admin-sidebar-head">
-          <div className="admin-brand">
-            <span className="admin-brand-text">medithrex</span>
-            {!collapsed && <span className="admin-brand-sub">ADMIN PANEL</span>}
-          </div>
-          <button className="sidebar-collapse-btn desktop-only" onClick={() => setCollapsed(!collapsed)}>
-            <ChevronRight size={16} className={collapsed ? '' : 'rotated'} />
+    <div className="min-h-screen bg-section flex">
+      {/* ── Sidebar ────────────────────────────────────────────────────── */}
+      <aside className={`fixed lg:sticky top-0 left-0 h-screen z-50 flex flex-col bg-primary-dark border-r border-white/5 transition-all duration-300 ${
+        collapsed ? 'w-[72px]' : 'w-[260px]'
+      } ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        
+        {/* Brand */}
+        <div className={`flex items-center gap-3 h-[72px] px-4 border-b border-white/5 ${collapsed ? 'justify-center' : ''}`}>
+          <Link to="/admin" className="flex items-center gap-3 min-w-0">
+            <img src={logo} alt="Medithrex" className="h-8 w-auto shrink-0" />
+            {!collapsed && (
+              <div className="min-w-0">
+                <p className="text-white font-bold text-sm leading-tight truncate">Medithrex</p>
+                <p className="text-[9px] font-semibold text-secondary tracking-[0.2em] uppercase">Admin Panel</p>
+              </div>
+            )}
+          </Link>
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="hidden lg:flex ml-auto w-7 h-7 items-center justify-center rounded-full border border-white/10 text-white/40 hover:text-white hover:bg-white/5 transition-all shrink-0"
+          >
+            <ChevronRight size={13} className={`transition-transform ${collapsed ? '' : 'rotate-180'}`} />
           </button>
         </div>
 
-        <nav className="admin-nav">
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto p-3 space-y-1">
           {NAV.map(item => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.end}
-              className={({ isActive }) => `admin-nav-item${isActive ? ' active' : ''}`}
               onClick={() => setMobileOpen(false)}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sm font-medium ${
+                  collapsed ? 'justify-center' : ''
+                } ${
+                  isActive
+                    ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
+                }`
+              }
             >
-              <span className="admin-nav-icon">{item.icon}</span>
-              {!collapsed && <span className="admin-nav-label">{item.label}</span>}
+              <span className="shrink-0">{item.icon}</span>
+              {!collapsed && <span>{item.label}</span>}
             </NavLink>
           ))}
         </nav>
 
-        <div className="admin-sidebar-footer">
-          {!collapsed && (
-            <div className="admin-user-info">
-              <div className="admin-user-avatar">{user?.name?.slice(0, 2).toUpperCase()}</div>
-              <div>
-                <strong>{user?.name?.split(' ')[0]}</strong>
-                <span>Administrator</span>
+        {/* User & Logout */}
+        <div className="border-t border-white/5 p-3">
+          {!collapsed && user && (
+            <div className="flex items-center gap-3 px-3 py-2 mb-2 rounded-lg bg-white/5">
+              <div className="w-8 h-8 rounded-full bg-secondary text-white text-xs font-bold flex items-center justify-center shrink-0">
+                {user.name?.slice(0, 2).toUpperCase() || 'A'}
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-white truncate">{user.name?.split(' ')[0]}</p>
+                <p className="text-[10px] text-white/40">Administrator</p>
               </div>
             </div>
           )}
-          <button className="admin-logout-btn" onClick={handleLogout} title="Sign Out">
-            <LogOut size={18} />
+          <button
+            onClick={handleLogout}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/50 hover:text-danger hover:bg-danger/10 transition-all w-full ${
+              collapsed ? 'justify-center' : ''
+            }`}
+          >
+            <LogOut size={16} className="shrink-0" />
             {!collapsed && <span>Sign Out</span>}
           </button>
+          {!collapsed && (
+            <Link to="/" className="flex items-center justify-center gap-2 mt-2 px-3 py-2 rounded-lg text-xs text-white/30 hover:text-secondary transition-all">
+              <BarChart3 size={12} /> View Site
+            </Link>
+          )}
         </div>
       </aside>
 
-      {/* Mobile overlay */}
-      {mobileOpen && <div className="sidebar-overlay" onClick={() => setMobileOpen(false)} />}
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setMobileOpen(false)}
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
 
-      {/* Main */}
-      <div className="admin-main">
-        <header className="admin-topbar">
-          <button className="mobile-menu-btn" onClick={() => setMobileOpen(true)}>
-            <Menu size={22} />
+      {/* ── Main Area ──────────────────────────────────────────────────── */}
+      <div className="flex-1 min-w-0 flex flex-col">
+        {/* Top Bar */}
+        <header className="sticky top-0 z-30 h-[64px] bg-white/80 backdrop-blur-md border-b border-border flex items-center gap-4 px-4 lg:px-6">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-border text-charcoal-600 hover:bg-section transition-all"
+          >
+            <Menu size={18} />
           </button>
-          <Link to="/admin" className="admin-topbar-brand">
-            <span className="admin-topbar-wordmark">medithrex</span>
-            <span className="admin-topbar-tag">Admin</span>
+
+          <Link to="/admin" className="lg:hidden flex items-center gap-2">
+            <img src={logo} alt="" className="h-7 w-auto" />
+            <span className="text-sm font-bold text-charcoal">Medithrex</span>
+            <span className="text-[8px] font-semibold text-secondary tracking-wider uppercase px-1.5 py-0.5 rounded bg-secondary-50">Admin</span>
           </Link>
-          <div className="admin-topbar-right" style={{ marginLeft: 'auto' }}>
-            <a href="/" target="_blank" rel="noreferrer" className="topbar-site-btn">View Site ↗</a>
-            <div className="topbar-avatar">{user?.name?.slice(0, 2).toUpperCase()}</div>
+
+          <div className="hidden sm:flex flex-1 max-w-md relative">
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-400" />
+            <input
+              type="text"
+              placeholder="Search products, orders, users..."
+              className="w-full pl-9 pr-4 py-2 bg-section border border-border rounded-lg text-sm focus:outline-none focus:border-primary transition-all"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 ml-auto">
+            <button className="relative w-9 h-9 flex items-center justify-center rounded-lg border border-border text-charcoal-600 hover:bg-section transition-all">
+              <Bell size={16} />
+              <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-danger text-white text-[7px] font-bold rounded-full flex items-center justify-center">3</span>
+            </button>
+            <Link
+              to="/"
+              className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-charcoal-600 border border-border rounded-lg hover:bg-section hover:text-primary transition-all"
+            >
+              <BarChart3 size={13} /> View Site
+            </Link>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-secondary text-white text-xs font-bold flex items-center justify-center">
+              {user?.name?.slice(0, 2).toUpperCase() || 'A'}
+            </div>
           </div>
         </header>
-        <div className="admin-content">
+
+        {/* Content */}
+        <div className="flex-1 p-4 lg:p-6 overflow-hidden">
           <Outlet />
         </div>
       </div>

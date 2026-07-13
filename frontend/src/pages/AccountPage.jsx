@@ -1,16 +1,41 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext.jsx';
 import { isValidKenyanPhone, normalizeKenyanPhone, KENYAN_PHONE_HINT } from '../utils/validation.js';
 import {
   User, Package, FileText, LogOut, ChevronRight,
-  CheckCircle, Clock, Truck, XCircle, Edit3, Save
+  CheckCircle, Clock, Truck, XCircle, Edit3, Save,
+  LayoutDashboard, ShoppingCart, ArrowRight, Phone, Mail,
+  Building2, MapPin, Loader2, Heart, Settings, BarChart3
 } from 'lucide-react';
-import './AccountPage.css';
 
-/* ── Sidebar ─────────────────────────────────────── */
+/* ── Status Badge ──────────────────────────────────── */
+function StatusBadge({ status }) {
+  const map = {
+    Pending: { cls: 'bg-warning-light text-warning-dark border-warning/30', icon: <Clock size={11} /> },
+    Confirmed: { cls: 'bg-primary-100 text-primary border-primary/20', icon: <CheckCircle size={11} /> },
+    Processing: { cls: 'bg-info-light text-info border-info/20', icon: <Clock size={11} /> },
+    Shipped: { cls: 'bg-primary-100 text-primary border-primary/20', icon: <Truck size={11} /> },
+    Delivered: { cls: 'bg-accent-light text-accent-dark border-accent/20', icon: <CheckCircle size={11} /> },
+    Cancelled: { cls: 'bg-danger-light text-danger border-danger/20', icon: <XCircle size={11} /> },
+    New: { cls: 'bg-warning-light text-warning-dark border-warning/30', icon: <Clock size={11} /> },
+    Reviewed: { cls: 'bg-primary-100 text-primary border-primary/20', icon: <CheckCircle size={11} /> },
+    Quoted: { cls: 'bg-accent-light text-accent-dark border-accent/20', icon: <CheckCircle size={11} /> },
+    Accepted: { cls: 'bg-accent-light text-accent-dark border-accent/20', icon: <CheckCircle size={11} /> },
+    Declined: { cls: 'bg-danger-light text-danger border-danger/20', icon: <XCircle size={11} /> },
+  };
+  const s = map[status] || { cls: 'bg-section text-charcoal-400 border-border', icon: null };
+  return (
+    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${s.cls}`}>
+      {s.icon} {status}
+    </span>
+  );
+}
+
+/* ── Sidebar ──────────────────────────────────────── */
 function Sidebar({ active }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -18,59 +43,63 @@ function Sidebar({ active }) {
   const handleLogout = () => { logout(); navigate('/'); };
 
   const links = [
-    { path: '/account', label: 'Dashboard', icon: <User size={18} /> },
-    { path: '/account/orders', label: 'My Orders', icon: <Package size={18} /> },
-    { path: '/account/quotes', label: 'My Quotes', icon: <FileText size={18} /> },
-    { path: '/account/profile', label: 'Profile Settings', icon: <Edit3 size={18} /> },
+    { path: '/account', label: 'Dashboard', icon: <LayoutDashboard size={17} /> },
+    { path: '/account/orders', label: 'My Orders', icon: <ShoppingCart size={17} /> },
+    { path: '/account/quotes', label: 'My Quotes', icon: <FileText size={17} /> },
+    { path: '/account/profile', label: 'Profile Settings', icon: <Settings size={17} /> },
   ];
 
   return (
-    <aside className="account-sidebar">
-      <div className="account-user">
-        <div className="account-avatar">{user?.name?.slice(0, 2).toUpperCase()}</div>
-        <div>
-          <strong>{user?.name}</strong>
-          <span>{user?.company || user?.email}</span>
+    <div className="w-full lg:w-64 shrink-0">
+      <div className="lg:sticky lg:top-24 premium-card p-4 space-y-4">
+        <div className="flex items-center gap-3 pb-4 border-b border-border">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white text-sm font-bold shrink-0">
+            {user?.name?.slice(0, 2).toUpperCase() || 'U'}
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-charcoal truncate">{user?.name}</p>
+            <p className="text-[10px] text-charcoal-400 truncate">{user?.company || user?.email}</p>
+          </div>
+        </div>
+
+        <nav className="space-y-1">
+          {links.map(l => (
+            <Link
+              key={l.path}
+              to={l.path}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                active === l.path
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-charcoal-600 hover:text-charcoal hover:bg-section'
+              }`}
+            >
+              {l.icon} {l.label}
+              <ChevronRight size={13} className="ml-auto opacity-50" />
+            </Link>
+          ))}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-charcoal-600 hover:text-danger hover:bg-danger-light/30 transition-all w-full"
+          >
+            <LogOut size={17} /> Sign Out
+          </button>
+        </nav>
+
+        {/* Quick actions */}
+        <div className="pt-4 border-t border-border space-y-2">
+          <Link to="/products" className="flex items-center gap-2 text-xs text-charcoal-400 hover:text-primary transition-colors">
+            <Package size={14} /> Browse Products <ArrowRight size={12} className="ml-auto" />
+          </Link>
+          <Link to="/quote" className="flex items-center gap-2 text-xs text-charcoal-400 hover:text-primary transition-colors">
+            <FileText size={14} /> Request Quote <ArrowRight size={12} className="ml-auto" />
+          </Link>
         </div>
       </div>
-      <nav className="account-nav">
-        {links.map(l => (
-          <Link key={l.path} to={l.path} className={`account-nav-link${active === l.path ? ' active' : ''}`}>
-            {l.icon} {l.label} <ChevronRight size={14} className="nav-arrow" />
-          </Link>
-        ))}
-        <button className="account-nav-link logout-btn" onClick={handleLogout}>
-          <LogOut size={18} /> Sign Out
-        </button>
-      </nav>
-    </aside>
+    </div>
   );
 }
 
-/* ── Status badge helper ─────────────────────────── */
-function StatusBadge({ status }) {
-  const map = {
-    Pending: { cls: 'badge-grey', icon: <Clock size={12} /> },
-    Confirmed: { cls: 'badge-dark', icon: <CheckCircle size={12} /> },
-    Processing: { cls: 'badge-yellow', icon: <Clock size={12} /> },
-    Shipped: { cls: 'badge-dark', icon: <Truck size={12} /> },
-    Delivered: { cls: 'badge-green', icon: <CheckCircle size={12} /> },
-    Cancelled: { cls: 'badge-red', icon: <XCircle size={12} /> },
-    New: { cls: 'badge-yellow', icon: <Clock size={12} /> },
-    Reviewed: { cls: 'badge-dark', icon: <CheckCircle size={12} /> },
-    Quoted: { cls: 'badge-green', icon: <CheckCircle size={12} /> },
-    Accepted: { cls: 'badge-green', icon: <CheckCircle size={12} /> },
-    Declined: { cls: 'badge-red', icon: <XCircle size={12} /> },
-  };
-  const s = map[status] || { cls: 'badge-grey', icon: null };
-  return (
-    <span className={`badge ${s.cls}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-      {s.icon} {status}
-    </span>
-  );
-}
-
-/* ── Dashboard ───────────────────────────────────── */
+/* ── Dashboard ────────────────────────────────────── */
 function Dashboard() {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
@@ -87,111 +116,115 @@ function Dashboard() {
     }).finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="account-loading"><div className="spinner" /></div>;
+  if (loading) return <div className="flex justify-center py-16"><div className="spinner" /></div>;
 
   const stats = [
-    { label: 'Total Orders', value: orders.length, icon: <Package size={22} />, link: '/account/orders' },
-    { label: 'Pending Orders', value: orders.filter(o => o.status === 'Pending').length, icon: <Clock size={22} />, link: '/account/orders' },
-    { label: 'Quote Requests', value: quotes.length, icon: <FileText size={22} />, link: '/account/quotes' },
-    { label: 'Active Quotes', value: quotes.filter(q => ['New', 'Reviewed'].includes(q.status)).length, icon: <CheckCircle size={22} />, link: '/account/quotes' },
+    { label: 'Total Orders', value: orders.length, icon: <ShoppingCart size={18} />, color: '#3B82F6', link: '/account/orders' },
+    { label: 'Pending Orders', value: orders.filter(o => o.status === 'Pending').length, icon: <Clock size={18} />, color: '#F59E0B', link: '/account/orders' },
+    { label: 'Quote Requests', value: quotes.length, icon: <FileText size={18} />, color: '#8B5CF6', link: '/account/quotes' },
+    { label: 'Active Quotes', value: quotes.filter(q => ['New', 'Reviewed'].includes(q.status)).length, icon: <CheckCircle size={18} />, color: '#10B981', link: '/account/quotes' },
   ];
 
   return (
-    <div className="account-content">
-      <div className="account-page-header">
-        <h2>Welcome back, {user?.name?.split(' ')[0]}!</h2>
-        <p>Manage your orders, track quotes, and update your profile.</p>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl lg:text-2xl font-display font-extrabold text-charcoal">Welcome back, {user?.name?.split(' ')[0]}!</h2>
+        <p className="text-sm text-charcoal-400 mt-1">Manage your orders, track quotes, and update your profile.</p>
       </div>
 
-      <div className="dashboard-stats">
-        {stats.map(s => (
-          <Link key={s.label} to={s.link} className="dash-stat-card">
-            <div className="dash-stat-icon">{s.icon}</div>
-            <div>
-              <span className="dash-stat-val">{s.value}</span>
-              <span className="dash-stat-label">{s.label}</span>
-            </div>
-          </Link>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((s, i) => (
+          <motion.div
+            key={s.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+          >
+            <Link to={s.link} className="premium-card p-5 flex items-center gap-4 hover:border-primary-100 block">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: s.color + '18', color: s.color }}>
+                {s.icon}
+              </div>
+              <div>
+                <p className="text-xl font-bold text-charcoal">{s.value}</p>
+                <p className="text-[10px] text-charcoal-400 font-medium">{s.label}</p>
+              </div>
+            </Link>
+          </motion.div>
         ))}
       </div>
 
-      {/* Recent orders */}
-      <div className="account-section">
-        <div className="account-section-head">
-          <h3>Recent Orders</h3>
-          <Link to="/account/orders" className="btn btn-outline btn-sm">View All</Link>
+      {/* Recent Orders */}
+      <div className="premium-card">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+          <h3 className="text-sm font-bold text-charcoal">Recent Orders</h3>
+          <Link to="/account/orders" className="text-xs font-semibold text-primary hover:text-primary-700 flex items-center gap-1">
+            View All <ArrowRight size={12} />
+          </Link>
         </div>
         {orders.length === 0 ? (
-          <div className="account-empty">
-            <Package size={36} strokeWidth={1} />
-            <p>No orders yet. <Link to="/products">Browse products</Link> to place your first order.</p>
+          <div className="flex flex-col items-center py-12 text-charcoal-400">
+            <Package size={32} className="mb-3 text-charcoal-200" />
+            <p className="text-sm mb-3">No orders yet. Start browsing our catalogue.</p>
+            <Link to="/products" className="btn btn-primary btn-sm">Browse Products</Link>
           </div>
         ) : (
-          <div className="orders-table">
-            <div className="orders-table-head">
-              <span>Order #</span><span>Date</span><span>Items</span><span>Total</span><span>Status</span>
-            </div>
+          <div className="divide-y divide-border/50">
             {orders.slice(0, 5).map(o => (
-              <div key={o.id} className="orders-table-row">
-                <span className="order-num-cell">{o.orderNumber}</span>
-                <span>{new Date(o.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                <span>{o.items?.length} item{o.items?.length !== 1 ? 's' : ''}</span>
-                <span className="order-total-cell">KES {o.totalAmount?.toLocaleString() || '—'}</span>
-                <span><StatusBadge status={o.status} /></span>
+              <div key={o.id} className="flex items-center justify-between px-5 py-3 text-sm hover:bg-section/30 transition-colors">
+                <div className="min-w-0">
+                  <p className="font-semibold text-charcoal text-xs">{o.orderNumber}</p>
+                  <p className="text-[10px] text-charcoal-400">
+                    {new Date(o.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    {' · '}{o.items?.length || 0} item(s)
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-semibold text-charcoal">KES {o.totalAmount?.toLocaleString() || '—'}</span>
+                  <StatusBadge status={o.status} />
+                </div>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Recent quotes */}
-      <div className="account-section">
-        <div className="account-section-head">
-          <h3>Recent Quotes</h3>
-          <Link to="/account/quotes" className="btn btn-outline btn-sm">View All</Link>
+      {/* Recent Quotes */}
+      <div className="premium-card">
+        <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+          <h3 className="text-sm font-bold text-charcoal">Recent Quotes</h3>
+          <Link to="/account/quotes" className="text-xs font-semibold text-primary hover:text-primary-700 flex items-center gap-1">
+            View All <ArrowRight size={12} />
+          </Link>
         </div>
         {quotes.length === 0 ? (
-          <div className="account-empty">
-            <FileText size={36} strokeWidth={1} />
-            <p>No quotes yet. <Link to="/quote">Request a quote</Link> for any product.</p>
+          <div className="flex flex-col items-center py-12 text-charcoal-400">
+            <FileText size={32} className="mb-3 text-charcoal-200" />
+            <p className="text-sm mb-3">No quotes yet. Request one for any product.</p>
+            <Link to="/quote" className="btn btn-primary btn-sm">Request a Quote</Link>
           </div>
         ) : (
-          <div className="orders-table">
-            <div className="orders-table-head">
-              <span>Quote #</span><span>Date</span><span>Items</span><span>Status</span>
-            </div>
+          <div className="divide-y divide-border/50">
             {quotes.slice(0, 5).map(q => (
-              <div key={q.id} className="orders-table-row">
-                <span className="order-num-cell">{q.quoteNumber}</span>
-                <span>{new Date(q.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                <span>{q.items?.length} item{q.items?.length !== 1 ? 's' : ''}</span>
-                <span><StatusBadge status={q.status} /></span>
+              <div key={q.id} className="flex items-center justify-between px-5 py-3 text-sm hover:bg-section/30 transition-colors">
+                <div className="min-w-0">
+                  <p className="font-semibold text-charcoal text-xs">{q.quoteNumber}</p>
+                  <p className="text-[10px] text-charcoal-400">
+                    {new Date(q.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    {' · '}{q.items?.length || 0} item(s)
+                  </p>
+                </div>
+                <StatusBadge status={q.status} />
               </div>
             ))}
           </div>
         )}
-      </div>
-
-      {/* Quick actions */}
-      <div className="account-quick-actions">
-        <Link to="/products" className="quick-action">
-          <Package size={20} />
-          <span>Browse Products</span>
-        </Link>
-        <Link to="/quote" className="quick-action">
-          <FileText size={20} />
-          <span>Request Quote</span>
-        </Link>
-        <Link to="/contact" className="quick-action">
-          <User size={20} />
-          <span>Contact Support</span>
-        </Link>
       </div>
     </div>
   );
 }
 
-/* ── Orders ──────────────────────────────────────── */
+/* ── Orders ────────────────────────────────────────── */
 function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -203,61 +236,59 @@ function Orders() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="account-loading"><div className="spinner" /></div>;
+  if (loading) return <div className="flex justify-center py-16"><div className="spinner" /></div>;
 
   return (
-    <div className="account-content">
-      <div className="account-page-header">
-        <h2>My Orders</h2>
-        <p>Track and manage all your equipment orders.</p>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl lg:text-2xl font-display font-extrabold text-charcoal">My Orders</h2>
+        <p className="text-sm text-charcoal-400 mt-1">Track and manage all your equipment orders.</p>
       </div>
 
       {orders.length === 0 ? (
-        <div className="account-empty large">
-          <Package size={56} strokeWidth={1} />
-          <h3>No Orders Yet</h3>
-          <p>Place your first order by browsing our product catalogue.</p>
+        <div className="flex flex-col items-center py-20 text-center">
+          <Package size={48} className="mb-4 text-charcoal-200" />
+          <h3 className="text-lg font-bold text-charcoal mb-2">No Orders Yet</h3>
+          <p className="text-sm text-charcoal-400 mb-6 max-w-sm">Place your first order by browsing our product catalogue.</p>
           <Link to="/products" className="btn btn-primary">Browse Products</Link>
         </div>
       ) : (
-        <div className="orders-list">
+        <div className="space-y-4">
           {orders.map(order => (
-            <div key={order.id} className="order-card">
-              <div className="order-card-header">
+            <div key={order.id} className="premium-card overflow-hidden">
+              <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-wrap gap-3">
                 <div>
-                  <span className="order-card-num">{order.orderNumber}</span>
-                  <span className="order-card-date">
+                  <p className="text-sm font-bold text-charcoal">{order.orderNumber}</p>
+                  <p className="text-[10px] text-charcoal-400">
                     {new Date(order.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  </span>
+                  </p>
                 </div>
                 <StatusBadge status={order.status} />
               </div>
-              <div className="order-card-items">
+              <div className="px-5 py-3 divide-y divide-border/30">
                 {order.items?.map((item, i) => (
-                  <div key={i} className="order-card-item">
-                    <span className="order-item-name">{item.name}</span>
-                    <span className="order-item-qty">× {item.quantity}</span>
-                    <span className="order-item-price">
-                      {item.price ? `KES ${(item.price * item.quantity).toLocaleString()}` : '—'}
-                    </span>
+                  <div key={i} className="flex items-center justify-between py-2 text-sm">
+                    <span className="text-charcoal">{item.name}</span>
+                    <div className="flex items-center gap-4">
+                      <span className="text-charcoal-400">× {item.quantity}</span>
+                      <span className="font-semibold text-charcoal">KES {(item.price * item.quantity).toLocaleString() || '—'}</span>
+                    </div>
                   </div>
                 ))}
               </div>
-              <div className="order-card-footer">
-                <div className="order-card-meta">
-                  <span>Payment: <strong>{order.paymentMethod}</strong></span>
-                  <span>
-                    <span className={`badge ${order.paymentStatus === 'Paid' ? 'badge-green' : 'badge-grey'}`}>
-                      {order.paymentStatus}
-                    </span>
-                  </span>
+              <div className="px-5 py-3 bg-section/50 flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-3 text-xs text-charcoal-400">
+                  <span>Payment: <strong className="text-charcoal-600">{order.paymentMethod}</strong></span>
+                  <StatusBadge status={order.paymentStatus} />
                 </div>
-                <div className="order-card-total">
-                  Total: <strong>KES {order.totalAmount?.toLocaleString() || '—'}</strong>
+                <div className="text-sm font-bold text-charcoal">
+                  Total: KES {order.totalAmount?.toLocaleString() || '—'}
                 </div>
               </div>
               {order.notes && (
-                <div className="order-card-notes">Notes: {order.notes}</div>
+                <div className="px-5 py-2 text-xs text-charcoal-400 italic border-t border-border/30">
+                  Notes: {order.notes}
+                </div>
               )}
             </div>
           ))}
@@ -267,7 +298,7 @@ function Orders() {
   );
 }
 
-/* ── Quotes ──────────────────────────────────────── */
+/* ── Quotes ────────────────────────────────────────── */
 function Quotes() {
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -279,60 +310,66 @@ function Quotes() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="account-loading"><div className="spinner" /></div>;
+  if (loading) return <div className="flex justify-center py-16"><div className="spinner" /></div>;
 
   return (
-    <div className="account-content">
-      <div className="account-page-header">
+    <div className="space-y-6">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h2>My Quote Requests</h2>
-          <p>View all your submitted quote requests and their responses.</p>
+          <h2 className="text-xl lg:text-2xl font-display font-extrabold text-charcoal">My Quote Requests</h2>
+          <p className="text-sm text-charcoal-400 mt-1">View all your submitted quote requests and their responses.</p>
         </div>
-        <Link to="/quote" className="btn btn-primary">New Quote Request</Link>
+        <Link to="/quote" className="btn btn-primary btn-sm">New Quote Request</Link>
       </div>
 
       {quotes.length === 0 ? (
-        <div className="account-empty large">
-          <FileText size={56} strokeWidth={1} />
-          <h3>No Quote Requests</h3>
-          <p>Request a quote for any equipment we supply.</p>
+        <div className="flex flex-col items-center py-20 text-center">
+          <FileText size={48} className="mb-4 text-charcoal-200" />
+          <h3 className="text-lg font-bold text-charcoal mb-2">No Quote Requests</h3>
+          <p className="text-sm text-charcoal-400 mb-6 max-w-sm">Request a quote for any equipment we supply.</p>
           <Link to="/quote" className="btn btn-primary">Request a Quote</Link>
         </div>
       ) : (
-        <div className="orders-list">
+        <div className="space-y-4">
           {quotes.map(quote => (
-            <div key={quote.id} className="order-card">
-              <div className="order-card-header">
+            <div key={quote.id} className="premium-card overflow-hidden">
+              <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-wrap gap-3">
                 <div>
-                  <span className="order-card-num">{quote.quoteNumber}</span>
-                  <span className="order-card-date">
+                  <p className="text-sm font-bold text-charcoal">{quote.quoteNumber}</p>
+                  <p className="text-[10px] text-charcoal-400">
                     {new Date(quote.createdAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  </span>
+                  </p>
                 </div>
                 <StatusBadge status={quote.status} />
               </div>
-              <div className="order-card-items">
+              <div className="px-5 py-3 divide-y divide-border/30">
                 {quote.items?.map((item, i) => (
-                  <div key={i} className="order-card-item">
-                    <span className="order-item-name">{item.productName}</span>
-                    <span className="order-item-qty">× {item.quantity}</span>
-                    {item.notes && <span className="order-item-note">{item.notes}</span>}
+                  <div key={i} className="flex items-center justify-between py-2 text-sm">
+                    <span className="text-charcoal">{item.productName}</span>
+                    <div className="flex items-center gap-4">
+                      <span className="text-charcoal-400">× {item.quantity}</span>
+                      {item.notes && <span className="text-xs text-charcoal-200 italic">{item.notes}</span>}
+                    </div>
                   </div>
                 ))}
               </div>
               {quote.message && (
-                <div className="order-card-notes">Message: {quote.message}</div>
+                <div className="px-5 py-2 text-xs text-charcoal-400 border-t border-border/30">
+                  <span className="font-medium text-charcoal-600">Message:</span> {quote.message}
+                </div>
               )}
               {quote.quotedPrice && (
-                <div className="quoted-price-row">
-                  Quoted Price: <strong>KES {quote.quotedPrice?.toLocaleString()}</strong>
+                <div className="px-5 py-2 bg-accent-light/30 border-t border-accent/10 text-sm font-bold text-accent-dark">
+                  Quoted Price: KES {quote.quotedPrice?.toLocaleString()}
                 </div>
               )}
               {quote.responseMessage && (
-                <div className="order-card-notes">Response: {quote.responseMessage}</div>
+                <div className="px-5 py-2 text-xs text-charcoal-400 border-t border-border/30">
+                  <span className="font-medium text-charcoal-600">Response:</span> {quote.responseMessage}
+                </div>
               )}
               {quote.respondedAt && (
-                <div className="order-card-notes">
+                <div className="px-5 py-2 text-[10px] text-charcoal-200 border-t border-border/30">
                   Responded on {new Date(quote.respondedAt).toLocaleDateString('en-KE', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </div>
               )}
@@ -344,7 +381,7 @@ function Quotes() {
   );
 }
 
-/* ── Profile ─────────────────────────────────────── */
+/* ── Profile ───────────────────────────────────────── */
 function Profile() {
   const { user, updateProfile } = useAuth();
   const [form, setForm] = useState({
@@ -372,56 +409,73 @@ function Profile() {
   };
 
   return (
-    <div className="account-content">
-      <div className="account-page-header">
-        <h2>Profile Settings</h2>
-        <p>Update your contact information and account details.</p>
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl lg:text-2xl font-display font-extrabold text-charcoal">Profile Settings</h2>
+        <p className="text-sm text-charcoal-400 mt-1">Update your contact information and account details.</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="profile-form">
-        <div className="profile-section">
-          <h3>Personal Information</h3>
-          <div className="profile-grid">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="premium-card p-5">
+          <h3 className="text-sm font-bold text-charcoal mb-4">Personal Information</h3>
+          <div className="grid sm:grid-cols-2 gap-5">
             <div className="form-group">
               <label className="form-label">Full Name</label>
-              <input className="form-input" value={form.name} onChange={e => set('name', e.target.value)} required />
+              <div className="relative">
+                <User size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-400" />
+                <input className="form-input pl-9" value={form.name} onChange={e => set('name', e.target.value)} required />
+              </div>
             </div>
             <div className="form-group">
               <label className="form-label">Email Address</label>
-              <input className="form-input" value={user?.email} disabled style={{ opacity: 0.6 }} />
+              <div className="relative">
+                <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-400" />
+                <input className="form-input pl-9" value={user?.email} disabled style={{ opacity: 0.6 }} />
+              </div>
             </div>
             <div className="form-group">
               <label className="form-label">Phone / WhatsApp</label>
-              <input className="form-input" inputMode="tel" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="0790 080 903" />
+              <div className="relative">
+                <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-400" />
+                <input className="form-input pl-9" inputMode="tel" value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="0790 080 903" />
+              </div>
             </div>
             <div className="form-group">
               <label className="form-label">Institution / Company</label>
-              <input className="form-input" value={form.company} onChange={e => set('company', e.target.value)} placeholder="Hospital or clinic name" />
+              <div className="relative">
+                <Building2 size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-400" />
+                <input className="form-input pl-9" value={form.company} onChange={e => set('company', e.target.value)} placeholder="Hospital or clinic name" />
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="profile-section">
-          <h3>Account Details</h3>
-          <div className="profile-info-row">
-            <span>Account Type</span>
-            <span className="badge badge-dark">{user?.role === 'admin' ? 'Administrator' : 'Customer'}</span>
-          </div>
-          <div className="profile-info-row">
-            <span>Member Since</span>
-            <span>{user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-KE', { month: 'long', year: 'numeric' }) : 'N/A'}</span>
+        <div className="premium-card p-5">
+          <h3 className="text-sm font-bold text-charcoal mb-4">Account Details</h3>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between py-2 px-3 bg-section rounded-lg text-sm">
+              <span className="text-charcoal-600">Account Type</span>
+              <span className="badge-primary text-[9px]">{user?.role === 'admin' ? 'Administrator' : 'Customer'}</span>
+            </div>
+            <div className="flex items-center justify-between py-2 px-3 bg-section rounded-lg text-sm">
+              <span className="text-charcoal-600">Member Since</span>
+              <span className="text-charcoal font-medium">
+                {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-KE', { month: 'long', year: 'numeric' }) : 'N/A'}
+              </span>
+            </div>
           </div>
         </div>
 
         <button type="submit" className="btn btn-primary" disabled={loading}>
-          <Save size={16} /> {loading ? 'Saving...' : 'Save Changes'}
+          {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+          {loading ? 'Saving...' : 'Save Changes'}
         </button>
       </form>
     </div>
   );
 }
 
-/* ── Main Account layout ─────────────────────────── */
+/* ── Main Account Layout ──────────────────────────── */
 export default function AccountPage() {
   const location = useLocation();
   const path = location.pathname;
@@ -432,25 +486,34 @@ export default function AccountPage() {
     : '/account';
 
   return (
-    <div className="account-page">
-      <div className="page-hero" style={{ padding: '40px 0 32px' }}>
-        <div className="container page-hero-content">
-          <p className="section-label">Your Account</p>
-          <h1 style={{ fontSize: '2.5rem' }}>My Account</h1>
+    <div className="min-h-screen">
+      {/* Page Hero */}
+      <section className="page-hero pt-28 pb-12 lg:pt-36 lg:pb-16">
+        <div className="container-custom page-hero-content">
+          <div className="page-hero-breadcrumb">
+            <Link to="/">Home</Link> <ChevronRight size={10} /> <span>My Account</span>
+          </div>
+          <h1>My Account</h1>
+          <p>Manage your orders, quotes, and profile settings</p>
         </div>
-      </div>
+      </section>
 
-      <div className="container account-layout">
-        <Sidebar active={activeTab} />
-        <div className="account-main">
-          <Routes>
-            <Route index element={<Dashboard />} />
-            <Route path="orders" element={<Orders />} />
-            <Route path="quotes" element={<Quotes />} />
-            <Route path="profile" element={<Profile />} />
-          </Routes>
+      {/* Content */}
+      <section className="section pt-8">
+        <div className="container-custom">
+          <div className="flex flex-col lg:flex-row gap-8">
+            <Sidebar active={activeTab} />
+            <div className="flex-1 min-w-0">
+              <Routes>
+                <Route index element={<Dashboard />} />
+                <Route path="orders" element={<Orders />} />
+                <Route path="quotes" element={<Quotes />} />
+                <Route path="profile" element={<Profile />} />
+              </Routes>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

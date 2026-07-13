@@ -1,221 +1,252 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, ArrowRight, UserPlus, Check, X, AlertTriangle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Eye, EyeOff, Mail, Lock, User, Phone, ArrowRight, Loader2, ShieldCheck, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { isValidEmail, isValidKenyanPhone, normalizeKenyanPhone, KENYAN_PHONE_HINT } from '../utils/validation.js';
 import toast from 'react-hot-toast';
-import { BUSINESS_EMAIL, PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
-import './AuthPages.css';
-
-const KENYAN_COUNTIES = ['Nairobi','Mombasa','Kisumu','Nakuru','Eldoret','Thika','Malindi','Kitale','Garissa','Kakamega','Nyeri','Machakos','Meru','Embu','Kisii','Kilifi','Lamu','Isiolo','Marsabit','Mandera','Wajir','Turkana','West Pokot','Samburu','Trans Nzoia','Uasin Gishu','Elgeyo Marakwet','Nandi','Baringo','Laikipia','Nakuru','Narok','Kajiado','Kericho','Bomet','Kakamega','Vihiga','Bungoma','Busia','Siaya','Kisumu','Homa Bay','Migori','Kisii','Nyamira','Nairobi','Kiambu','Murang\'a','Kirinyaga','Nyeri','Nyandarua','Meru','Tharaka Nithi','Embu','Kitui','Machakos','Makueni','Garissa','Wajir','Mandera','Marsabit','Isiolo','Mombasa','Kwale','Kilifi','Tana River','Lamu','Taita Taveta'];
-
-// Password strength checker
-const checkPasswordStrength = (password) => {
-  const checks = {
-    length: password.length >= 8,
-    uppercase: /[A-Z]/.test(password),
-    lowercase: /[a-z]/.test(password),
-    number: /\d/.test(password),
-    special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
-  };
-
-  const score = Object.values(checks).filter(Boolean).length;
-
-  let strength = 'weak';
-  let color = 'var(--red)';
-  let label = 'Weak';
-
-  if (score >= 4) {
-    strength = 'strong';
-    color = 'var(--green)';
-    label = 'Strong';
-  } else if (score >= 3) {
-    strength = 'medium';
-    color = 'var(--yellow)';
-    label = 'Medium';
-  }
-
-  return { checks, score, strength, color, label };
-};
+import logo from '../Assets/med.png';
 
 export default function RegisterPage() {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', county: '', password: '', confirm: '' });
-  const [show, setShow] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirmPassword: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const { user, register } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const passwordStrength = checkPasswordStrength(form.password);
-  const passwordsMatch = form.password && form.confirm && form.password === form.confirm;
+  // If already logged in, redirect based on role
+  useEffect(() => {
+    if (user) {
+      const dest = user.role === 'admin' ? '/admin' : '/account';
+      navigate(dest, { replace: true });
+    }
+  }, [user, navigate]);
 
-  const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
+  const update = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }));
 
-  const handleSubmit = async e => {
+  const passwordStrength = () => {
+    const p = form.password;
+    if (!p) return { score: 0, label: '', color: 'bg-border' };
+    let score = 0;
+    if (p.length >= 8) score++;
+    if (/[A-Z]/.test(p)) score++;
+    if (/[0-9]/.test(p)) score++;
+    if (/[^A-Za-z0-9]/.test(p)) score++;
+    const levels = [
+      { score: 1, label: 'Weak', color: 'bg-danger' },
+      { score: 2, label: 'Fair', color: 'bg-warning' },
+      { score: 3, label: 'Good', color: 'bg-info' },
+      { score: 4, label: 'Strong', color: 'bg-accent' },
+    ];
+    return levels[score - 1] || { score: 0, label: '', color: 'bg-border' };
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isValidEmail(form.email)) return toast.error('Enter a valid email address');
-    if (!isValidKenyanPhone(form.phone)) return toast.error(KENYAN_PHONE_HINT);
-    if (passwordStrength.strength === 'weak') return toast.error('Password is too weak. Please create a stronger password.');
-    if (form.password !== form.confirm) return toast.error('Passwords do not match');
-    if (form.password.length < 8) return toast.error('Password must be at least 8 characters');
+    const { name, email, phone, password, confirmPassword } = form;
+    if (!name || !email || !password || !confirmPassword) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    if (!acceptedTerms) {
+      toast.error('Please accept the terms and conditions');
+      return;
+    }
     setLoading(true);
     try {
-      await register({ ...form, email: form.email.trim().toLowerCase(), phone: normalizeKenyanPhone(form.phone) });
-      toast.success('Account created! Welcome to medithrex.');
-      navigate('/account');
+      const userData = await register({ name, email, phone, password });
+      toast.success('Account created successfully!');
+      // Role-based redirect
+      const dest = userData.role === 'admin' ? '/admin' : '/account';
+      navigate(dest, { replace: true });
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Registration failed. Try again.');
+      toast.error(err.response?.data?.error || 'Registration failed');
     } finally {
       setLoading(false);
     }
   };
 
+  const strength = passwordStrength();
+
   return (
-    <div className="auth-page">
-      <div className="auth-split">
-        {/* Brand panel */}
-        <div className="auth-brand">
-          <div className="auth-brand-content">
-            <Link to="/" className="auth-logo">
-              <span className="auth-logo-text">medithrex</span>
-            </Link>
-            <h2>Join Kenya's Healthcare Network</h2>
-            <p>Create a free account to unlock seamless ordering, quote tracking, and personalized support for your facility.</p>
-            <div className="auth-perks">
-              {['Fast quote requests & tracking','Full order management dashboard','Exclusive institutional pricing','Priority delivery & support'].map(p => (
-                <div key={p} className="auth-perk"><span className="perk-dot" />{p}</div>
-              ))}
+    <div className="min-h-screen flex">
+      {/* Left - Form */}
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md"
+        >
+          <Link to="/" className="flex items-center gap-3 mb-8">
+            <img src={logo} alt="Medithrex" className="h-10 w-auto" />
+            <div>
+              <span className="text-xl font-bold text-charcoal">Medithrex</span>
+              <span className="block text-[9px] font-medium text-secondary tracking-[0.2em] uppercase">Medical Equipment</span>
             </div>
-            <div className="auth-contact">
-              Questions? Call: <a href={PRIMARY_PHONE.href}>{PRIMARY_PHONE.display}</a> or <a href={SECONDARY_PHONE.href}>{SECONDARY_PHONE.display}</a>
-            </div>
+          </Link>
+
+          <div className="mb-6">
+            <h1 className="text-3xl font-display font-extrabold text-charcoal mb-2">Create Account</h1>
+            <p className="text-charcoal-400 text-sm">Join thousands of healthcare professionals</p>
           </div>
-          <div className="auth-brand-bg" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=900&q=80)' }} />
-        </div>
 
-        {/* Form panel */}
-        <div className="auth-form-panel">
-          <div className="auth-form-wrap">
-            <div className="auth-form-header">
-              <div className="auth-form-icon"><UserPlus size={22} /></div>
-              <h1>Create Account</h1>
-              <p>Already registered? <Link to="/login">Sign in here</Link></p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="auth-form">
-              <div className="form-row-2">
-                <div className="form-group">
-                  <label className="form-label">Full Name *</label>
-                  <input className="form-input" name="name" placeholder="Dr. Jane Wanjiru" value={form.name} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Phone Number *</label>
-                  <input className="form-input" name="phone" inputMode="tel" placeholder="0790 080 903" value={form.phone} onChange={handleChange} required />
-                </div>
-              </div>
-
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="form-group">
-                <label className="form-label">Email Address *</label>
-                <input className="form-input" type="email" name="email" placeholder="jane@hospital.co.ke" value={form.email} onChange={handleChange} required />
-              </div>
-
-              <div className="form-row-2">
-                <div className="form-group">
-                  <label className="form-label">Organisation / Facility</label>
-                  <input className="form-input" name="company" placeholder="Nairobi General Hospital" value={form.company} onChange={handleChange} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">County</label>
-                  <select className="form-select" name="county" value={form.county} onChange={handleChange}>
-                    <option value="">Select county</option>
-                    {[...new Set(KENYAN_COUNTIES)].sort().map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                <label className="form-label">Full Name *</label>
+                <div className="relative">
+                  <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-400" />
+                  <input type="text" value={form.name} onChange={update('name')} className="form-input pl-10" placeholder="John Kamau" />
                 </div>
               </div>
+              <div className="form-group">
+                <label className="form-label">Phone Number</label>
+                <div className="relative">
+                  <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-400" />
+                  <input type="tel" value={form.phone} onChange={update('phone')} className="form-input pl-10" placeholder="+254 7XX XXX XXX" />
+                </div>
+              </div>
+            </div>
 
-              <div className="form-row-2">
-                <div className="form-group">
-                  <label className="form-label">Password *</label>
-                  <div className="password-wrap">
-                    <input className="form-input" type={show ? 'text' : 'password'} name="password" placeholder="Min. 8 characters" value={form.password} onChange={handleChange} required />
-                    <button type="button" className="password-toggle" onClick={() => setShow(!show)}>
-                      {show ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
+            <div className="form-group">
+              <label className="form-label">Email Address *</label>
+              <div className="relative">
+                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-400" />
+                <input type="email" value={form.email} onChange={update('email')} className="form-input pl-10" placeholder="you@example.com" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="form-group">
+                <label className="form-label">Password *</label>
+                <div className="relative">
+                  <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-400" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.password}
+                    onChange={update('password')}
+                    className="form-input pl-10 pr-10"
+                    placeholder="Min. 8 characters"
+                  />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-charcoal-400 hover:text-charcoal">
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {form.password && (
+                  <div className="mt-2">
+                    <div className="pw-strength-bar">
+                      <div className={`pw-strength-fill ${strength.color}`} style={{ width: `${(strength.score / 4) * 100}%` }} />
+                    </div>
+                    <p className="text-[10px] text-charcoal-400 mt-1">Strength: {strength.label}</p>
                   </div>
-                  {form.password && (
-                    <div className="password-strength">
-                      <div className="strength-bar">
-                        <div
-                          className={`strength-fill strength-${passwordStrength.strength}`}
-                          style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
-                        />
-                      </div>
-                      <span className="strength-label" style={{ color: passwordStrength.color }}>
-                        {passwordStrength.label}
-                      </span>
-                    </div>
-                  )}
-                  {form.password && (
-                    <div className="password-requirements">
-                      <div className={`requirement ${passwordStrength.checks.length ? 'met' : ''}`}>
-                        {passwordStrength.checks.length ? <Check size={14} /> : <X size={14} />}
-                        At least 8 characters
-                      </div>
-                      <div className={`requirement ${passwordStrength.checks.uppercase ? 'met' : ''}`}>
-                        {passwordStrength.checks.uppercase ? <Check size={14} /> : <X size={14} />}
-                        One uppercase letter
-                      </div>
-                      <div className={`requirement ${passwordStrength.checks.lowercase ? 'met' : ''}`}>
-                        {passwordStrength.checks.lowercase ? <Check size={14} /> : <X size={14} />}
-                        One lowercase letter
-                      </div>
-                      <div className={`requirement ${passwordStrength.checks.number ? 'met' : ''}`}>
-                        {passwordStrength.checks.number ? <Check size={14} /> : <X size={14} />}
-                        One number
-                      </div>
-                      <div className={`requirement ${passwordStrength.checks.special ? 'met' : ''}`}>
-                        {passwordStrength.checks.special ? <Check size={14} /> : <X size={14} />}
-                        One special character
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Confirm Password *</label>
-                  <div className="password-wrap">
-                    <input className="form-input" type={show ? 'text' : 'password'} name="confirm" placeholder="Re-enter password" value={form.confirm} onChange={handleChange} required />
-                    <button type="button" className="password-toggle" onClick={() => setShow(!show)}>
-                      {show ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                  {form.confirm && (
-                    <div className="password-match">
-                      {passwordsMatch ? (
-                        <span style={{ color: 'var(--green)' }}>
-                          <Check size={14} /> Passwords match
-                        </span>
-                      ) : form.password && form.confirm ? (
-                        <span style={{ color: 'var(--red)' }}>
-                          <AlertTriangle size={14} /> Passwords do not match
-                        </span>
-                      ) : null}
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
+              <div className="form-group">
+                <label className="form-label">Confirm Password *</label>
+                <div className="relative">
+                  <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-400" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.confirmPassword}
+                    onChange={update('confirmPassword')}
+                    className="form-input pl-10"
+                    placeholder="Repeat password"
+                  />
+                </div>
+                {form.confirmPassword && form.password !== form.confirmPassword && (
+                  <p className="form-error"><X size={12} /> Passwords do not match</p>
+                )}
+              </div>
+            </div>
 
-              <p className="auth-terms">
-                By creating an account you agree to our{' '}
-                <a href={`mailto:${BUSINESS_EMAIL}?subject=Terms%20of%20Service%20Request`}>Terms of Service</a> and{' '}
-                <a href={`mailto:${BUSINESS_EMAIL}?subject=Privacy%20Policy%20Request`}>Privacy Policy</a>.
-              </p>
+            <div className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-0.5 w-4 h-4 rounded border-border text-primary focus:ring-primary"
+              />
+              <label htmlFor="terms" className="text-xs text-charcoal-400 leading-relaxed">
+                I agree to the{' '}
+                <Link to="/terms" className="text-primary hover:text-primary-700">Terms of Service</Link>
+                {' '}and{' '}
+                <Link to="/privacy" className="text-primary hover:text-primary-700">Privacy Policy</Link>
+              </label>
+            </div>
 
-              <button type="submit" className="btn btn-primary btn-lg auth-submit" disabled={loading}>
-                {loading ? <span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} /> : <>Create Account <ArrowRight size={18} /></>}
-              </button>
-            </form>
+            <button type="submit" disabled={loading} className="btn btn-primary btn-lg w-full mt-2">
+              {loading ? <Loader2 size={18} className="animate-spin" /> : <>Create Account <ArrowRight size={18} /></>}
+            </button>
+          </form>
+
+          <p className="text-center text-sm text-charcoal-400 mt-6">
+            Already have an account?{' '}
+            <Link to="/login" className="font-semibold text-primary hover:text-primary-700">Sign in</Link>
+          </p>
+
+          <div className="flex items-center justify-center gap-6 mt-6 pt-6 border-t border-border">
+            <div className="flex items-center gap-1.5 text-xs text-charcoal-400">
+              <ShieldCheck size={14} className="text-secondary" /> Secure Registration
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-charcoal-400">
+              <ShieldCheck size={14} className="text-secondary" /> Data Protected
+            </div>
           </div>
+        </motion.div>
+      </div>
+
+      {/* Right - Illustration */}
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary-dark via-primary to-primary-700 items-center justify-center p-12 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-secondary/10 blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-white/5 blur-3xl" />
+        </div>
+        <div className="relative z-10 text-center max-w-md">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }}>
+            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/10">
+              <CheckCircle size={40} className="text-secondary" />
+            </div>
+            <h2 className="text-3xl font-display font-extrabold text-white mb-4">Join Medithrex Today</h2>
+            <p className="text-white/60 text-sm leading-relaxed mb-8">
+              Get access to exclusive benefits and streamline your medical equipment procurement
+            </p>
+            {[
+              'Bulk pricing & corporate accounts',
+              'Expedited quote processing',
+              'Order tracking & history',
+              'Product documentation downloads',
+              'Priority customer support',
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 + i * 0.1 }}
+                className="flex items-center gap-3 text-sm text-white/50 mb-3"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-secondary" />
+                {item}
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </div>
     </div>
+  );
+}
+
+// Close X icon for password mismatch
+function X({ size }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
   );
 }

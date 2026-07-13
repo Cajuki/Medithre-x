@@ -1,96 +1,115 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Mail, ArrowRight, CheckCircle, LogIn } from 'lucide-react';
-import { isValidEmail } from '../utils/validation.js';
-import { useAuth } from '../context/AuthContext.jsx';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Mail, ArrowLeft, Loader2, ShieldCheck, CheckCircle, ArrowRight } from 'lucide-react';
+import axios from 'axios';
 import toast from 'react-hot-toast';
-import { PRIMARY_PHONE, SECONDARY_PHONE } from '../config/contact.js';
-import './AuthPages.css';
+import logo from '../Assets/med.png';
 
 export default function ForgotPassword() {
-  const [form, setForm] = useState({ email: '' });
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1); // 1 = request reset, 2 = check email
-  const { forgotPassword } = useAuth();
-  const navigate = useNavigate();
+  const [sent, setSent] = useState(false);
 
-  const handleChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
-
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isValidEmail(form.email)) return toast.error('Enter a valid email address');
+    if (!email) {
+      toast.error('Please enter your email address');
+      return;
+    }
     setLoading(true);
     try {
-      await forgotPassword(form.email.trim().toLowerCase());
-      toast.success('If an account exists with that email, you will receive reset instructions.');
-      setStep(2);
+      await axios.post('/api/auth/forgot-password', { email });
+      setSent(true);
+      toast.success('Reset link sent to your email');
     } catch (err) {
-      toast.error(err.response?.data?.message || err.response?.data?.error || 'Failed to send reset email. Please try again.');
+      toast.error(err.response?.data?.error || 'Failed to send reset email');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-split">
-        {/* Brand panel */}
-        <div className="auth-brand">
-          <div className="auth-brand-content">
-            <Link to="/" className="auth-logo">
-              <span className="auth-logo-text">medithrex</span>
-            </Link>
-            <h1>Reset Your Password</h1>
-            <p>Enter your email address to receive password reset instructions.</p>
-            <div className="auth-contact">
-              Need help? Call: <a href={PRIMARY_PHONE.href}>{PRIMARY_PHONE.display}</a> or <a href={SECONDARY_PHONE.href}>{SECONDARY_PHONE.display}</a>
+    <div className="min-h-screen flex">
+      {/* Left - Form */}
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md"
+        >
+          <Link to="/" className="flex items-center gap-3 mb-10">
+            <img src={logo} alt="Medithrex" className="h-10 w-auto" />
+            <div>
+              <span className="text-xl font-bold text-charcoal">Medithrex</span>
+              <span className="block text-[9px] font-medium text-secondary tracking-[0.2em] uppercase">Medical Equipment</span>
             </div>
-          </div>
-          <div className="auth-brand-bg" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1576086213369-97a306d36557?w=900&q=80)' }} />
-        </div>
+          </Link>
 
-        {/* Form panel */}
-        <div className="auth-form-panel">
-          <div className="auth-form-wrap">
-            <div className="auth-form-header">
-              <div className="auth-form-icon">{step === 1 ? <LogIn size={22} /> : <Mail size={22} />}</div>
-              <h2>{step === 1 ? 'Forgot Password' : 'Check Your Email'}</h2>
-              <p>{step === 1 ? 'Don\'t worry, it happens. Enter your email to reset your password.' : 'We\'ve sent password reset instructions to your email address.'}</p>
+          {sent ? (
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-accent-light flex items-center justify-center">
+                <CheckCircle size={36} className="text-accent-dark" />
+              </div>
+              <h1 className="text-2xl font-display font-extrabold text-charcoal mb-3">Check Your Email</h1>
+              <p className="text-sm text-charcoal-400 mb-6">
+                We've sent a password reset link to <strong className="text-charcoal">{email}</strong>
+              </p>
+              <Link to="/login" className="btn btn-primary">
+                Back to Login <ArrowRight size={16} />
+              </Link>
             </div>
+          ) : (
+            <>
+              <div className="mb-8">
+                <h1 className="text-3xl font-display font-extrabold text-charcoal mb-2">Forgot Password?</h1>
+                <p className="text-charcoal-400 text-sm">Enter your email and we'll send you a reset link</p>
+              </div>
 
-            {step === 1 && (
-              <form onSubmit={handleSubmit} className="auth-form">
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="form-group">
                   <label className="form-label">Email Address</label>
-                  <input
-                    className="form-input"
-                    type="email"
-                    name="email"
-                    placeholder="you@institution.co.ke"
-                    value={form.email}
-                    onChange={handleChange}
-                    required
-                    autoFocus
-                  />
+                  <div className="relative">
+                    <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-400" />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="form-input pl-10"
+                      placeholder="you@example.com"
+                    />
+                  </div>
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-lg auth-submit" disabled={loading}>
-                  {loading ? <span className="spinner" style={{ width: 20, height: 20, borderWidth: 2 }} /> : <>Send Reset Link <ArrowRight size={18} /></>}
+                <button type="submit" disabled={loading} className="btn btn-primary btn-lg w-full">
+                  {loading ? <Loader2 size={18} className="animate-spin" /> : 'Send Reset Link'}
                 </button>
               </form>
-            )}
 
-            {step === 2 && (
-              <div className="auth-success">
-                <CheckCircle size={48} />
-                <h3>Reset Instructions Sent</h3>
-                <p>If an account exists with {form.email}, you should receive an email with password reset instructions shortly.</p>
-                <Link to="/login" className="btn btn-outline" style={{ width: '100%', justifyContent: 'center' }}>
-                  Back to Sign In
-                </Link>
-              </div>
-            )}
-          </div>
+              <Link to="/login" className="flex items-center justify-center gap-2 text-sm text-charcoal-400 hover:text-primary mt-6 transition-colors">
+                <ArrowLeft size={14} /> Back to Login
+              </Link>
+            </>
+          )}
+        </motion.div>
+      </div>
+
+      {/* Right - Illustration */}
+      <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary-dark via-primary to-primary-700 items-center justify-center p-12 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-secondary/10 blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-white/5 blur-3xl" />
+        </div>
+        <div className="relative z-10 text-center max-w-md">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }}>
+            <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/10">
+              <ShieldCheck size={40} className="text-secondary" />
+            </div>
+            <h2 className="text-3xl font-display font-extrabold text-white mb-4">Secure Password Reset</h2>
+            <p className="text-white/60 text-sm leading-relaxed">
+              We'll send a secure link to your email. Click it to reset your password and regain access to your account.
+            </p>
+          </motion.div>
         </div>
       </div>
     </div>

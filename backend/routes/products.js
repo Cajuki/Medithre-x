@@ -23,6 +23,33 @@ const format = (p) => ({
   createdAt: p.created_at,
 });
 
+// ── GET PRODUCTS BY IDS (for wishlist) ──
+router.get('/batch', async (req, res) => {
+  try {
+    const { ids } = req.query;
+    if (!ids) return res.json({ products: [] });
+
+    const idArr = ids.split(',').map(id => id.trim()).filter(Boolean);
+    if (!idArr.length) return res.json({ products: [] });
+
+    const placeholders = idArr.map((_, i) => `$${i + 1}`).join(',');
+    const result = await query(
+      `SELECT * FROM products WHERE id IN (${placeholders})`,
+      idArr
+    );
+
+    // Preserve the original order from the request
+    const productMap = {};
+    result.rows.forEach(r => { productMap[r.id] = format(r); });
+    const ordered = idArr.map(id => productMap[id]).filter(Boolean);
+
+    res.json({ products: ordered });
+  } catch (err) {
+    console.error('Batch products error:', err);
+    res.status(500).json({ message: 'Failed to load products' });
+  }
+});
+
 // ── GET ALL PRODUCTS ──
 router.get('/', async (req, res) => {
   try {

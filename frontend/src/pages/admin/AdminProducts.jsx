@@ -243,15 +243,15 @@ export default function AdminProducts() {
                 ) : products.map(p => (
                   <tr key={p.id}>
                     <td>
-                      <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                      <div className="product-thumb-cell">
                         {p.images?.[0]
                           ? <img className="td-img" src={p.images[0]} alt={p.name} />
-                          : <div className="td-img-placeholder"><ImagePlus size={16} /></div>
+                          : <div className="td-img-placeholder"><ImagePlus size={20} /></div>
                         }
-     <>
+                        <div className="product-thumb-info">
                           <div className="td-name">{p.name}</div>
-                          <div className="td-sub">{p.brand}</div>
-     </>
+                          {p.brand && <div className="td-sub">{p.brand}</div>}
+                        </div>
                       </div>
                     </td>
                     <td className="td-sub">{p.sku || '—'}</td>
@@ -508,3 +508,4 @@ export default function AdminProducts() {
     </div>
   );
 }
+

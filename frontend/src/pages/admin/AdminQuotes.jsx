@@ -102,26 +102,39 @@ export default function AdminQuotes() {
 
   const submitUpdate = async () => {
     // Validate price
-    const priceRaw = updateForm.quoted_price.trim();
+    const priceRaw = updateForm.quoted_price ? String(updateForm.quoted_price).trim() : '';
     if (priceRaw !== '' && isNaN(Number(priceRaw))) {
       toast.error('Please enter a valid number for the quoted price');
       return;
     }
 
+    if (!updateForm.status) {
+      toast.error('Please select a status');
+      return;
+    }
+
     setUpdating(true);
     const payload = {
-      ...updateForm,
+      status: updateForm.status,
+      admin_notes: updateForm.admin_notes,
       quoted_price: priceRaw === '' ? null : Number(priceRaw),
     };
 
     try {
-      await axios.put(`/api/admin/quotes/${selected.id}`, payload);
-      toast.success('Quote updated successfully');
-      load();
-      setSelected(null);
+      const r = await axios.put(`/api/admin/quotes/${selected.id}`, payload);
+      toast.success(`Quote ${selected.quote_number} updated successfully`);
+      // Update the selected quote with fresh data
+      setSelected(prev => prev ? { ...prev, ...r.data } : null);
+      setUpdateForm({
+        status: r.data.status || updateForm.status,
+        quoted_price: r.data.quoted_price || '',
+        admin_notes: r.data.admin_notes || '',
+      });
+      // Reload the quotes list
+      await load();
     } catch (err) {
       console.error('Update error:', err);
-      toast.error(err.response?.data?.message || 'Update failed');
+      toast.error(err.response?.data?.message || 'Failed to update quote. Please try again.');
     } finally {
       setUpdating(false);
     }

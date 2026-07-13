@@ -12,12 +12,12 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   border-radius: 6px;
-  color: var(--grey);
+  color: rgba(255, 255, 255, 0.56);
   transition: var(--transition);
   border: 1.5px solid transparent;
 }
-.msg-tab:hover { background: var(--white); color: var(--black); border-color: var(--white-3); }
-.msg-tab.active { background: var(--black); color: var(--yellow); }
+.msg-tab:hover { background: var(--ink-700); color: var(--paper-2); border-color: var(--line); }
+.msg-tab.active { background: var(--accent-warm); color: var(--ink-900); }
 
 /* Settings rows */
 .settings-info-row {
@@ -25,12 +25,12 @@
   justify-content: space-between;
   align-items: center;
   padding: 11px 0;
-  border-bottom: 1px solid var(--white-3);
+  border-bottom: 1px solid var(--line);
   font-size: 0.85rem;
 }
 .settings-info-row:last-child { border-bottom: none; }
-.settings-info-row span { color: var(--grey); }
-.settings-info-row strong { color: var(--black); font-family: var(--font-condensed); font-size: 0.9rem; }
+.settings-info-row span { color: rgba(255, 255, 255, 0.56); }
+.settings-info-row strong { color: var(--paper-2); font-family: var(--font-condensed); font-size: 0.9rem; }
 
 .settings-contact-row {
   display: flex;
@@ -39,8 +39,8 @@
 }
 .settings-contact-icon {
   width: 40px; height: 40px;
-  background: var(--yellow);
-  color: var(--black);
+  background: var(--accent-warm);
+  color: var(--ink-900);
   border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
@@ -52,10 +52,10 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--grey);
+  color: rgba(255, 255, 255, 0.42);
   margin-bottom: 2px;
 }
-.settings-contact-row p { font-size: 0.9rem; color: var(--black); font-weight: 500; }
+.settings-contact-row p { font-size: 0.9rem; color: var(--paper-2); font-weight: 500; }
 
 @media (max-width: 768px) {
   .admin-page-header + div[style*="grid-template-columns"] {

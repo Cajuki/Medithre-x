@@ -97,7 +97,7 @@ export default function AdminCategories() {
         const r = await axios.post('/api/categories', fd, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        setCategories(prev => [...prev, r.data].sort((a,b) => a.sort_order - b.sort_order));
+        setCategories(prev => [r.data, ...prev].sort((a,b) => a.sort_order - b.sort_order));
         toast.success('Category added');
       } else {
         const r = await axios.put(`/api/categories/${form.id}`, fd, {

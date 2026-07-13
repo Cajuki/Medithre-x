@@ -264,8 +264,8 @@ export default function TermsOfServicePage() {
             </Section>
 
             <div style={{ display: 'flex', gap: 12, paddingTop: 24, borderTop: '1px solid var(--white-200)', flexWrap: 'wrap' }}>
-              <Link to="/privacy" className="btn btn-outline btn-sm">← Privacy Policy</Link>
-              <Link to="/returns" className="btn btn-outline btn-sm">Returns Policy →</Link>
+              <Link to="/privacy-policy" className="btn btn-outline btn-sm">← Privacy Policy</Link>
+              <Link to="/returns-policy" className="btn btn-outline btn-sm">Returns Policy →</Link>
               <Link to="/contact" className="btn btn-dark btn-sm">Contact Us</Link>
             </div>
           </div>

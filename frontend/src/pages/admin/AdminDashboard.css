@@ -6,7 +6,7 @@
 
 .dash-date {
   font-size: 0.82rem;
-  color: var(--slate-600);
+  color: rgba(255, 255, 255, 0.56);
   font-family: var(--font-condensed);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -24,9 +24,9 @@
   align-items: center;
   gap: 16px;
   padding: 20px;
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: var(--radius-md);
+  background: var(--ink-800);
+  border: 1px solid var(--line);
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
   text-decoration: none;
@@ -52,7 +52,7 @@
   display: block;
   font-family: var(--font-display);
   font-size: 1.95rem;
-  color: var(--ink-900);
+  color: var(--paper-2);
   line-height: 1;
   letter-spacing: -0.03em;
 }
@@ -65,14 +65,14 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--slate-600);
+  color: rgba(255, 255, 255, 0.56);
 }
 
 .dsc-sub {
   display: block;
   margin-top: 3px;
   font-size: 0.74rem;
-  color: var(--slate-500);
+  color: rgba(255, 255, 255, 0.42);
 }
 
 .dash-charts-grid {
@@ -138,7 +138,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--slate-500);
+  color: rgba(255, 255, 255, 0.42);
   text-align: center;
 }
 
@@ -163,13 +163,14 @@
 }
 
 .donut-legend-label {
-  color: var(--ink-800);
+  color: rgba(255, 255, 255, 0.72);
   flex: 1;
 }
 
 .donut-legend-val {
   font-family: var(--font-condensed);
   font-weight: 700;
+  color: var(--paper-2);
 }
 
 .status-bars {
@@ -192,12 +193,13 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .status-bar-track {
   flex: 1;
   height: 8px;
-  background: rgba(15, 23, 42, 0.08);
+  background: var(--ink-700);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -214,6 +216,7 @@
   font-family: var(--font-condensed);
   font-size: 0.8rem;
   font-weight: 700;
+  color: var(--paper-2);
 }
 
 .mini-bar-row {
@@ -226,7 +229,7 @@
   flex: 1;
   min-width: 0;
   font-size: 0.78rem;
-  color: var(--ink-800);
+  color: rgba(255, 255, 255, 0.72);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -236,7 +239,7 @@
   width: 110px;
   height: 8px;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.08);
+  background: var(--ink-700);
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -254,6 +257,7 @@
   font-family: var(--font-condensed);
   font-size: 0.82rem;
   font-weight: 700;
+  color: var(--paper-2);
 }
 
 .dash-tables-grid {
@@ -263,7 +267,7 @@
 }
 
 .admin-link {
-  color: var(--ink-900);
+  color: var(--paper-2);
   font-weight: 700;
   font-family: var(--font-condensed);
   transition: var(--transition);
@@ -276,11 +280,12 @@
 .td-name {
   font-weight: 600;
   font-size: 0.86rem;
+  color: var(--paper-2);
 }
 
 .td-sub {
   font-size: 0.75rem;
-  color: var(--slate-500);
+  color: rgba(255, 255, 255, 0.42);
   margin-top: 1px;
 }
 
@@ -288,11 +293,12 @@
   font-family: var(--font-condensed);
   font-weight: 700;
   font-size: 0.88rem;
+  color: var(--paper-2);
 }
 
 .td-date {
   font-size: 0.78rem;
-  color: var(--slate-500);
+  color: rgba(255, 255, 255, 0.42);
   white-space: nowrap;
 }
 
