@@ -206,7 +206,7 @@ export default function AdminProducts() {
   const totalImages = form.images.length + uploadQueue.length;
 
   return (
-    <div>
+    <div className="bg-white rounded-xl shadow-sm border border-border p-4 lg:p-6">
       <div className="admin-page-header">
         <div><h1>Products</h1><p>{total} products in catalogue</p></div>
         <button className="btn btn-primary" onClick={openAdd}><Plus size={16} /> Add Product</button>

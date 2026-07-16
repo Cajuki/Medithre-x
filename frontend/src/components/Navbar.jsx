@@ -133,22 +133,20 @@ export default function Navbar() {
               <Search size={18} />
             </button>
 
-            {/* Wishlist */}
-            <Link to="/wishlist" className="hidden sm:flex p-2.5 text-charcoal-600 hover:text-primary hover:bg-section rounded-lg transition-all relative">
+            {/* Wishlist — always visible on all screen sizes */}
+            <Link to="/wishlist" className="flex p-2.5 text-charcoal-600 hover:text-primary hover:bg-section rounded-lg transition-all relative">
               <Heart size={18} />
               <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-secondary text-white text-[8px] font-bold rounded-full flex items-center justify-center">
                 {wishlistCount}
               </span>
             </Link>
 
-            {/* Cart */}
+            {/* Cart — badge always visible just like wishlist */}
             <Link to="/cart" className="relative p-2.5 text-charcoal-600 hover:text-primary hover:bg-section rounded-lg transition-all">
               <ShoppingCart size={18} />
-              {cartTotal > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-secondary text-white text-[8px] font-bold rounded-full flex items-center justify-center">
-                  {cartTotal > 99 ? '99+' : cartTotal}
-                </span>
-              )}
+              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-secondary text-white text-[8px] font-bold rounded-full flex items-center justify-center">
+                {cartTotal > 99 ? '99+' : cartTotal}
+              </span>
             </Link>
 
             {/* User Menu */}

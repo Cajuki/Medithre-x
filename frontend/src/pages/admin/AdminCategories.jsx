@@ -141,7 +141,7 @@ export default function AdminCategories() {
   const currentImage = previewFile?.preview || resolveAssetUrl(form.image_url);
 
   return (
-    <>
+    <div className="bg-white rounded-xl shadow-sm border border-border p-4 lg:p-6">
       <div className="admin-page-header">
         <div>
           <h1>Categories</h1>
@@ -362,6 +362,6 @@ export default function AdminCategories() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

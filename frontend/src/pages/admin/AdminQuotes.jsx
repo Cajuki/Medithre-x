@@ -168,7 +168,7 @@ export default function AdminQuotes() {
   };
 
   return (
-    <>
+    <div className="bg-white rounded-xl shadow-sm border border-border p-4 lg:p-6">
       <div className="admin-page-header">
         <div>
           <h1>Quote Requests</h1>
@@ -451,6 +451,6 @@ export default function AdminQuotes() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

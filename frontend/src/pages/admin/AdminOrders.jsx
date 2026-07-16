@@ -59,7 +59,7 @@ export default function AdminOrders() {
   };
 
   return (
-     <>
+     <div className="bg-white rounded-xl shadow-sm border border-border p-4 lg:p-6">
        <div className="admin-page-header">
         <div><h1>Orders</h1><p>{total} total orders</p></div>
       </div>
@@ -205,7 +205,7 @@ export default function AdminOrders() {
             </div>
           </div>
         </div>
-       )}
-     </>
+        )}
+     </div>
   );
 }

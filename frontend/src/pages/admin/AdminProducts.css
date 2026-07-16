@@ -3,17 +3,15 @@
 
 /* ── Image count in modal section header ────────────────────────────────── */
 .img-count-label {
-  font-family: var(--font-condensed);
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.56);
+  letter-spacing: 0.06em;
+  color: var(--charcoal-400);
   margin-left: 10px;
-  background: var(--ink-700);
-  padding: 2px 8px;
+  background: var(--section);
+  padding: 2px 10px;
   border-radius: 100px;
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--border);
 }
 
 /* ── Image grid ─────────────────────────────────────────────────────────── */
@@ -28,13 +26,15 @@
 .img-thumb {
   position: relative;
   aspect-ratio: 4/3;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
-  border: 2px solid var(--line);
-  background: var(--ink-700);
+  border: 2px solid var(--border);
+  background: var(--section);
   transition: var(--transition);
 }
-.img-thumb:hover { border-color: var(--accent-warm); }
+
+.img-thumb:hover { border-color: var(--primary); }
+
 .img-thumb img {
   width: 100%; height: 100%;
   object-fit: cover;
@@ -45,42 +45,52 @@
 .img-thumb-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.55);
+  background: rgba(11, 31, 58, 0.55);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   padding: 6px;
   opacity: 0;
-  transition: var(--transition);
+  transition: opacity 0.2s ease;
 }
+
 .img-thumb:hover .img-thumb-overlay { opacity: 1; }
 
 .img-thumb-num {
-  font-family: var(--font-condensed);
   font-size: 0.65rem;
   font-weight: 800;
-  color: var(--paper-2);
-  background: rgba(0,0,0,0.5);
-  padding: 1px 5px;
-  border-radius: 3px;
+  color: var(--white);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 1px 6px;
+  border-radius: 4px;
 }
+
 .img-thumb-remove {
   background: var(--danger);
-  color: var(--paper-2);
-  border-radius: 3px;
-  width: 22px; height: 22px;
-  display: flex; align-items: center; justify-content: center;
+  color: var(--white);
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: var(--transition);
+  border: none;
+  cursor: pointer;
 }
-.img-thumb-remove:hover { background: var(--red-dark); }
+
+.img-thumb-remove:hover { background: #C82333; }
 
 /* Queued (pending upload) style */
-.img-thumb--queued { border-style: dashed; border-color: var(--accent-warm); }
+.img-thumb--queued { border-style: dashed; border-color: var(--secondary); }
+
 .img-thumb-badge {
-  font-family: var(--font-condensed);
-  font-size: 0.6rem; font-weight: 800;
-  background: var(--accent-warm); color: var(--ink-900);
-  padding: 1px 5px; border-radius: 3px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  background: var(--secondary);
+  color: var(--white);
+  padding: 1px 6px;
+  border-radius: 4px;
 }
 
 /* ── Add photo slot ──────────────────────────────────────────────────────── */
@@ -91,34 +101,32 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  border: 2px dashed var(--line-strong);
-  border-radius: 6px;
-  background: var(--ink-700);
-  color: rgba(255, 255, 255, 0.56);
-  font-family: var(--font-condensed);
-  font-size: 0.72rem; font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  background: var(--section);
+  color: var(--charcoal-400);
+  font-size: 0.72rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.2s ease;
 }
+
 .img-add-slot:hover {
-  border-color: var(--accent-warm);
-  background: var(--accent-warm-soft);
-  color: var(--paper-2);
+  border-color: var(--primary);
+  background: var(--primary-50);
+  color: var(--primary);
 }
+
 .img-add-hint {
   font-size: 0.62rem;
-  color: rgba(255, 255, 255, 0.42);
+  color: var(--charcoal-400);
   font-weight: 400;
-  text-transform: none;
-  letter-spacing: 0;
 }
 
 /* ── Helper text ─────────────────────────────────────────────────────────── */
 .img-hint {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.56);
+  color: var(--charcoal-400);
   line-height: 1.5;
 }
 
@@ -128,12 +136,11 @@
   align-items: center;
   gap: 8px;
   font-size: 0.82rem;
-  color: var(--paper-2);
-  font-family: var(--font-condensed);
+  color: var(--charcoal-600);
   font-weight: 600;
-  background: var(--accent-warm-soft);
-  border: 1px solid var(--accent-warm);
-  border-radius: 6px;
+  background: var(--primary-50);
+  border: 1.5px solid var(--primary-100);
+  border-radius: 8px;
   padding: 8px 14px;
   margin-top: 8px;
 }
@@ -150,7 +157,7 @@
   height: 48px;
   object-fit: cover;
   border-radius: 6px;
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   background: var(--section);
   flex-shrink: 0;
 }
@@ -194,12 +201,11 @@
 
 /* ── Image count badge in table ──────────────────────────────────────────── */
 .img-count-badge {
-  font-family: var(--font-condensed);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  background: var(--ink-700);
-  color: var(--paper-2);
-  border: 1px solid var(--line);
+  background: var(--section);
+  color: var(--charcoal-600);
+  border: 1.5px solid var(--border);
   padding: 2px 8px;
   border-radius: 100px;
 }
@@ -209,6 +215,16 @@
 .spin { animation: spin-icon 0.8s linear infinite; }
 
 /* ── Form layout ─────────────────────────────────────────────────────────── */
+.product-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.product-form-grid .full-width {
+  grid-column: 1 / -1;
+}
+
 .toggles-col {
   display: flex;
   flex-direction: column;
@@ -216,8 +232,38 @@
   justify-content: flex-end;
 }
 
-@media (max-width: 640px) {
-  .img-grid { grid-template-columns: repeat(3, 1fr); }
-  .product-form-grid { grid-template-columns: 1fr !important; }
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .product-form-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
+@media (max-width: 640px) {
+  .img-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .product-form-grid { grid-template-columns: 1fr; }
+  .img-add-slot { gap: 4px; }
+  .img-add-slot svg { width: 18px; height: 18px; }
+  .img-hint { font-size: 0.7rem; }
+}
+
+@media (max-width: 480px) {
+  .img-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .product-thumb-cell { gap: 8px; }
+  .td-img { width: 44px; height: 36px; }
+  .td-img-placeholder { width: 44px; height: 36px; }
+  .product-thumb-info .td-name { font-size: 0.8rem; }
+  .img-count-label { font-size: 0.66rem; }
+  .img-uploading { font-size: 0.76rem; padding: 6px 10px; }
+}
+
+@media (max-width: 360px) {
+  .img-grid { grid-template-columns: repeat(2, 1fr); gap: 5px; }
+  .td-img { width: 36px; height: 30px; }
+  .td-img-placeholder { width: 36px; height: 30px; }
+  .product-thumb-info .td-name { font-size: 0.74rem; }
+  .product-thumb-info .td-sub { font-size: 0.66rem; }
+  .img-add-slot { font-size: 0.64rem; }
+  .img-add-hint { font-size: 0.56rem; }
+  .img-hint { font-size: 0.64rem; }
+}

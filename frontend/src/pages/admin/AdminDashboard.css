@@ -1,3 +1,4 @@
+/* ── Admin Dashboard ───────────────────────────────────────────────────────── */
 .admin-dashboard {
   display: flex;
   flex-direction: column;
@@ -6,13 +7,13 @@
 
 .dash-date {
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.56);
-  font-family: var(--font-condensed);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  color: var(--charcoal-400);
+  font-weight: 600;
+  letter-spacing: 0.04em;
   white-space: nowrap;
 }
 
+/* ── Stats Grid ────────────────────────────────────────────────────────────── */
 .dash-stats-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -25,34 +26,35 @@
   gap: 16px;
   padding: 20px;
   border-radius: var(--radius-md);
-  background: var(--ink-800);
-  border: 1px solid var(--line);
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition);
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-xs);
+  transition: all 0.25s ease;
   text-decoration: none;
 }
 
 .dash-stat-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   box-shadow: var(--shadow-md);
+  border-color: var(--primary);
 }
 
 .dsc-icon {
   width: 54px;
   height: 54px;
-  border-radius: 18px;
+  border-radius: 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--paper-2);
 }
 
 .dsc-val {
   display: block;
   font-family: var(--font-display);
   font-size: 1.95rem;
-  color: var(--paper-2);
+  font-weight: 800;
+  color: var(--charcoal);
   line-height: 1;
   letter-spacing: -0.03em;
 }
@@ -60,21 +62,21 @@
 .dsc-label {
   display: block;
   margin-top: 4px;
-  font-family: var(--font-condensed);
   font-size: 0.76rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.56);
+  color: var(--charcoal-400);
 }
 
 .dsc-sub {
   display: block;
   margin-top: 3px;
   font-size: 0.74rem;
-  color: rgba(255, 255, 255, 0.42);
+  color: var(--charcoal-400);
 }
 
+/* ── Charts Grid ───────────────────────────────────────────────────────────── */
 .dash-charts-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -112,10 +114,10 @@
   left: 50%;
   transform: translateX(-50%);
   margin-bottom: 8px;
-  padding: 5px 8px;
-  border-radius: 999px;
-  background: var(--ink-900);
-  color: var(--paper-2);
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: var(--charcoal);
+  color: var(--white);
   font-size: 0.68rem;
   white-space: nowrap;
   opacity: 0;
@@ -127,18 +129,16 @@
 .bar-fill {
   width: 100%;
   min-height: 8px;
-  border-radius: 999px 999px 0 0;
-  background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, var(--primary-500), var(--primary));
   transition: height 0.4s ease;
 }
 
 .bar-label {
   font-size: 0.68rem;
-  font-family: var(--font-condensed);
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.42);
+  letter-spacing: 0.04em;
+  color: var(--charcoal-400);
   text-align: center;
 }
 
@@ -163,14 +163,13 @@
 }
 
 .donut-legend-label {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--charcoal-600);
   flex: 1;
 }
 
 .donut-legend-val {
-  font-family: var(--font-condensed);
   font-weight: 700;
-  color: var(--paper-2);
+  color: var(--charcoal);
 }
 
 .status-bars {
@@ -188,18 +187,17 @@
 .status-bar-label {
   width: 80px;
   flex-shrink: 0;
-  font-family: var(--font-condensed);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--charcoal-600);
 }
 
 .status-bar-track {
   flex: 1;
   height: 8px;
-  background: var(--ink-700);
+  background: var(--section);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -213,10 +211,9 @@
 .status-bar-count {
   min-width: 24px;
   text-align: right;
-  font-family: var(--font-condensed);
-  font-size: 0.8rem;
   font-weight: 700;
-  color: var(--paper-2);
+  font-size: 0.8rem;
+  color: var(--charcoal);
 }
 
 .mini-bar-row {
@@ -229,7 +226,7 @@
   flex: 1;
   min-width: 0;
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--charcoal-600);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -239,7 +236,7 @@
   width: 110px;
   height: 8px;
   border-radius: 999px;
-  background: var(--ink-700);
+  background: var(--section);
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -247,19 +244,19 @@
 .mini-bar-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent-warm), #fbbf24);
+  background: linear-gradient(90deg, var(--secondary), var(--secondary-600));
   transition: width 0.4s ease;
 }
 
 .mini-bar-val {
   min-width: 24px;
   text-align: right;
-  font-family: var(--font-condensed);
-  font-size: 0.82rem;
   font-weight: 700;
-  color: var(--paper-2);
+  font-size: 0.82rem;
+  color: var(--charcoal);
 }
 
+/* ── Tables Grid ───────────────────────────────────────────────────────────── */
 .dash-tables-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -267,46 +264,47 @@
 }
 
 .admin-link {
-  color: var(--paper-2);
-  font-weight: 700;
-  font-family: var(--font-condensed);
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.85rem;
   transition: var(--transition);
 }
 
 .admin-link:hover {
-  color: var(--accent);
+  color: var(--primary-700);
+  text-decoration: underline;
 }
 
+/* ── Reused table cell overrides ──────────────────────────────────────────── */
 .td-name {
   font-weight: 600;
   font-size: 0.86rem;
-  color: var(--paper-2);
+  color: var(--charcoal);
 }
 
 .td-sub {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.42);
+  font-size: 0.74rem;
+  color: var(--charcoal-400);
   margin-top: 1px;
 }
 
 .td-mono {
-  font-family: var(--font-condensed);
   font-weight: 700;
   font-size: 0.88rem;
-  color: var(--paper-2);
+  color: var(--charcoal);
 }
 
 .td-date {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.42);
+  color: var(--charcoal-400);
   white-space: nowrap;
 }
 
+/* ── Responsive ──────────────────────────────────────────────────────────────── */
 @media (max-width: 1200px) {
   .dash-charts-grid {
     grid-template-columns: 1fr 1fr;
   }
-
   .dash-tables-grid {
     grid-template-columns: 1fr;
   }
@@ -317,7 +315,6 @@
   .dash-charts-grid {
     grid-template-columns: 1fr;
   }
-
   .dash-stats-grid {
     gap: 12px;
   }
@@ -327,9 +324,9 @@
   .admin-dashboard { gap: 18px; }
   .dash-date { font-size: 0.74rem; }
   .dash-stat-card { padding: 16px; gap: 12px; }
-  .dsc-icon { width: 44px; height: 44px; border-radius: 14px; }
-  .dsc-val { font-size: 1.6rem; }
-  .dsc-label { font-size: 0.7rem; }
+  .dsc-icon { width: 44px; height: 44px; border-radius: 12px; }
+  .dsc-val { font-size: 1.5rem; }
+  .dsc-label { font-size: 0.68rem; }
   .dash-charts-grid { gap: 14px; }
   .revenue-chart, .status-chart { padding: 16px; }
   .bar-chart { height: 150px; gap: 6px; }
@@ -345,64 +342,28 @@
 }
 
 @media (max-width: 600px) {
-  .dash-stat-card {
-    padding: 16px;
-  }
-
-  .revenue-chart,
-  .status-chart {
-    padding: 16px;
-  }
-
-  .bar-chart {
-    height: 150px;
-  }
+  .dash-stat-card { padding: 14px; }
+  .revenue-chart, .status-chart { padding: 14px; }
+  .bar-chart { height: 140px; }
 }
 
 @media (max-width: 480px) {
-  .dash-charts-grid,
-  .dash-tables-grid {
-    gap: 12px;
-  }
-
-  .dash-stat-card,
-  .revenue-chart,
-  .status-chart {
-    padding: 14px;
-  }
-
-  .mini-bar-track {
-    width: 84px;
-  }
-
-  .status-bar-label {
-    width: 68px;
-  }
-
-  .bar-chart {
-    height: 132px;
-  }
+  .dash-charts-grid, .dash-tables-grid { gap: 12px; }
+  .dash-stat-card, .revenue-chart, .status-chart { padding: 12px; }
+  .mini-bar-track { width: 72px; }
+  .status-bar-label { width: 60px; font-size: 0.64rem; }
+  .bar-chart { height: 120px; gap: 4px; }
+  .dsc-val { font-size: 1.3rem; }
+  .dsc-icon { width: 38px; height: 38px; }
+  .dsc-icon svg { width: 18px; height: 18px; }
 }
 
 @media (max-width: 360px) {
-  .dash-stat-val {
-    font-size: 1.35rem;
-  }
-
-  .dash-stat-label {
-    font-size: 0.68rem;
-  }
-
-  .mini-bar-row,
-  .status-bar-row {
-    gap: 8px;
-  }
-
-  .mini-bar-track {
-    width: 72px;
-  }
-
-  .status-bar-count {
-    min-width: 18px;
-  }
+  .dsc-val { font-size: 1.2rem; }
+  .dsc-label { font-size: 0.64rem; }
+  .mini-bar-row, .status-bar-row { gap: 6px; }
+  .mini-bar-track { width: 60px; }
+  .status-bar-count { min-width: 18px; font-size: 0.74rem; }
+  .bar-chart { height: 100px; }
+  .bar-label { font-size: 0.56rem; }
 }
