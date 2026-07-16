@@ -3,25 +3,44 @@ import { query } from '../db/pool.js';
 
 const router = express.Router();
 
-const format = (p) => ({
-  id: String(p.id),
-  name: p.name,
-  description: p.description,
-  shortDescription: p.short_description,
-  category: p.category,
-  price: p.price ? parseFloat(p.price) : null,
-  salePrice: p.sale_price ? parseFloat(p.sale_price) : null,
-  priceOnRequest: p.price_on_request,
-  images: Array.isArray(p.images) ? p.images : [],
-  brand: p.brand,
-  origin: p.origin,
-  inStock: p.in_stock,
-  featured: p.featured,
-  specifications: Array.isArray(p.specifications)
-    ? p.specifications
-    : (p.specifications ? JSON.parse(p.specifications) : []),
-  createdAt: p.created_at,
-});
+const format = (p) => {
+  const price = p.price ? parseFloat(p.price) : null;
+  const salePrice = p.sale_price ? parseFloat(p.sale_price) : null;
+  // For frontend compatibility: price = current price, compare_price = original price
+  const currentPrice = salePrice !== null ? salePrice : price;
+  const comparePrice = salePrice !== null ? price : 0;
+  
+  return {
+    id: String(p.id),
+    name: p.name,
+    description: p.description,
+    shortDescription: p.short_description,
+    category: p.category,
+    price: currentPrice,
+    compare_price: comparePrice,
+    salePrice: salePrice, // Keep for backward compatibility if needed
+    priceOnRequest: p.price_on_request,
+    images: Array.isArray(p.images) ? p.images : [],
+    image_url: Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : null,
+    brand: p.brand,
+    manufacturer: p.manufacturer,
+    origin: p.origin,
+    inStock: p.in_stock,
+    stock: p.stock ?? 0,
+    sku: p.sku,
+    featured: p.featured,
+    specifications: Array.isArray(p.specifications)
+      ? p.specifications
+      : (p.specifications ? JSON.parse(p.specifications) : []),
+    features: Array.isArray(p.features)
+      ? p.features
+      : (p.features ? JSON.parse(p.features) : []),
+    rating: p.rating ? parseFloat(p.rating) : 0,
+    review_count: p.review_count ? parseInt(p.review_count) : 0,
+    createdAt: p.created_at,
+    updatedAt: p.updated_at,
+  };
+};
 
 // ── GET PRODUCTS BY IDS (for wishlist) ──
 router.get('/batch', async (req, res) => {
@@ -53,7 +72,7 @@ router.get('/batch', async (req, res) => {
 // ── GET ALL PRODUCTS ──
 router.get('/', async (req, res) => {
   try {
-    const { category, search, page = 1, limit = 12 } = req.query;
+    const { category, search, featured, page = 1, limit = 12, sort, min_price, max_price } = req.query;
 
     const conditions = [];
     const params = [];
@@ -70,6 +89,23 @@ router.get('/', async (req, res) => {
       i++;
     }
 
+    if (featured !== undefined && featured !== '') {
+      conditions.push(`featured = $${i++}`);
+      params.push(featured === 'true');
+    }
+
+    if (min_price) {
+      conditions.push(`(COALESCE(sale_price, price) >= $${i})`);
+      params.push(parseFloat(min_price));
+      i++;
+    }
+
+    if (max_price) {
+      conditions.push(`(COALESCE(sale_price, price) <= $${i})`);
+      params.push(parseFloat(max_price));
+      i++;
+    }
+
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
     const totalRes = await query(`SELECT COUNT(*) FROM products ${where}`, params);
@@ -77,9 +113,33 @@ router.get('/', async (req, res) => {
 
     const offset = (page - 1) * limit;
 
+    // Build ORDER BY clause based on sort param
+    let orderClause = 'created_at DESC';
+    switch (sort) {
+      case 'price_asc':
+        orderClause = 'COALESCE(sale_price, price) ASC NULLS LAST';
+        break;
+      case 'price_desc':
+        orderClause = 'COALESCE(sale_price, price) DESC NULLS LAST';
+        break;
+      case 'name_asc':
+        orderClause = 'name ASC';
+        break;
+      case 'name_desc':
+        orderClause = 'name DESC';
+        break;
+      case 'popular':
+        orderClause = 'featured DESC, created_at DESC';
+        break;
+      case 'newest':
+      default:
+        orderClause = 'created_at DESC';
+        break;
+    }
+
     const data = await query(
       `SELECT * FROM products ${where}
-       ORDER BY created_at DESC
+       ORDER BY ${orderClause}
        LIMIT $${i} OFFSET $${i + 1}`,
       [...params, limit, offset]
     );

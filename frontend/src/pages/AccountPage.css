@@ -426,6 +426,31 @@
   .profile-section { padding: 18px 16px; }
 }
 
+@media (max-width: 480px) {
+  .account-layout { padding: 16px 0 32px; gap: 16px; }
+  .account-page-header h2 { font-size: 1.4rem; }
+  .account-page-header p { font-size: 0.84rem; line-height: 1.5; }
+  .dashboard-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .dash-stat-card { padding: 14px; gap: 10px; }
+  .dash-stat-icon { width: 40px; height: 40px; }
+  .dash-stat-val { font-size: 1.4rem; }
+  .dash-stat-label { font-size: 0.68rem; }
+  .account-quick-actions { grid-template-columns: 1fr; }
+  .quick-action { padding: 14px; font-size: 0.82rem; }
+  .profile-section { padding: 20px 16px; }
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-info-row { font-size: 0.84rem; }
+  .order-card-header { padding: 14px 16px; }
+  .order-card-items { padding: 12px 16px; }
+  .order-card-footer { padding: 10px 16px; }
+  .order-card-meta { flex-direction: column; gap: 6px; }
+  .account-section-head { padding: 14px 16px; }
+  .account-section-head h3 { font-size: 0.9rem; }
+  .account-empty { padding: 24px 16px; }
+  .account-empty.large { padding: 40px 16px; }
+  .account-empty.large h3 { font-size: 1.4rem; }
+}
+
 @media (max-width: 360px) {
   .account-page-header h2 { font-size: 1.35rem; }
   .account-page-header p { font-size: 0.92rem; }
@@ -442,4 +467,13 @@
   .quick-action { padding: 14px 14px; font-size: 0.8rem; }
   .profile-section { padding: 16px 14px; }
   .profile-info-row { font-size: 0.82rem; gap: 12px; }
+  .account-layout { padding: 12px 0 24px; }
+  .account-page-header h2 { font-size: 1.2rem; }
+  .dash-stat-val { font-size: 1.2rem; }
+  .dash-stat-icon { width: 36px; height: 36px; }
+  .order-card-num { font-size: 0.88rem; }
+  .order-card-date { font-size: 0.72rem; }
+  .order-item-name { font-size: 0.82rem; }
+  .order-item-price { font-size: 0.82rem; }
+  .order-card-total { font-size: 0.85rem; }
 }

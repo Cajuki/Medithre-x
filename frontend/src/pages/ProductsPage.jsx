@@ -57,7 +57,7 @@ export default function ProductsPage() {
 
       const { data } = await axios.get(`/api/products?${params.toString()}`);
       setProducts(data.products || []);
-      setTotalPages(data.totalPages || 1);
+      setTotalPages(data.pages || 1);
       setTotalProducts(data.total || 0);
     } catch {
       setProducts([]);

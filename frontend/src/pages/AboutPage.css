@@ -376,4 +376,56 @@
     flex-direction: column;
     align-items: flex-start;
   }
+  
+  .about-stat-val { font-size: 1.8rem; }
+  .about-stat-label { font-size: 0.65rem; }
+  .value-card { padding: 22px 18px; }
+  .founder-card { padding: 20px; }
+  .founder-avatar { width: 80px; height: 80px; }
+}
+
+@media (max-width: 480px) {
+  .about-mission-grid { gap: 32px; }
+  .mission-img img { height: 240px; }
+  .mission-badge { right: 14px; bottom: 14px; padding: 10px 14px; }
+  .mission-badge-num { font-size: 1.6rem; }
+  .mission-content p { font-size: 0.9rem; }
+  .mission-check { font-size: 0.84rem; }
+  .about-stats-bar { padding: 24px 0; }
+  .about-stat-val { font-size: 1.6rem; }
+  .about-stat-label { font-size: 0.6rem; }
+  .values-grid { gap: 12px; }
+  .value-card { padding: 18px 14px; }
+  .value-icon { width: 48px; height: 48px; }
+  .value-card h4 { font-size: 0.9rem; }
+  .value-card p { font-size: 0.8rem; }
+  .founders-grid { gap: 16px; }
+  .founder-card { padding: 16px; gap: 14px; }
+  .founder-avatar { width: 72px; height: 72px; }
+  .founder-info h4 { font-size: 0.95rem; }
+  .founder-bio { font-size: 0.8rem; }
+  .location-inner { gap: 24px; }
+  .location-row strong { font-size: 0.88rem; }
+  .location-row p { font-size: 0.78rem; }
+  .about-cta { padding: 44px 0; }
+  .about-cta h2 { font-size: clamp(1.5rem, 6vw, 2rem); }
+  .about-cta-btns { flex-direction: column; width: 100%; }
+  .about-cta-btns .btn { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 360px) {
+  .mission-img img { height: 200px; }
+  .mission-badge { right: 10px; bottom: 10px; padding: 8px 12px; }
+  .mission-badge-num { font-size: 1.3rem; }
+  .mission-content p { font-size: 0.85rem; }
+  .mission-check { font-size: 0.8rem; }
+  .about-stat-val { font-size: 1.4rem; }
+  .value-card { padding: 14px 12px; }
+  .value-icon { width: 40px; height: 40px; border-radius: 14px; }
+  .value-card h4 { font-size: 0.84rem; }
+  .founder-card { padding: 14px; }
+  .founder-avatar { width: 64px; height: 64px; }
+  .founder-info h4 { font-size: 0.88rem; }
+  .founder-role { font-size: 0.68rem; }
+  .about-cta h2 { font-size: clamp(1.3rem, 7vw, 1.6rem); }
 }

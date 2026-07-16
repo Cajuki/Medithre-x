@@ -847,5 +847,19 @@
   .admin-table td,
   .admin-table th {
     padding: 6px 8px;
+    font-size: 0.7rem;
   }
+  .admin-page-header h1 { font-size: 1.05rem; }
+  .admin-page-header p { font-size: 0.78rem; }
+  .admin-modal-header { padding: 12px 14px; }
+  .admin-modal-header h3 { font-size: 1rem; }
+  .admin-modal-body { padding: 12px 14px; }
+  .modal-grid-2 { gap: 12px; }
+  .admin-search { font-size: 0.8rem; padding: 6px 10px 6px 32px; }
+  .admin-select { font-size: 0.8rem; padding: 6px 28px 6px 10px; }
+  .admin-pagination { padding: 10px 14px; }
+  .admin-page-btn { min-width: 30px; height: 30px; font-size: 0.76rem; }
+  .msg-card-header { padding: 12px 14px; }
+  .msg-card-body { padding: 12px 14px; font-size: 0.82rem; }
+  .msg-tab { padding: 6px 14px; font-size: 0.74rem; }
 }

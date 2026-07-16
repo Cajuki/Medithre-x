@@ -214,5 +214,20 @@
   .cat-admin-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 480px) {
-  .cat-admin-grid { grid-template-columns: 1fr; }
+  .cat-admin-grid { grid-template-columns: 1fr; gap: 16px; }
+  .cat-admin-body { padding: 12px 14px; }
+  .cat-admin-name { font-size: 0.88rem; }
+  .cat-admin-desc { font-size: 0.74rem; }
+  .cat-admin-actions { padding: 8px 10px; flex-wrap: wrap; }
+  .cat-toggle-btn { padding: 5px 10px; font-size: 0.68rem; }
+}
+
+@media (max-width: 360px) {
+  .cat-admin-grid { gap: 12px; }
+  .cat-admin-img { aspect-ratio: 4/3; }
+  .cat-admin-body { padding: 10px 12px; }
+  .cat-admin-name { font-size: 0.82rem; }
+  .cat-admin-desc { font-size: 0.7rem; }
+  .cat-admin-actions { padding: 6px 8px; gap: 4px; }
+  .cat-toggle-btn { padding: 4px 8px; font-size: 0.64rem; }
 }

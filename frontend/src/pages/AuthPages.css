@@ -250,6 +250,18 @@
   .password-requirements { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 480px) {
+  .auth-form-panel { padding: 32px 18px 48px; }
+  .auth-form-header h1 { font-size: 1.6rem; }
+  .auth-form-header p { font-size: 0.86rem; line-height: 1.5; }
+  .auth-form-icon { width: 44px; height: 44px; }
+  .auth-form-wrap { max-width: none; }
+  .auth-submit { font-size: 0.95rem; }
+  .auth-terms { font-size: 0.74rem; }
+  .password-requirements { grid-template-columns: 1fr; }
+  .auth-contact { font-size: 0.78rem; line-height: 1.6; }
+}
+
 @media (max-width: 360px) {
   .auth-form-panel { padding: 24px 14px 40px; }
   .auth-form-icon { width: 42px; height: 42px; }
@@ -261,4 +273,7 @@
     align-items: flex-start;
   }
   .auth-divider { margin: 20px 0; }
+  .auth-form-header { margin-bottom: 20px; }
+  .form-row-2 { gap: 12px; }
+  .auth-perk { font-size: 0.82rem; }
 }

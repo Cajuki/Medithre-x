@@ -511,4 +511,44 @@
   .products-page .products-grid {
     grid-template-columns: 1fr;
   }
+  
+  .cat-pill-row { gap: 6px; }
+  .cat-pill { padding: 6px 12px; font-size: 0.7rem; }
+  .active-filter-chips { gap: 6px; }
+  .filter-chip { font-size: 0.68rem; padding: 4px 8px 4px 10px; }
+  .pagination { gap: 4px; }
+  .page-btn { min-width: 36px; height: 36px; font-size: 0.8rem; }
+}
+
+@media (max-width: 480px) {
+  .products-page-body { padding: 12px 0 28px; gap: 10px; }
+  .products-toolbar-bar { padding: 10px; gap: 8px; }
+  .search-form-bar { padding: 0 6px 0 10px; }
+  .search-bar-input { padding: 10px 0; font-size: 0.9rem; }
+  .filter-icon-btn { width: 40px; height: 40px; }
+  .filter-panel { padding: 8px; }
+  .filter-panel-inner { max-width: none; }
+  .filter-panel-header { padding: 12px 14px; font-size: 0.76rem; }
+  .filter-section-head { padding: 10px 14px; font-size: 0.7rem; }
+  .filter-section-body { padding: 4px 8px 10px; }
+  .fp-cat-btn { padding: 8px 10px; font-size: 0.8rem; }
+  .fp-checkbox { padding: 7px 10px; font-size: 0.8rem; }
+  .result-count { font-size: 0.76rem; }
+  .sort-select { padding: 8px 30px 8px 12px; font-size: 0.8rem; }
+  .cat-pill { padding: 5px 10px; font-size: 0.65rem; }
+  .page-btn { min-width: 32px; height: 32px; font-size: 0.76rem; padding: 0 8px; }
+}
+
+@media (max-width: 360px) {
+  .products-page-body { padding: 8px 0 24px; }
+  .products-toolbar-bar { padding: 8px; }
+  .search-bar-input { font-size: 0.85rem; }
+  .filter-icon-btn { width: 36px; height: 36px; }
+  .filter-panel { padding: 4px; }
+  .filter-panel-header { padding: 10px 12px; font-size: 0.72rem; }
+  .filter-section-head { padding: 8px 12px; }
+  .filter-panel-footer { padding: 10px 12px 14px; }
+  .cat-pill { padding: 4px 8px; font-size: 0.6rem; }
+  .page-btn { min-width: 28px; height: 28px; font-size: 0.7rem; padding: 0 6px; }
+  .pagination { gap: 3px; }
 }

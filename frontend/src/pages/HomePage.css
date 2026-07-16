@@ -606,4 +606,63 @@
   .quote-banner {
     padding: 56px 0;
   }
+  
+  .brands-row { gap: 8px; }
+  .brand-chip { padding: 8px 12px; font-size: 0.7rem; }
+  .testimonial-card { padding: 20px; }
+  .testimonial-text { font-size: 0.88rem; }
+}
+
+@media (max-width: 480px) {
+  .hero { min-height: 92vh; }
+  .hero-content { padding: 56px 0 130px; }
+  .hero-title { font-size: clamp(2.2rem, 10vw, 3.2rem); }
+  .hero-sub { font-size: 0.9rem; margin-top: 14px; }
+  .hero-trust span { font-size: 0.68rem; }
+  .hero-label { font-size: 0.7rem; padding: 6px 12px; }
+  .hero-dots { bottom: 20px; }
+  .hero-dot { width: 16px; height: 3px; }
+  .hero-dot.active { width: 40px; }
+  .stats-bar { padding: 20px 0; }
+  .stat-value { font-size: clamp(1.6rem, 6vw, 2rem); }
+  .stat-label { font-size: 0.65rem; }
+  .cat-card-body { padding: 14px; flex-direction: column; align-items: flex-start; }
+  .cat-card-name { font-size: 0.92rem; }
+  .why-right { gap: 12px; }
+  .why-card { padding: 16px; }
+  .why-card-icon { width: 40px; height: 40px; }
+  .why-card h4 { font-size: 0.88rem; }
+  .why-card p { font-size: 0.8rem; }
+  .quote-banner-text h2 { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+  .brand-chip { font-size: 0.65rem; padding: 6px 10px; }
+  .testimonials-grid { gap: 14px; }
+  .testimonial-card { padding: 16px; }
+}
+
+@media (max-width: 360px) {
+  .hero { min-height: 94vh; }
+  .hero-content { padding: 48px 0 140px; }
+  .hero-title { font-size: clamp(1.8rem, 11vw, 2.5rem); }
+  .hero-sub { font-size: 0.82rem; }
+  .hero-actions { gap: 8px; margin: 20px 0 20px; }
+  .hero-trust { gap: 6px 10px; }
+  .hero-trust span { font-size: 0.62rem; }
+  .hero-label { font-size: 0.65rem; padding: 4px 10px; }
+  .stats-bar { padding: 16px 0; }
+  .stat-item { padding: 4px 0; }
+  .stat-value { font-size: clamp(1.4rem, 7vw, 1.7rem); }
+  .stat-label { font-size: 0.6rem; }
+  .categories-grid { gap: 12px; }
+  .cat-card-body { padding: 12px; gap: 8px; }
+  .cat-card-name { font-size: 0.85rem; }
+  .cat-card-desc, .cat-card-count { font-size: 0.76rem; }
+  .why-card { gap: 10px; }
+  .why-card-icon { width: 36px; height: 36px; border-radius: 12px; }
+  .why-card h4 { font-size: 0.82rem; }
+  .why-card p { font-size: 0.76rem; }
+  .brands-row { gap: 6px; }
+  .brand-chip { font-size: 0.6rem; padding: 5px 8px; }
+  .quote-banner { padding: 40px 0; }
+  .quote-banner-text h2 { font-size: clamp(1.3rem, 7vw, 1.8rem); }
+  .quote-banner-text p { font-size: 0.82rem; }
 }
