@@ -2,10 +2,11 @@ import { Link } from 'react-router-dom';
 import { Trash2, ShoppingBag, ArrowRight, Plus, Minus } from 'lucide-react';
 import { useCart } from '../context/CartContext.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
+import { resolveAssetUrl } from '../utils/assets.js';
 import './CartPage.css';
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, total, clearCart } = useCart();
+  const { items, count, removeItem, updateQuantity, total, clearCart } = useCart();
   const { user } = useAuth();
   const effectivePrice = (item) => item.salePrice || item.price || 0;
 
@@ -26,7 +27,7 @@ export default function CartPage() {
         <div className="container page-hero-content">
           <p className="section-label">Your Selection</p>
           <h1>Shopping Cart</h1>
-          <p>{items.length} item{items.length !== 1 ? 's' : ''} in your cart</p>
+          <p>{count} item{count !== 1 ? 's' : ''} in your cart · {items.length} product{items.length !== 1 ? 's' : ''}</p>
         </div>
       </div>
 
@@ -43,7 +44,7 @@ export default function CartPage() {
           {items.map(item => (
             <div key={item.id} className="cart-row">
               <div className="cart-product">
-                <img src={item.images?.[0]} alt={item.name} />
+                <img src={resolveAssetUrl(item.image_url || item.images?.[0])} alt={item.name} />
                 <div>
                   <Link to={`/products/${item.id}`}><h4>{item.name}</h4></Link>
                   <p>{item.category}</p>

@@ -689,3 +689,204 @@
     font-size: 0.72rem;
   }
 }
+
+/* --------------------------------------------------------------------------
+   Current admin application theme
+   The admin pages use a mix of utility classes and legacy page classes. These
+   scoped overrides keep every route on the same solid, high-contrast system.
+---------------------------------------------------------------------------- */
+.admin-area {
+  --admin-bg: #f1f5f9;
+  --admin-surface: #ffffff;
+  --admin-surface-soft: #f8fafc;
+  --admin-border: #dbe5ef;
+  --admin-text: #17324d;
+  --admin-muted: #64748b;
+  --admin-navy: #0b1f3a;
+  --admin-blue: #0b5cad;
+  --admin-teal: #008f91;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+}
+
+.admin-area .admin-sidebar-modern,
+.admin-area aside {
+  background: var(--admin-navy) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 10px 0 30px rgba(11, 31, 58, 0.12);
+}
+
+.admin-area .admin-topbar-modern {
+  background: var(--admin-surface) !important;
+  border-color: var(--admin-border) !important;
+  box-shadow: 0 1px 0 rgba(11, 31, 58, 0.03);
+}
+
+.admin-area .admin-content-modern {
+  background: var(--admin-bg);
+}
+
+.admin-area .admin-page-header h1,
+.admin-area .admin-page-header h2,
+.admin-area .admin-page-header h3,
+.admin-area .admin-card-header h3 {
+  color: var(--admin-text) !important;
+}
+
+.admin-area .admin-page-header p,
+.admin-area .admin-empty,
+.admin-area .admin-loading,
+.admin-area .admin-pagination {
+  color: var(--admin-muted) !important;
+}
+
+.admin-area .premium-card,
+.admin-area .admin-card,
+.admin-area .admin-panel,
+.admin-area .settings-card,
+.admin-area .bg-white.rounded-xl {
+  background: var(--admin-surface) !important;
+  border-color: var(--admin-border) !important;
+  box-shadow: 0 8px 24px rgba(23, 50, 77, 0.06) !important;
+}
+
+.admin-area .admin-card-header,
+.admin-area .admin-pagination {
+  border-color: var(--admin-border) !important;
+}
+
+.admin-area .admin-table th {
+  color: #52677d !important;
+  background: var(--admin-surface-soft) !important;
+  border-color: var(--admin-border) !important;
+}
+
+.admin-area .admin-table td {
+  color: #334e68 !important;
+  border-color: #e8eef4 !important;
+}
+
+.admin-area .admin-table tr:hover td {
+  background: #f5f9fc !important;
+}
+
+.admin-area .admin-search,
+.admin-area .admin-select,
+.admin-area .form-input,
+.admin-area .form-select,
+.admin-area .form-textarea {
+  background: var(--admin-surface) !important;
+  color: var(--admin-text) !important;
+  border-color: var(--admin-border) !important;
+}
+
+.admin-area .admin-search::placeholder,
+.admin-area .form-input::placeholder,
+.admin-area .form-textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+.admin-area .admin-search:focus,
+.admin-area .admin-select:focus,
+.admin-area .form-input:focus,
+.admin-area .form-select:focus,
+.admin-area .form-textarea:focus {
+  border-color: var(--admin-blue) !important;
+  box-shadow: 0 0 0 3px rgba(11, 92, 173, 0.12) !important;
+}
+
+.admin-area .td-bold,
+.admin-area .td-name,
+.admin-area .modal-section h4,
+.admin-area .settings-info-row strong {
+  color: var(--admin-text) !important;
+}
+
+.admin-area .td-sub,
+.admin-area .td-date,
+.admin-area .form-label,
+.admin-area .settings-info-row span {
+  color: var(--admin-muted) !important;
+}
+
+.admin-area .admin-modal-overlay {
+  background: rgba(11, 31, 58, 0.62) !important;
+  backdrop-filter: blur(3px);
+}
+
+.admin-area .admin-modal {
+  background: var(--admin-surface) !important;
+  border: 1px solid var(--admin-border) !important;
+  box-shadow: 0 24px 80px rgba(11, 31, 58, 0.24) !important;
+}
+
+.admin-area .admin-modal-header,
+.admin-area .admin-modal-footer,
+.admin-area .modal-section + .modal-section {
+  border-color: var(--admin-border) !important;
+}
+
+.admin-area .admin-modal-header h3,
+.admin-area .admin-modal-header h2 {
+  color: var(--admin-text) !important;
+}
+
+.admin-area .modal-close {
+  color: var(--admin-muted) !important;
+}
+
+.admin-area .modal-close:hover {
+  background: #eef4f9 !important;
+  color: var(--admin-blue) !important;
+}
+
+.admin-area .cat-admin-card,
+.admin-area .msg-card {
+  background: var(--admin-surface) !important;
+  border-color: var(--admin-border) !important;
+  box-shadow: 0 8px 24px rgba(23, 50, 77, 0.06) !important;
+}
+
+.admin-area .cat-admin-name,
+.admin-area .msg-card-name {
+  color: var(--admin-text) !important;
+}
+
+.admin-area .cat-admin-desc,
+.admin-area .cat-admin-meta,
+.admin-area .msg-card-body,
+.admin-area .msg-card-meta {
+  color: var(--admin-muted) !important;
+}
+
+.admin-area .cat-admin-actions,
+.admin-area .msg-card-header {
+  border-color: var(--admin-border) !important;
+}
+
+.admin-area .admin-page-btn {
+  background: var(--admin-surface) !important;
+  color: var(--admin-text) !important;
+  border-color: var(--admin-border) !important;
+}
+
+.admin-area .admin-page-btn.active,
+.admin-area .btn-primary {
+  background: linear-gradient(135deg, var(--admin-blue), #164a8a) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+@media (max-width: 768px) {
+  .admin-area .admin-topbar-modern {
+    min-height: 64px;
+  }
+
+  .admin-area .admin-page-header {
+    margin-bottom: 18px;
+  }
+
+  .admin-area .admin-card-header {
+    padding: 14px 16px;
+  }
+}

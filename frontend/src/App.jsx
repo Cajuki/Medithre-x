@@ -29,6 +29,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage.jsx';
 import TermsOfServicePage from './pages/TermsOfServicePage.jsx';
 import ReturnsPage       from './pages/ReturnsPage.jsx';
 import WishlistPage      from './pages/WishlistPage.jsx';
+import CategoriesPage    from './pages/CategoriesPage.jsx';
 
 // Admin pages
 import AdminLayout      from './pages/admin/AdminLayout.jsx';
@@ -81,6 +82,7 @@ export default function App() {
             <Route path="/*" element={<PublicLayout><Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/products" element={<ProductsPage />} />
+              <Route path="/categories" element={<CategoriesPage />} />
               <Route path="/products/:id" element={<ProductDetailPage />} />
               <Route path="/cart" element={<CartPage />} />
               <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />

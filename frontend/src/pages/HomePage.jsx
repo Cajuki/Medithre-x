@@ -348,7 +348,7 @@ export default function HomePage() {
               <h2 className="section-title">Equipment Categories</h2>
               <p className="section-subtitle">Comprehensive medical equipment categories for every healthcare need</p>
             </div>
-            <Link to="/products" className="hidden md:flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-700 transition-colors">
+            <Link to="/categories" className="hidden md:flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-700 transition-colors">
               Browse All <ArrowRight size={15} />
             </Link>
           </motion.div>
@@ -413,7 +413,7 @@ export default function HomePage() {
           )}
 
           <div className="text-center mt-8 md:hidden">
-            <Link to="/products" className="btn btn-outline">
+            <Link to="/categories" className="btn btn-outline">
               Browse All Categories <ArrowRight size={15} />
             </Link>
           </div>

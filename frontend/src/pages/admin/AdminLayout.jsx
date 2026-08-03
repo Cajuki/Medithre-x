@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import logo from '../../Assets/med.png';
+import './AdminLayout.css';
 
 const NAV = [
   { to: '/admin',            label: 'Dashboard',   icon: <LayoutDashboard size={18} />, end: true },
@@ -29,7 +30,7 @@ export default function AdminLayout() {
   const handleLogout = () => { logout(); navigate('/login'); };
 
   return (
-    <div className="min-h-screen bg-section flex">
+    <div className="admin-area min-h-screen flex">
       {/* ── Sidebar ────────────────────────────────────────────────────── */}
       <aside className={`fixed lg:sticky top-0 left-0 h-screen z-50 flex flex-col bg-primary-dark border-r border-white/5 transition-all duration-300 ${
         collapsed ? 'w-[72px]' : 'w-[260px]'
@@ -124,7 +125,7 @@ export default function AdminLayout() {
       {/* ── Main Area ──────────────────────────────────────────────────── */}
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 h-[64px] bg-white/80 backdrop-blur-md border-b border-border flex items-center gap-4 px-4 lg:px-6">
+        <header className="admin-topbar-modern sticky top-0 z-30 h-[64px] bg-white border-b border-border flex items-center gap-4 px-4 lg:px-6">
           <button
             onClick={() => setMobileOpen(true)}
             className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg border border-border text-charcoal-600 hover:bg-section transition-all"
@@ -165,7 +166,7 @@ export default function AdminLayout() {
         </header>
 
         {/* Content */}
-        <div className="flex-1 p-4 lg:p-6 overflow-hidden">
+        <div className="admin-content-modern flex-1 p-4 lg:p-6 overflow-hidden">
           <Outlet />
         </div>
       </div>

@@ -14,7 +14,7 @@ import logo from '../Assets/med.png';
 const NAV_ITEMS = [
   { name: 'Home', path: '/' },
   { name: 'Products', path: '/products' },
-  { name: 'Categories', path: '/products#categories' },
+  { name: 'Categories', path: '/categories' },
   { name: 'About', path: '/about' },
   { name: 'Contact', path: '/contact' },
   { name: 'Quote', path: '/quote' },
@@ -27,7 +27,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const { user, logout } = useAuth();
-  const { cartTotal } = useCart();
+  const { count: cartCount } = useCart();
   const { count: wishlistCount } = useWishlist();
   const location = useLocation();
   const navigate = useNavigate();
@@ -113,7 +113,7 @@ export default function Navbar() {
                 to={item.path}
                 className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                   location.pathname === item.path
-                    ? 'text-white bg-white/10'
+                    ? 'text-primary bg-primary-50'
                     : 'text-charcoal hover:text-primary'
                 }`}
               >
@@ -144,8 +144,8 @@ export default function Navbar() {
             {/* Cart — badge always visible just like wishlist */}
             <Link to="/cart" className="relative p-2.5 text-charcoal-600 hover:text-primary hover:bg-section rounded-lg transition-all">
               <ShoppingCart size={18} />
-              <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-secondary text-white text-[8px] font-bold rounded-full flex items-center justify-center">
-                {cartTotal > 99 ? '99+' : cartTotal}
+              <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-secondary text-white text-[8px] font-bold rounded-full flex items-center justify-center" aria-label={`${cartCount} items in cart`}>
+                {cartCount > 99 ? '99+' : cartCount}
               </span>
             </Link>
 

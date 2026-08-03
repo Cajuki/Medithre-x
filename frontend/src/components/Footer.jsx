@@ -16,12 +16,8 @@ const FOOTER_LINKS = {
     { name: 'Request Quote', path: '/quote' },
   ],
   'Categories': [
-    { name: 'Medical Equipment', path: '/products?category=Medical+Equipment' },
-    { name: 'Laboratory Equipment', path: '/products?category=Laboratory+Equipment' },
-    { name: 'Surgical Instruments', path: '/products?category=Surgical+Instruments' },
-    { name: 'Diagnostic Kits', path: '/products?category=Diagnostic+Kits' },
-    { name: 'Hospital Furniture', path: '/products?category=Hospital+Furniture' },
-    { name: 'All Categories', path: '/products' },
+    { name: 'Browse all categories', path: '/categories' },
+    { name: 'View all products', path: '/products' },
   ],
   'Support': [
     { name: 'Privacy Policy', path: '/privacy-policy' },
@@ -33,11 +29,11 @@ const FOOTER_LINKS = {
 };
 
 const SOCIAL_LINKS = [
-  { icon: <Facebook size={16} />, href: '#', label: 'Facebook' },
-  { icon: <Twitter size={16} />, href: '#', label: 'Twitter' },
-  { icon: <Instagram size={16} />, href: '#', label: 'Instagram' },
-  { icon: <Linkedin size={16} />, href: '#', label: 'LinkedIn' },
-  { icon: <Youtube size={16} />, href: '#', label: 'YouTube' },
+  { icon: <Facebook size={16} />, href: 'https://www.facebook.com/', label: 'Facebook' },
+  { icon: <Twitter size={16} />, href: 'https://x.com/', label: 'X' },
+  { icon: <Instagram size={16} />, href: 'https://www.instagram.com/', label: 'Instagram' },
+  { icon: <Linkedin size={16} />, href: 'https://www.linkedin.com/', label: 'LinkedIn' },
+  { icon: <Youtube size={16} />, href: 'https://www.youtube.com/', label: 'YouTube' },
 ];
 
 const FEATURES = [
@@ -119,6 +115,8 @@ export default function Footer() {
                 <a
                   key={social.label}
                   href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
                   aria-label={social.label}
                   className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center text-white/40 hover:bg-secondary hover:text-white transition-all duration-200"
                 >
