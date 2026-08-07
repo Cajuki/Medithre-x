@@ -21,13 +21,21 @@ axios.interceptors.response.use(
     if (error.code === 'ERR_NETWORK' || !error.response) {
       console.error('❌ Cannot reach backend:', API_URL || 'localhost:8080');
     }
-    if (error.response?.status === 401) {
-      // Clear stale token on auth failure
-      const currentPath = window.location.pathname;
-      if (!currentPath.startsWith('/login') && !currentPath.startsWith('/register')) {
-        localStorage.removeItem('medithrex_token');
-      }
-    }
+     if (error.response?.status === 401) {
+       // Clear stale token on auth failure
+       const currentPath = window.location.pathname;
+       if (!currentPath.startsWith('/login') && !currentPath.startsWith('/register')) {
+         // Safely remove token from localStorage
+         if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+           try {
+             localStorage.removeItem('medithrex_token');
+           } catch (e) {
+             // If localStorage is inaccessible due to tracking prevention, continue anyway
+             console.warn('Unable to remove token from localStorage due to tracking prevention');
+           }
+         }
+       }
+     }
     return Promise.reject(error);
   }
 );
