@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -31,12 +31,15 @@ export default function RegisterPage() {
     }
   }, [user, navigate]);
 
-  const update = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }));
+   const update = useCallback((field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value })), []);
 
-  const handleBlur = (field) => {
-    setFocusedField(null);
-    setTouched(prev => ({ ...prev, [field]: true }));
-  };
+   const handleBlur = (field) => {
+     // Delay clearing focus to prevent keyboard from disappearing on mobile
+     setTimeout(() => {
+       setFocusedField(null);
+     }, 100);
+     setTouched(prev => ({ ...prev, [field]: true }));
+   };
 
   // Validation
   const nameError = touched.name && form.name && form.name.length < 2;
@@ -118,69 +121,69 @@ export default function RegisterPage() {
     }
   };
 
-  // Input field builder
-  const Field = ({ field, label, icon: Icon, type = 'text', placeholder, options = {} }) => {
-    const { extraPadding, validation, autoComplete } = options;
-    const value = form[field];
-    const isFocused = focusedField === field;
-    const isTouched = touched[field];
-    const hasError = isTouched && validation?.error;
-    const isValid = isTouched && validation?.valid;
-    const isPassword = type === 'password';
-    const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
+   // Input field builder
+   const Field = useCallback(({ field, label, icon: Icon, type = 'text', placeholder, options = {} }) => {
+     const { extraPadding, validation, autoComplete } = options;
+     const value = form[field];
+     const isFocused = focusedField === field;
+     const isTouched = touched[field];
+     const hasError = isTouched && validation?.error;
+     const isValid = isTouched && validation?.valid;
+     const isPassword = type === 'password';
+     const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
-    return (
-      <div className="auth-input-group">
-        <div className={`
-          auth-input-wrap
-          ${isFocused ? 'focused' : ''}
-          ${hasError ? 'error' : ''}
-          ${isValid ? 'valid' : ''}
-        `}>
-          <div className="auth-input-icon">
-            <Icon size={17} className={isFocused ? 'text-primary' : 'text-charcoal-400'} />
-          </div>
-          <input
-            type={inputType}
-            value={value}
-            onChange={update(field)}
-            onFocus={() => setFocusedField(field)}
-            onBlur={() => handleBlur(field)}
-            className={`auth-input ${isPassword ? 'auth-input--password' : ''}`}
-            placeholder=" "
-            autoComplete={autoComplete || type || 'off'}
-          />
-          <label className="auth-floating-label">{label}</label>
-          <div className="auth-input-border" />
-          <div className="auth-input-status">
-            {hasError && <AlertCircle size={14} className="text-danger" />}
-            {isValid && <CheckCircle size={14} className="text-accent" />}
-          </div>
-          
-          {isPassword && (
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="auth-password-toggle"
-              tabIndex={-1}
-            >
-              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          )}
-        </div>
-        {hasError && validation?.message && (
-          <motion.p
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="auth-field-error"
-          >
-            <AlertCircle size={11} />
-            {validation.message}
-          </motion.p>
-        )}
-      </div>
-    );
-  };
+     return (
+       <div className="auth-input-group">
+         <div className={`
+           auth-input-wrap
+           ${isFocused ? 'focused' : ''}
+           ${hasError ? 'error' : ''}
+           ${isValid ? 'valid' : ''}
+         `}>
+           <div className="auth-input-icon">
+             <Icon size={17} className={isFocused ? 'text-primary' : 'text-charcoal-400'} />
+           </div>
+           <input
+             type={inputType}
+             value={value}
+             onChange={update(field)}
+             onFocus={() => setFocusedField(field)}
+             onBlur={() => handleBlur(field)}
+             className={`auth-input ${isPassword ? 'auth-input--password' : ''}`}
+             placeholder=" "
+             autoComplete={autoComplete || type || 'off'}
+           />
+           <label className="auth-floating-label">{label}</label>
+           <div className="auth-input-border" />
+           <div className="auth-input-status">
+             {hasError && <AlertCircle size={14} className="text-danger" />}
+             {isValid && <CheckCircle size={14} className="text-accent" />}
+           </div>
+           
+           {isPassword && (
+             <button
+               type="button"
+               onClick={() => setShowPassword(!showPassword)}
+               className="auth-password-toggle"
+               tabIndex={-1}
+             >
+               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+             </button>
+           )}
+         </div>
+         {hasError && validation?.message && (
+           <motion.p
+             initial={{ opacity: 0, y: -4 }}
+             animate={{ opacity: 1, y: 0 }}
+             className="auth-field-error"
+           >
+             <AlertCircle size={11} />
+             {validation.message}
+           </motion.p>
+         )}
+       </div>
+     );
+   }, [form, focusedField, touched, showPassword, update]);
 
   return (
     <div className="min-h-screen flex">

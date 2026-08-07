@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader2, ShieldCheck, AlertCircle, CheckCircle } from 'lucide-react';
@@ -32,35 +32,38 @@ export default function LoginPage() {
   const passwordError = touched.password && password && password.length < 1;
   const isFormValid = email && password && !emailError;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setTouched({ email: true, password: true });
-    if (!email || !password) {
-      toast.error('Please fill in all fields');
-      return;
-    }
-    if (emailError) {
-      toast.error('Please enter a valid email address');
-      return;
-    }
-    setLoading(true);
-    try {
-      const userData = await login(email, password);
-      toast.success(`Welcome back, ${userData.name}!`);
-      // Role-based redirect
-      const dest = userData.role === 'admin' ? '/admin' : '/account';
-      navigate(dest, { replace: true });
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Invalid email or password');
-    } finally {
-      setLoading(false);
-    }
-  };
+   const handleSubmit = useCallback(async (e) => {
+     e.preventDefault();
+     setTouched({ email: true, password: true });
+     if (!email || !password) {
+       toast.error('Please fill in all fields');
+       return;
+     }
+     if (emailError) {
+       toast.error('Please enter a valid email address');
+       return;
+     }
+     setLoading(true);
+     try {
+       const userData = await login(email, password);
+       toast.success(`Welcome back, ${userData.name}!`);
+       // Role-based redirect
+       const dest = userData.role === 'admin' ? '/admin' : '/account';
+       navigate(dest, { replace: true });
+     } catch (err) {
+       toast.error(err.response?.data?.error || 'Invalid email or password');
+     } finally {
+       setLoading(false);
+     }
+   }, [email, password, emailError, login, navigate, toast]);
 
-  const handleBlur = (field) => {
-    setFocusedField(null);
-    setTouched(prev => ({ ...prev, [field]: true }));
-  };
+   const handleBlur = (field) => {
+     // Delay clearing focus to prevent keyboard from disappearing on mobile
+     setTimeout(() => {
+       setFocusedField(null);
+     }, 100);
+     setTouched(prev => ({ ...prev, [field]: true }));
+   };
 
   return (
     <div className="min-h-screen flex">
@@ -119,17 +122,17 @@ export default function LoginPage() {
                   <div className="auth-input-icon">
                     <Mail size={17} className={focusedField === 'email' ? 'text-primary' : 'text-charcoal-400'} />
                   </div>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onFocus={() => setFocusedField('email')}
-                    onBlur={() => handleBlur('email')}
-                    className="auth-input"
-                    placeholder=" "
-                    autoComplete="email"
-                    autoFocus
-                  />
+               <input
+                     type="email"
+                     value={email}
+                     onChange={useCallback((e) => setEmail(e.target.value), [])}
+                     onFocus={() => setFocusedField('email')}
+                     onBlur={() => handleBlur('email')}
+                     className="auth-input"
+                     placeholder=" "
+                     autoComplete="email"
+                     autoFocus
+                   />
                   <label className="auth-floating-label">Email Address</label>
                   <div className="auth-input-border" />
                   <div className="auth-input-status">
@@ -172,16 +175,16 @@ export default function LoginPage() {
                 <div className="auth-input-icon">
                   <Lock size={17} className={focusedField === 'password' ? 'text-primary' : 'text-charcoal-400'} />
                 </div>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onFocus={() => setFocusedField('password')}
-                  onBlur={() => handleBlur('password')}
-                  className="auth-input auth-input--password"
-                  placeholder=" "
-                  autoComplete="current-password"
-                />
+               <input
+                   type={showPassword ? 'text' : 'password'}
+                   value={password}
+                   onChange={useCallback((e) => setPassword(e.target.value), [])}
+                   onFocus={() => setFocusedField('password')}
+                   onBlur={() => handleBlur('password')}
+                   className="auth-input auth-input--password"
+                   placeholder=" "
+                   autoComplete="current-password"
+                 />
                 <label className="auth-floating-label">Enter your password</label>
                 <div className="auth-input-border" />
                 <button
