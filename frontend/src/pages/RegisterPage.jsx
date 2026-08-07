@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -9,6 +9,86 @@ import { useAuth } from '../context/AuthContext.jsx';
 import toast from 'react-hot-toast';
 import './AuthPages.css';
 import logo from '../Assets/med.png';
+
+// Memoized field component to prevent unnecessary re-renders
+const FormField = memo(({ 
+  field, 
+  label, 
+  icon: Icon, 
+  type = 'text', 
+  value, 
+  onChange, 
+  onFocus, 
+  onBlur,
+  showPassword, 
+  setShowPassword,
+  focusedField,
+  touched,
+  validation,
+  autoComplete
+}) => {
+  const { extraPadding, validation: validationObj, autoComplete: autoCompleteOpt } = options || {};
+  const isFocused = focusedField === field;
+  const isTouched = touched[field];
+  const hasError = isTouched && validationObj?.error;
+  const isValid = isTouched && validationObj?.valid;
+  const isPassword = type === 'password';
+  const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
+
+  return (
+    <div className="auth-input-group">
+      <div className={`
+        auth-input-wrap
+        ${isFocused ? 'focused' : ''}
+        ${hasError ? 'error' : ''}
+        ${isValid ? 'valid' : ''}
+      `}>
+        <div className="auth-input-icon">
+          <Icon size={17} className={isFocused ? 'text-primary' : 'text-charcoal-400'} />
+        </div>
+        <input
+          id={field}
+          name={field}
+          type={inputType}
+          value={value}
+          onChange={onChange}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          className={`auth-input ${isPassword ? 'auth-input--password' : ''}`}
+          placeholder=" "
+          autoComplete={autoCompleteOpt || type || 'off'}
+        />
+        <label htmlFor={field} className="auth-floating-label">{label}</label>
+        <div className="auth-input-border" />
+        <div className="auth-input-status">
+          {hasError && <AlertCircle size={14} className="text-danger" />}
+          {isValid && <CheckCircle size={14} className="text-accent" />}
+        </div>
+        
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="auth-password-toggle"
+            tabIndex={-1}
+          >
+            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        )}
+      </div>
+      {validationObj?.message && (
+        <motion.p
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="auth-field-error"
+        >
+          <AlertCircle size={11} />
+          {validationObj.message}
+        </motion.p>
+      )}
+    </div>
+  );
+});
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
@@ -33,13 +113,10 @@ export default function RegisterPage() {
 
    const update = useCallback((field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value })), []);
 
-   const handleBlur = (field) => {
-     // Delay clearing focus to prevent keyboard from disappearing on mobile
-     setTimeout(() => {
-       setFocusedField(null);
-     }, 100);
-     setTouched(prev => ({ ...prev, [field]: true }));
-   };
+    const handleBlur = (field) => {
+      setTouched(prev => ({ ...prev, [field]: true }));
+      setFocusedField(null);
+    };
 
   // Validation
   const nameError = touched.name && form.name && form.name.length < 2;
@@ -143,17 +220,19 @@ export default function RegisterPage() {
            <div className="auth-input-icon">
              <Icon size={17} className={isFocused ? 'text-primary' : 'text-charcoal-400'} />
            </div>
-           <input
-             type={inputType}
-             value={value}
-             onChange={update(field)}
-             onFocus={() => setFocusedField(field)}
-             onBlur={() => handleBlur(field)}
-             className={`auth-input ${isPassword ? 'auth-input--password' : ''}`}
-             placeholder=" "
-             autoComplete={autoComplete || type || 'off'}
-           />
-           <label className="auth-floating-label">{label}</label>
+            <input
+              id={field}
+              name={field}
+              type={inputType}
+              value={value}
+              onChange={update(field)}
+              onFocus={() => setFocusedField(field)}
+              onBlur={() => handleBlur(field)}
+              className={`auth-input ${isPassword ? 'auth-input--password' : ''}`}
+              placeholder=" "
+              autoComplete={autoComplete || type || 'off'}
+            />
+            <label htmlFor={field} className="auth-floating-label">{label}</label>
            <div className="auth-input-border" />
            <div className="auth-input-status">
              {hasError && <AlertCircle size={14} className="text-danger" />}
@@ -237,18 +316,25 @@ export default function RegisterPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25, duration: 0.5 }}
               >
-                <Field
+                <FormField
+                  key="name"
                   field="name"
                   label="Full Name"
                   icon={User}
-                  options={{
-                    autoComplete: 'name',
-                    validation: {
-                      error: nameError,
-                      valid: nameValid,
-                      message: 'Name must be at least 2 characters',
-                    }
+                  value={form.name}
+                  onChange={update('name')}
+                  onFocus={() => setFocusedField('name')}
+                  onBlur={() => handleBlur('name')}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                  focusedField={focusedField}
+                  touched={touched}
+                  validation={{
+                    error: nameError,
+                    valid: nameValid,
+                    message: 'Name must be at least 2 characters',
                   }}
+                  autoComplete='name'
                 />
               </motion.div>
               <motion.div
@@ -256,19 +342,26 @@ export default function RegisterPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.28, duration: 0.5 }}
               >
-                <Field
+                <FormField
+                  key="phone"
                   field="phone"
                   label="Phone Number"
                   icon={Phone}
                   type="tel"
-                  options={{
-                    autoComplete: 'tel',
-                    validation: {
-                      error: touched.phone && form.phone && !phoneValid,
-                      valid: touched.phone && form.phone && phoneValid,
-                      message: 'Invalid phone number',
-                    }
+                  value={form.phone}
+                  onChange={update('phone')}
+                  onFocus={() => setFocusedField('phone')}
+                  onBlur={() => handleBlur('phone')}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                  focusedField={focusedField}
+                  touched={touched}
+                  validation={{
+                    error: touched.phone && form.phone && !phoneValid,
+                    valid: touched.phone && form.phone && phoneValid,
+                    message: 'Invalid phone number',
                   }}
+                  autoComplete='tel'
                 />
               </motion.div>
             </div>
@@ -280,19 +373,26 @@ export default function RegisterPage() {
               transition={{ delay: 0.3, duration: 0.5 }}
               className="mb-5"
             >
-              <Field
+              <FormField
+                key="email"
                 field="email"
                 label="Email Address"
                 icon={Mail}
                 type="email"
-                options={{
-                  autoComplete: 'email',
-                  validation: {
-                    error: emailError,
-                    valid: emailValid,
-                    message: 'Please enter a valid email address',
-                  }
+                value={form.email}
+                onChange={update('email')}
+                onFocus={() => setFocusedField('email')}
+                onBlur={() => handleBlur('email')}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+                focusedField={focusedField}
+                touched={touched}
+                validation={{
+                  error: emailError,
+                  valid: emailValid,
+                  message: 'Please enter a valid email address',
                 }}
+                autoComplete='email'
               />
             </motion.div>
 
@@ -303,18 +403,26 @@ export default function RegisterPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.33, duration: 0.5 }}
               >
-                <Field
+                 <FormField
+                  key="password"
                   field="password"
                   label="Password"
                   icon={Lock}
                   type="password"
-                  options={{
-                    validation: {
-                      error: touched.password && form.password && form.password.length < 8,
-                      valid: touched.password && form.password && form.password.length >= 8,
-                      message: 'Min. 8 characters',
-                    }
+                  value={form.password}
+                  onChange={update('password')}
+                  onFocus={() => setFocusedField('password')}
+                  onBlur={() => handleBlur('password')}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                  focusedField={focusedField}
+                  touched={touched}
+                  validation={{
+                    error: touched.password && form.password && form.password.length < 8,
+                    valid: touched.password && form.password && form.password.length >= 8,
+                    message: 'Min. 8 characters',
                   }}
+                  autoComplete='new-password'
                 />
               </motion.div>
               <motion.div
@@ -322,18 +430,26 @@ export default function RegisterPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.36, duration: 0.5 }}
               >
-                <Field
+                 <FormField
+                  key="confirmPassword"
                   field="confirmPassword"
                   label="Confirm Password"
                   icon={Lock}
                   type="password"
-                  options={{
-                    validation: {
-                      error: passwordsDontMatch,
-                      valid: passwordsMatch,
-                      message: 'Passwords do not match',
-                    }
+                  value={form.confirmPassword}
+                  onChange={update('confirmPassword')}
+                  onFocus={() => setFocusedField('confirmPassword')}
+                  onBlur={() => handleBlur('confirmPassword')}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                  focusedField={focusedField}
+                  touched={touched}
+                  validation={{
+                    error: passwordsDontMatch,
+                    valid: passwordsMatch,
+                    message: 'Passwords do not match',
                   }}
+                  autoComplete='new-password'
                 />
               </motion.div>
             </div>
