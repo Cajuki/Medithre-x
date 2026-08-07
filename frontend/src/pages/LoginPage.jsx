@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader2, ShieldCheck, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import toast from 'react-hot-toast';
+import './AuthPages.css';
 import logo from '../Assets/med.png';
 
 export default function LoginPage() {

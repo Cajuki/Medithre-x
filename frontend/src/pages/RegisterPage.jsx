@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
 import toast from 'react-hot-toast';
+import './AuthPages.css';
 import logo from '../Assets/med.png';
 
 export default function RegisterPage() {
@@ -126,6 +127,7 @@ export default function RegisterPage() {
     const hasError = isTouched && validation?.error;
     const isValid = isTouched && validation?.valid;
     const isPassword = type === 'password';
+    const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
     return (
       <div className="auth-input-group">
@@ -139,14 +141,14 @@ export default function RegisterPage() {
             <Icon size={17} className={isFocused ? 'text-primary' : 'text-charcoal-400'} />
           </div>
           <input
-            type={isPassword && !showPassword ? 'password' : 'text'}
+            type={inputType}
             value={value}
             onChange={update(field)}
             onFocus={() => setFocusedField(field)}
             onBlur={() => handleBlur(field)}
             className={`auth-input ${isPassword ? 'auth-input--password' : ''}`}
             placeholder=" "
-            autoComplete={autoComplete || 'off'}
+            autoComplete={autoComplete || type || 'off'}
           />
           <label className="auth-floating-label">{label}</label>
           <div className="auth-input-border" />
