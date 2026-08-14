@@ -1,6 +1,11 @@
 export const isValidEmail = (email) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email).trim().toLowerCase());
 
+export const isStrongPassword = (password) =>
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])\S{8,}$/.test(String(password || ''));
+
+export const PASSWORD_HINT = 'Use at least 8 characters with uppercase, lowercase, a number, and a symbol.';
+
 export const normalizeKenyanPhone = (phone) => {
   const cleaned = String(phone || '').replace(/[\s().-]/g, '');
 

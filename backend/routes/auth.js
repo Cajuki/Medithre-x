@@ -13,15 +13,27 @@ const makeToken = (user) =>
   jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
 
 const safeUser = ({ password, ...u }) => u;
+const isStrongPassword = (password) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d])\S{8,}$/.test(String(password || ''));
+const normalizeKenyanPhone = (phone) => {
+  const cleaned = String(phone || '').replace(/[\s().-]/g, '');
+  if (/^\+254[17]\d{8}$/.test(cleaned)) return `0${cleaned.slice(4)}`;
+  if (/^254[17]\d{8}$/.test(cleaned)) return `0${cleaned.slice(3)}`;
+  return cleaned;
+};
 
 // ── REGISTER ─────────────────────────────────────────────────────────────────
 router.post('/register', async (req, res) => {
   try {
     const { name, email, phone, company, county, password } = req.body;
-    if (!name || !email || !password)
-      return res.status(400).json({ message: 'Name, email and password are required' });
-    if (password.length < 6)
-      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    if (!name || !email || !phone || !password)
+      return res.status(400).json({ message: 'Name, email, Kenyan phone and password are required' });
+    if (!/^\S+@\S+\.\S{2,}$/.test(email.trim()))
+      return res.status(400).json({ message: 'Please provide a valid email address' });
+    const normalizedPhone = normalizeKenyanPhone(phone);
+    if (!/^0[17]\d{8}$/.test(normalizedPhone))
+      return res.status(400).json({ message: 'Please provide a valid Kenyan phone number' });
+    if (!isStrongPassword(password))
+      return res.status(400).json({ message: 'Password must be at least 8 characters and include uppercase, lowercase, a number and a symbol' });
 
     const emailLower = email.toLowerCase().trim();
     const existing = await query('SELECT id FROM users WHERE email = $1', [emailLower]);
@@ -32,7 +44,7 @@ router.post('/register', async (req, res) => {
     const result = await query(
       `INSERT INTO users (name, email, phone, company, county, password, role)
        VALUES ($1,$2,$3,$4,$5,$6,'user') RETURNING *`,
-      [name.trim(), emailLower, phone || '', company || '', county || '', hashed]
+      [name.trim(), emailLower, normalizedPhone, company || '', county || '', hashed]
     );
     const user = result.rows[0];
     return res.status(201).json({ token: makeToken(user), user: safeUser(user) });
@@ -148,8 +160,8 @@ router.post('/reset-password', async (req, res) => {
     const { token, newPassword } = req.body;
     if (!token || !newPassword)
       return res.status(400).json({ message: 'Token and new password are required' });
-    if (newPassword.length < 6)
-      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    if (!isStrongPassword(newPassword))
+      return res.status(400).json({ message: 'Password must be at least 8 characters and include uppercase, lowercase, a number and a symbol' });
 
     const tokenHash = hashToken(token);
     const result = await query(
@@ -218,8 +230,8 @@ router.put('/password', protect, async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     if (!currentPassword || !newPassword)
       return res.status(400).json({ message: 'Both current and new password are required' });
-    if (newPassword.length < 6)
-      return res.status(400).json({ message: 'New password must be at least 6 characters' });
+    if (!isStrongPassword(newPassword))
+      return res.status(400).json({ message: 'New password must be at least 8 characters and include uppercase, lowercase, a number and a symbol' });
 
     const result = await query('SELECT * FROM users WHERE id = $1', [req.user.id]);
     if (!result.rows.length) return res.status(404).json({ message: 'User not found' });

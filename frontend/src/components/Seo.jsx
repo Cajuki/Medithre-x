@@ -42,7 +42,7 @@ export default function Seo({
 }) {
   useEffect(() => {
     const appName = import.meta.env.VITE_APP_NAME || 'Medithrex';
-    const siteTitle = title ? `${title} | ${appName}` : `${appName} — Medical & Laboratory Equipment Kenya`;
+    const siteTitle = title ? (title.endsWith(appName) ? title : `${title} | ${appName}`) : `${appName} — Medical & Laboratory Equipment Kenya`;
     document.title = siteTitle;
 
     setTag('name', 'description', description || 'Medithrex supplies medical and laboratory equipment across Kenya with fast delivery, support, and trusted brands.');

@@ -24,7 +24,7 @@ export default function ProductDetailPage() {
   const [activeTab, setActiveTab] = useState('description');
   const [selectedImage, setSelectedImage] = useState(0);
   const [relatedProducts, setRelatedProducts] = useState([]);
-  const { addToCart } = useCart();
+  const { addToCart, count } = useCart();
   const { itemIds, addToWishlist } = useWishlist();
   const isInWishlist = itemIds.includes(id);
 
@@ -236,9 +236,12 @@ export default function ProductDetailPage() {
                     </button>
                   </div>
 
-                  <button onClick={handleAddToCart} className="flex-1 btn btn-primary btn-lg">
-                    <ShoppingCart size={18} /> Add to Cart
+                  <button onClick={handleAddToCart} className="btn btn-primary btn-lg product-cart-button" title="Add to cart" aria-label={`Add ${product.name} to cart`}>
+                    <ShoppingCart size={18} />
                   </button>
+                  <Link to="/cart" className="btn btn-outline btn-lg product-view-cart" aria-label="View cart" title="View cart">
+                    <ShoppingCart size={18} /><span className="product-cart-count">{count}</span>
+                  </Link>
                 </div>
               )}
 
