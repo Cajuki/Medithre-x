@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider }  from './context/AuthContext.jsx';
 import { CartProvider }  from './context/CartContext.jsx';
@@ -43,6 +43,11 @@ import AdminMessages    from './pages/admin/AdminMessages.jsx';
 import AdminSettings    from './pages/admin/AdminSettings.jsx';
 
 function PublicLayout({ children }) {
+  const { pathname } = useLocation();
+  const isAuthPage = ['/login', '/register', '/forgot-password', '/reset-password'].includes(pathname);
+
+  if (isAuthPage) return children;
+
   return (
     <>
       <Navbar />
